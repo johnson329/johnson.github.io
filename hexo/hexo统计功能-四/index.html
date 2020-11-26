@@ -22,21 +22,26 @@
     var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Gemini","version":"8.0.0-rc.4","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="语言、时区_config.yml 12language: zh-CNtimezone: &#39;Asia&#x2F;Shanghai&#39;    菜单themes&#x2F;next&#x2F;_config.yml 去掉相应注释即可。 菜单配置的结构是key:路由">
+  <meta name="description" content="安装统计代码在themes&#x2F;next&#x2F;_config.yml中搜索static\ 找到如下配置 123# Statistics and Analytics# See: https:&#x2F;&#x2F;theme-next.js.org&#x2F;docs&#x2F;third-party-services&#x2F;statistics-and-analytics# --------------------------------------">
 <meta property="og:type" content="article">
-<meta property="og:title" content="hexo配置菜单、分类、标签、预览、scheme">
-<meta property="og:url" content="http://yoursite.com/hexo/hexo%E9%85%8D%E7%BD%AE%E8%8F%9C%E5%8D%95%E3%80%81%E5%88%86%E7%B1%BB%E3%80%81%E6%A0%87%E7%AD%BE%E3%80%81%E9%A2%84%E8%A7%88%E3%80%81scheme/index.html">
+<meta property="og:title" content="hexo统计功能(四)">
+<meta property="og:url" content="http://yoursite.com/hexo/hexo%E7%BB%9F%E8%AE%A1%E5%8A%9F%E8%83%BD-%E5%9B%9B/index.html">
 <meta property="og:site_name" content="Johnson的个人博客">
-<meta property="og:description" content="语言、时区_config.yml 12language: zh-CNtimezone: &#39;Asia&#x2F;Shanghai&#39;    菜单themes&#x2F;next&#x2F;_config.yml 去掉相应注释即可。 菜单配置的结构是key:路由">
+<meta property="og:description" content="安装统计代码在themes&#x2F;next&#x2F;_config.yml中搜索static\ 找到如下配置 123# Statistics and Analytics# See: https:&#x2F;&#x2F;theme-next.js.org&#x2F;docs&#x2F;third-party-services&#x2F;statistics-and-analytics# --------------------------------------">
 <meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://i.loli.net/2020/11/27/IR9cBFeHrbnLo76.png">
+<meta property="og:image" content="https://i.loli.net/2020/11/27/KYm2dLNe9GOkpxu.png">
+<meta property="og:image" content="https://i.loli.net/2020/11/27/wHnS1gykzR3NrVC.png">
+<meta property="og:image" content="https://i.loli.net/2020/11/27/wJT8YZoLisRPr1U.png">
 <meta property="article:published_time" content="2020-07-18T16:48:53.550Z">
-<meta property="article:modified_time" content="2020-07-18T17:17:05.333Z">
+<meta property="article:modified_time" content="2020-11-26T22:14:01.364Z">
 <meta property="article:author" content="Johnson">
 <meta property="article:tag" content="hexo">
 <meta property="article:tag" content="博客">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://i.loli.net/2020/11/27/IR9cBFeHrbnLo76.png">
 
-<link rel="canonical" href="http://yoursite.com/hexo/hexo%E9%85%8D%E7%BD%AE%E8%8F%9C%E5%8D%95%E3%80%81%E5%88%86%E7%B1%BB%E3%80%81%E6%A0%87%E7%AD%BE%E3%80%81%E9%A2%84%E8%A7%88%E3%80%81scheme/">
+<link rel="canonical" href="http://yoursite.com/hexo/hexo%E7%BB%9F%E8%AE%A1%E5%8A%9F%E8%83%BD-%E5%9B%9B/">
 
 
 <script class="page-configurations">
@@ -49,7 +54,7 @@
   };
 </script>
 
-  <title>hexo配置菜单、分类、标签、预览、scheme | Johnson的个人博客</title>
+  <title>hexo统计功能(四) | Johnson的个人博客</title>
   
 
 
@@ -192,7 +197,7 @@
 
       <!--noindex-->
       <section class="post-toc-wrap sidebar-panel">
-          <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#语言、时区"><span class="nav-number">1.</span> <span class="nav-text">语言、时区</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#菜单"><span class="nav-number">2.</span> <span class="nav-text">菜单</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#分类"><span class="nav-number">3.</span> <span class="nav-text">分类</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#标签"><span class="nav-number">4.</span> <span class="nav-text">标签</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#首页文章预览"><span class="nav-number">5.</span> <span class="nav-text">首页文章预览</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#主题的几种scheme"><span class="nav-number">6.</span> <span class="nav-text">主题的几种scheme</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#参考资料"><span class="nav-number">7.</span> <span class="nav-text">参考资料</span></a></li></ol></div>
+          <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#安装统计代码"><span class="nav-number">1.</span> <span class="nav-text">安装统计代码</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#检查代码安装状态"><span class="nav-number">2.</span> <span class="nav-text">检查代码安装状态</span></a></li></ol></div>
       </section>
       <!--/noindex-->
 
@@ -259,7 +264,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/hexo/hexo%E9%85%8D%E7%BD%AE%E8%8F%9C%E5%8D%95%E3%80%81%E5%88%86%E7%B1%BB%E3%80%81%E6%A0%87%E7%AD%BE%E3%80%81%E9%A2%84%E8%A7%88%E3%80%81scheme/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/hexo/hexo%E7%BB%9F%E8%AE%A1%E5%8A%9F%E8%83%BD-%E5%9B%9B/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -272,7 +277,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          hexo配置菜单、分类、标签、预览、scheme
+          hexo统计功能(四)
         </h1>
 
         <div class="post-meta">
@@ -281,10 +286,16 @@
                 <i class="far fa-calendar"></i>
               </span>
               <span class="post-meta-item-text">发表于</span>
-              
 
-              <time title="创建时间：2020-07-19 00:48:53 / 修改时间：01:17:05" itemprop="dateCreated datePublished" datetime="2020-07-19T00:48:53+08:00">2020-07-19</time>
+              <time title="创建时间：2020-07-19 00:48:53" itemprop="dateCreated datePublished" datetime="2020-07-19T00:48:53+08:00">2020-07-19</time>
             </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-11-27 06:14:01" itemprop="dateModified" datetime="2020-11-27T06:14:01+08:00">2020-11-27</time>
+              </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
                 <i class="far fa-folder"></i>
@@ -306,67 +317,22 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <h3 id="语言、时区"><a href="#语言、时区" class="headerlink" title="语言、时区"></a>语言、时区</h3><p><code>_config.yml</code></p>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">language:</span> <span class="string">zh-CN</span></span><br><span class="line"><span class="attr">timezone:</span> <span class="string">'Asia/Shanghai'</span></span><br></pre></td></tr></table></figure>
+        <h3 id="安装统计代码"><a href="#安装统计代码" class="headerlink" title="安装统计代码"></a>安装统计代码</h3><p>在<code>themes/next/_config.yml</code>中搜索<code>static</code>\</p>
+<p>找到如下配置</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Statistics and Analytics</span></span><br><span class="line"><span class="comment"># See: https://theme-next.js.org/docs/third-party-services/statistics-and-analytics</span></span><br><span class="line"><span class="comment"># ---------------------------------------------------------------</span></span><br></pre></td></tr></table></figure>
 
-
-
-<h3 id="菜单"><a href="#菜单" class="headerlink" title="菜单"></a>菜单</h3><p><code>themes/next/_config.yml</code></p>
-<p>去掉相应注释即可。</p>
-<p>菜单配置的结构是<code>key:路由</code></p>
+<p>跟着<a href="https://theme-next.js.org/docs/third-party-services/statistics-and-analytics" target="_blank" rel="noopener">教程</a>走就行了</p>
 <a id="more"></a>
 
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">menu:</span></span><br><span class="line">  <span class="attr">home:</span> <span class="string">/</span> <span class="string">||</span> <span class="string">fa</span> <span class="string">fa-home</span></span><br><span class="line">  <span class="attr">about:</span> <span class="string">/about/</span> <span class="string">||</span> <span class="string">fa</span> <span class="string">fa-user</span></span><br><span class="line">  <span class="attr">tags:</span> <span class="string">/tags/</span> <span class="string">||</span> <span class="string">fa</span> <span class="string">fa-tags</span></span><br><span class="line">  <span class="attr">categories:</span> <span class="string">/categories/</span> <span class="string">||</span> <span class="string">fa</span> <span class="string">fa-th</span></span><br><span class="line">  <span class="attr">archives:</span> <span class="string">/archives/</span> <span class="string">||</span> <span class="string">fa</span> <span class="string">fa-archive</span></span><br></pre></td></tr></table></figure>
-
-
-
-<h3 id="分类"><a href="#分类" class="headerlink" title="分类"></a>分类</h3><p>去掉菜单配置项的注释后，页面多了菜单，但是点击菜单会显示页面不存在</p>
-<p>我们需要创建对应的页面</p>
-<ul>
-<li>创建分类页面</li>
-</ul>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">hexo new page categories</span><br><span class="line"><span class="comment">#source目录下会生成categories目录</span></span><br><span class="line">vim <span class="built_in">source</span>/categories/index.md</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>编辑分类页面</li>
-</ul>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">---</span></span><br><span class="line"><span class="attr">title:</span> <span class="string">分类</span></span><br><span class="line"><span class="attr">date:</span> <span class="number">2020</span><span class="number">-06</span><span class="number">-21</span> <span class="number">23</span><span class="string">:41:18</span></span><br><span class="line"><span class="attr">type:</span> <span class="string">"categories"</span></span><br><span class="line"><span class="meta">---</span></span><br></pre></td></tr></table></figure>
-
-<p>不加<code>type: &quot;categories&quot;</code> 的话，分类页面无法统计有多少分类</p>
-<ul>
-<li>使用分类</li>
-</ul>
-<p>在文章的开头添加，例如<code>vim source/_posts/搭建hexo博客.md</code></p>
-<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">---</span><br><span class="line">title: 搭建 hexo 博客</span><br><span class="line">categories: [hexo]</span><br><span class="line">---</span><br></pre></td></tr></table></figure>
-
-<p>这篇博客就属于hexo分类</p>
-<h3 id="标签"><a href="#标签" class="headerlink" title="标签"></a>标签</h3><ul>
-<li>创建标签页面</li>
-</ul>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">hexo</span> <span class="string">new</span> <span class="string">page</span> <span class="string">tags</span></span><br><span class="line"><span class="comment">#source目录下会生成categories目录</span></span><br><span class="line"><span class="string">vim</span> <span class="string">source/tags/index.md</span></span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>编辑标签页面</li>
-</ul>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">---</span></span><br><span class="line"><span class="attr">title:</span> <span class="string">标签</span></span><br><span class="line"><span class="attr">date:</span> <span class="number">2020</span><span class="number">-06</span><span class="number">-21</span> <span class="number">23</span><span class="string">:38:14</span></span><br><span class="line"><span class="attr">type:</span> <span class="string">"tags"</span></span><br><span class="line"><span class="meta">---</span></span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>使用标签</li>
-</ul>
-<p>在博客文章的开头添加以下内容，这篇博客就有了”hexo“和”博客“两个标签</p>
-<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">---</span><br><span class="line">title: 搭建 hexo 博客</span><br><span class="line">tags: [hexo,博客]</span><br><span class="line">categories: [hexo]</span><br><span class="line">---</span><br></pre></td></tr></table></figure>
-
-
-
-<h3 id="首页文章预览"><a href="#首页文章预览" class="headerlink" title="首页文章预览"></a>首页文章预览</h3><p>在文章中加入注释<code>&lt;!--more--&gt;</code> ，注释以上的内容就是首页预览的内容</p>
-<h3 id="主题的几种scheme"><a href="#主题的几种scheme" class="headerlink" title="主题的几种scheme"></a>主题的几种scheme</h3><p>我的理解就是next主题的几种布局，在<code>themes/next/_config.yml</code>中搜索scheme，取消注释即可选择你喜欢的scheme</p>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Schemes</span></span><br><span class="line"><span class="comment">#scheme: Muse</span></span><br><span class="line"><span class="comment">#scheme: Mist</span></span><br><span class="line"><span class="comment">#scheme: Pisces</span></span><br><span class="line"><span class="attr">scheme:</span> <span class="string">Gemini</span></span><br></pre></td></tr></table></figure>
-
-
-
-
-
-<h3 id="参考资料"><a href="#参考资料" class="headerlink" title="参考资料"></a>参考资料</h3><p><a href="https://www.jianshu.com/p/67b731c3f840" target="_blank" rel="noopener">Github+Hexo使用NexT主题和优化</a></p>
+<h3 id="检查代码安装状态"><a href="#检查代码安装状态" class="headerlink" title="检查代码安装状态"></a>检查代码安装状态</h3><p>刚安装一般要等20分钟左右才会显示成功</p>
+<p>这期间你在百度统计管理界面可能会发现代码检查不成功</p>
+<p><img src="https://i.loli.net/2020/11/27/IR9cBFeHrbnLo76.png" alt="代码检查不成功"></p>
+<p>但是在自己网站，打开F12，如果有以下请求，则为安装成功，否则是失败。</p>
+<p><img src="https://i.loli.net/2020/11/27/KYm2dLNe9GOkpxu.png" alt="检查安装"></p>
+<p>过一会儿，安装成功</p>
+<p><img src="https://i.loli.net/2020/11/27/wHnS1gykzR3NrVC.png" alt="安装成功"></p>
+<p>统计效果</p>
+<p><img src="https://i.loli.net/2020/11/27/wJT8YZoLisRPr1U.png" alt="统计效果"></p>
 
     </div>
 
@@ -386,12 +352,12 @@
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/hexo/%E6%90%AD%E5%BB%BA-hexo-%E5%8D%9A%E5%AE%A2/" rel="prev" title="搭建 hexo 博客">
-      <i class="fa fa-chevron-left"></i> 搭建 hexo 博客
+    <a href="/hexo/hexo%E8%AF%84%E8%AE%BA%E5%8A%9F%E8%83%BD-%E4%B8%89/" rel="prev" title="hexo评论功能(三)">
+      <i class="fa fa-chevron-left"></i> hexo评论功能(三)
     </a></div>
       <div class="post-nav-item">
-    <a href="/hexo/hexo%E8%AF%84%E8%AE%BA%E5%8A%9F%E8%83%BD/" rel="next" title="hexo评论功能">
-      hexo评论功能 <i class="fa fa-chevron-right"></i>
+    <a href="/uncategorized/hexo%E5%86%99%E4%BD%9C%E4%B8%8E%E5%B1%95%E7%A4%BA%E5%9B%BE%E7%89%87%E5%8A%9F%E8%83%BD-%E4%BA%94/" rel="next" title="hexo写作与展示图片功能(五)">
+      hexo写作与展示图片功能(五) <i class="fa fa-chevron-right"></i>
     </a></div>
     </div>
       </footer>
@@ -505,7 +471,7 @@ NexT.utils.loadComments(document.querySelector('#gitalk-container'), () => {
       repo        : 'johnson329.github.io',
       owner       : 'johnson329',
       admin       : ['johnson329'],
-      id          : '426549144707fc5980e3d0752cc6e032',
+      id          : '31cbcd39b9b03821b6172f2e674b04ec',
         language: '',
       distractionFreeMode: true
     });

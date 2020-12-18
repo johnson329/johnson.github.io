@@ -205,7 +205,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">6</span>
+          <span class="site-state-item-count">7</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -218,7 +218,7 @@
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-count">3</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -251,6 +251,90 @@
 
         <div class="content index posts-expand">
           
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/uncategorized/flask%E6%9E%84%E5%BB%BAsaas%E5%BA%94%E7%94%A8/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Johnson">
+      <meta itemprop="description" content="Johnson的个人博客">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Johnson的个人博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/uncategorized/flask%E6%9E%84%E5%BB%BAsaas%E5%BA%94%E7%94%A8/" class="post-title-link" itemprop="url">Flask构建SaaS应用</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2020-12-18 14:49:01 / 修改时间：14:58:27" itemprop="dateCreated datePublished" datetime="2020-12-18T14:49:01+08:00">2020-12-18</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h3 id="租户隔离"><a href="#租户隔离" class="headerlink" title="租户隔离"></a>租户隔离</h3><p>一个客户就是一个租户，每个租户的数据在数据表中都有个一个tenantid字段用来与其他租户隔离</p>
+<ul>
+<li>租户识别</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> flask <span class="keyword">import</span> g, request</span><br><span class="line">    </span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">get_tenant_from_request</span><span class="params">()</span>:</span></span><br><span class="line">    auth = validate_auth(request.headers.get(<span class="string">'Authorization'</span>))</span><br><span class="line">    <span class="keyword">return</span> Tenant.query.get(auth.tenant_id)</span><br><span class="line">        </span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">get_current_tenant</span><span class="params">()</span>:</span></span><br><span class="line">    rv = getattr(g, <span class="string">'current_tenant'</span>, <span class="literal">None</span>)</span><br><span class="line">    <span class="keyword">if</span> rv <span class="keyword">is</span> = <span class="literal">None</span>:</span><br><span class="line">        rv = get_tenant_from_request()</span><br><span class="line">        g.current_tenant = rv</span><br><span class="line">    <span class="keyword">return</span> rv</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>自动租户隔离</li>
+</ul>
+<p>例如，每个租户有自己的Project，像下面这样批量直接修改project又忘记带上tenantid查询字段，就会把其他租户的project一并修改了</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">batch_update_projects</span><span class="params">(ids, changes)</span>:</span></span><br><span class="line">    projects = Project.query.filter(</span><br><span class="line">        Project.id.in_(ids) &amp;</span><br><span class="line">        Project.status != ProjectStatus.INVISIBLE</span><br><span class="line">    )</span><br><span class="line">    <span class="keyword">for</span> project <span class="keyword">in</span> projects: </span><br><span class="line">        update_projects(project, changes)</span><br></pre></td></tr></table></figure>
+
+<p>我们可以override Project的query属性以及使用sqlalchemy的event listener来自动的进行租户隔离，也就是说我们在使用orm查询的时候，会自动带上<code>tenentid</code>查询字段，这样无论是修改、删除、查询都只会是操作自己租户下面的数据，毕竟在orm中，删除和修改都是要先查询的嘛</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># model</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Project</span><span class="params">(TenantBoundMixin, db.Model)</span>:</span></span><br><span class="line">    id = db.Column(db.Integer, primary_key=<span class="literal">True</span>)</span><br><span class="line">    name = db.Column(db.String(<span class="number">100</span>))</span><br><span class="line">    status = db.Column(db.Integer)</span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__repr__</span><span class="params">(self)</span>:</span></span><br><span class="line">        <span class="keyword">return</span> <span class="string">'&lt;Project name=%r&gt;'</span> % self.name</span><br></pre></td></tr></table></figure>
+
+
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> sqlalchemy.ext.declarative <span class="keyword">import</span> declared_attr</span><br><span class="line">​</span><br><span class="line"><span class="comment"># 覆写Project类的query_class属性</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">TenantQuery</span><span class="params">(db.Query)</span>:</span></span><br><span class="line">    current_tenant_constrained = <span class="literal">True</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">tenant_unconstrained_unsafe</span><span class="params">(self)</span>:</span></span><br><span class="line">        rv = self._clone()</span><br><span class="line">        rv.current_tenant_constrained = <span class="literal">False</span></span><br><span class="line">        <span class="keyword">return</span> rv</span><br><span class="line"><span class="comment"># 通过mixin的方式，让Project类多继承这个类</span></span><br><span class="line"><span class="comment"># 从而覆写了Project类的query_class属性</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">TenantBoundMixin</span><span class="params">(object)</span>:</span></span><br><span class="line">    query_class = TenantQuery</span><br><span class="line">    <span class="comment"># 为project表定义了一个tenant_id字段</span></span><br><span class="line"><span class="meta">    @declared_attr</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">tenant_id</span><span class="params">(cls)</span>:</span></span><br><span class="line">        <span class="keyword">return</span> db.Column(db.Integer, db.ForeignKey(<span class="string">'tenant.id'</span>))</span><br><span class="line">​</span><br><span class="line"><span class="meta">    @declared_attr</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">tenant</span><span class="params">(cls)</span>:</span></span><br><span class="line">        <span class="keyword">return</span> db.relationship(Tenant, uselist=<span class="literal">False</span>)</span><br><span class="line">​</span><br><span class="line"><span class="comment"># event_listener的意思是，每次执行例如Project.query的时候都会执行</span></span><br><span class="line"><span class="comment"># 下面的钩子函数，</span></span><br><span class="line"><span class="comment"># 这个钩子函数会给query对象带上ilter_by(tenant=get_current_tenant())</span></span><br><span class="line"><span class="meta">@db.event.listens_for(TenantQuery, 'before_compile', retval=True)</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">ensure_tenant_constrained</span><span class="params">(query)</span>:</span></span><br><span class="line">    <span class="keyword">for</span> desc <span class="keyword">in</span> query.column_descriptions:</span><br><span class="line">        <span class="keyword">if</span> hasattr(desc[<span class="string">'type'</span>], <span class="string">'tenant'</span>) <span class="keyword">and</span> \</span><br><span class="line">            query.current_tenant_constrained:</span><br><span class="line">              query = query.filter_by(tenant=get_current_tenant())</span><br><span class="line">    <span class="keyword">return</span> query</span><br></pre></td></tr></table></figure>
+
+<p>接下来我们来看一下使用</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 只查询我这个租户名下的project42</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>Project.query.all()</span><br><span class="line">[&lt;Project name=<span class="string">'project42'</span>&gt;]</span><br><span class="line"><span class="comment"># 去掉租户约束，查询所有project信息</span></span><br><span class="line"><span class="meta">&gt;&gt;&gt; </span>Project.query.tenant_unconstrained_unsafe().all()</span><br><span class="line">[&lt;Project name=<span class="string">'project1'</span>&gt;, Project.name=<span class="string">'project2'</span>, ...]</span><br></pre></td></tr></table></figure>
+
+<h3 id="审计日志"><a href="#审计日志" class="headerlink" title="审计日志"></a>审计日志</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">log</span><span class="params">(action, message=None)</span>:</span></span><br><span class="line">  data = &#123;</span><br><span class="line">        <span class="string">'action'</span>: action</span><br><span class="line">        <span class="string">'timestamp'</span>: datetime.utcnow()</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">if</span> message <span class="keyword">is</span> <span class="keyword">not</span> <span class="literal">None</span>:</span><br><span class="line">         data[<span class="string">'message'</span>] = message</span><br><span class="line">  <span class="keyword">if</span> request:</span><br><span class="line">         data[<span class="string">'ip'</span>] = request.remote_addr</span><br><span class="line">  user = get_current_user()</span><br><span class="line">  <span class="keyword">if</span> user <span class="keyword">is</span> <span class="keyword">not</span> <span class="literal">None</span>:</span><br><span class="line">         data[<span class="string">'user'</span>] = User</span><br><span class="line">  db.session.add(LogMessage(**data))</span><br></pre></td></tr></table></figure>
+
+<p>更多详细信息，请参考</p>
+<p><a href="http://mitsuhiko.pocoo.org/practicalsaas.pdf" target="_blank" rel="noopener">flask多租户实践</a></p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
       
   
   

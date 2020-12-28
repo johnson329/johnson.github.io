@@ -26,7 +26,7 @@
   <meta name="description" content="Johnson的个人博客">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Johnson的个人博客">
-<meta property="og:url" content="http://yoursite.com/archives/2020/11/index.html">
+<meta property="og:url" content="http://yoursite.com/page/2/index.html">
 <meta property="og:site_name" content="Johnson的个人博客">
 <meta property="og:description" content="Johnson的个人博客">
 <meta property="og:locale" content="zh_CN">
@@ -36,20 +36,20 @@
 <meta property="article:tag" content="django">
 <meta name="twitter:card" content="summary">
 
-<link rel="canonical" href="http://yoursite.com/archives/2020/11/">
+<link rel="canonical" href="http://yoursite.com/page/2/">
 
 
 <script class="page-configurations">
   // https://hexo.io/docs/variables.html
   CONFIG.page = {
     sidebar: "",
-    isHome : false,
+    isHome : true,
     isPost : false,
     lang   : 'zh-CN'
   };
 </script>
 
-  <title>归档 | Johnson的个人博客</title>
+  <title>Johnson的个人博客</title>
   
 
 
@@ -249,51 +249,111 @@
       <div class="main-inner">
         
 
-        <div class="content archive">
+        <div class="content index posts-expand">
+          
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/hexo/%E6%90%AD%E5%BB%BA-hexo-%E5%8D%9A%E5%AE%A2-%E4%B8%80/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Johnson">
+      <meta itemprop="description" content="Johnson的个人博客">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Johnson的个人博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/hexo/%E6%90%AD%E5%BB%BA-hexo-%E5%8D%9A%E5%AE%A2-%E4%B8%80/" class="post-title-link" itemprop="url">搭建 hexo 博客(一)</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-07-19 00:48:53" itemprop="dateCreated datePublished" datetime="2020-07-19T00:48:53+08:00">2020-07-19</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-11-27 06:14:10" itemprop="dateModified" datetime="2020-11-27T06:14:10+08:00">2020-11-27</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/hexo/" itemprop="url" rel="index"><span itemprop="name">hexo</span></a>
+                </span>
+            </span>
+
           
 
-  
-  
-  
-  <div class="post-block">
-    <div class="posts-collapse">
-      <div class="collection-title">
-        <span class="collection-header">嗯..! 目前共计 11 篇日志。 继续努力。</span>
-      </div>
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
 
       
-    <div class="collection-year">
-      <span class="collection-header">2020</span>
+          <h3 id="环境"><a href="#环境" class="headerlink" title="环境"></a>环境</h3><p>ubuntu 20.04</p>
+<p>node 10.21.0</p>
+<h3 id="下载和安装nvm"><a href="#下载和安装nvm" class="headerlink" title="下载和安装nvm"></a>下载和安装nvm</h3><p>nvm是node.js的版本管理器。使用nvm可以避免出现<code>EACCES</code> 权限错误和方便切换node.js和npm版本。</p>
+<ul>
+<li>执行以下命令下载和安装nvm</li>
+</ul>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wget -qO- https://raw.githubusercontent.com/nvm-sh/nvm/v0.35.3/install.sh | bash</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>验证安装</li>
+</ul>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">command</span> -v nvm</span><br><span class="line"><span class="comment">#或者</span></span><br><span class="line">nvm</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>出现<code>nvm: command not found</code>或者没有输出nvm</li>
+</ul>
+<p>重启terminal或者参考<a href="https://github.com/nvm-sh/nvm/issues/1404" target="_blank" rel="noopener">#1404</a>解决</p>
+<p>仍有问题请google或者参考项目的<a href="https://github.com/nvm-sh/nvm" target="_blank" rel="noopener">README</a>或者<a href="https://github.com/nvm-sh/nvm/issues" target="_blank" rel="noopener">github issue</a>解决</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/hexo/%E6%90%AD%E5%BB%BA-hexo-%E5%8D%9A%E5%AE%A2-%E4%B8%80/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
     </div>
 
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <div class="post-meta">
-        <time itemprop="dateCreated"
-              datetime="2020-11-27T04:57:05+08:00"
-              content="2020-11-27">
-          11-27
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/uncategorized/hexo%E5%86%99%E4%BD%9C%E4%B8%8E%E5%B1%95%E7%A4%BA%E5%9B%BE%E7%89%87%E5%8A%9F%E8%83%BD-%E4%BA%94/" itemprop="url">
-            <span itemprop="name">hexo写作与展示图片功能(五)</span>
-          </a>
-      </div>
-
-    </header>
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
   </article>
-
-
-    </div>
-  </div>
   
   
   
 
+
   
+  <nav class="pagination">
+    <a class="extend prev" rel="prev" href="/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><span class="page-number current">2</span>
+  </nav>
 
 
 

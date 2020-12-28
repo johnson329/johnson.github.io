@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+  
+  <link rel="stylesheet" href="/lib/animate-css/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"yoursite.com","root":"/","scheme":"Muse","version":"8.0.0-rc.4","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+<script data-ad-client="ca-pub-5647031416661489" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+
+  <meta name="description" content="123def wsgi_app(self, environ, start_response):            ctx &#x3D; self.request_context(environ)  我们继续来看wsgi这个方法，self.request_context这个方法把environ封装成了RequestContext对象，看名字也知道这个是请求上下文 123def request_contex">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Flask源码之请求上下文和应用上下文">
+<meta property="og:url" content="http://yoursite.com/flask/flask%E6%BA%90%E7%A0%81%E4%B9%8B%E8%AF%B7%E6%B1%82%E4%B8%8A%E4%B8%8B%E6%96%87%E5%92%8C%E5%BA%94%E7%94%A8%E4%B8%8A%E4%B8%8B%E6%96%87/index.html">
+<meta property="og:site_name" content="Johnson的个人博客">
+<meta property="og:description" content="123def wsgi_app(self, environ, start_response):            ctx &#x3D; self.request_context(environ)  我们继续来看wsgi这个方法，self.request_context这个方法把environ封装成了RequestContext对象，看名字也知道这个是请求上下文 123def request_contex">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2020-12-24T08:35:34.000Z">
+<meta property="article:modified_time" content="2020-12-25T09:53:54.156Z">
+<meta property="article:author" content="Johnson">
+<meta property="article:tag" content="flask源码">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://yoursite.com/flask/flask%E6%BA%90%E7%A0%81%E4%B9%8B%E8%AF%B7%E6%B1%82%E4%B8%8A%E4%B8%8B%E6%96%87%E5%92%8C%E5%BA%94%E7%94%A8%E4%B8%8A%E4%B8%8B%E6%96%87/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Flask源码之请求上下文和应用上下文 | Johnson的个人博客</title>
+  
+
+
+  <script>
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?1d1705f6a65cb7060130e6deef362fde";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <main class="main">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+        <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+        <span class="toggle-line toggle-line-first"></span>
+        <span class="toggle-line toggle-line-middle"></span>
+        <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">Johnson的个人博客</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Johnson的个人博客</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <section class="post-toc-wrap sidebar-panel">
+          <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#Local和LocalStack"><span class="nav-number">1.</span> <span class="nav-text">Local和LocalStack</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#如何获取请求上下文"><span class="nav-number">2.</span> <span class="nav-text">如何获取请求上下文</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#LocalProxy"><span class="nav-number">3.</span> <span class="nav-text">LocalProxy</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#总结"><span class="nav-number">4.</span> <span class="nav-text">总结</span></a></li></ol></div>
+      </section>
+      <!--/noindex-->
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Johnson</p>
+  <div class="site-description" itemprop="description">Johnson的个人博客</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">11</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </section>
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </header>
+
+      
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div id="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+      <div class="main-inner">
+        
+
+        <div class="content post posts-expand">
+          
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/flask/flask%E6%BA%90%E7%A0%81%E4%B9%8B%E8%AF%B7%E6%B1%82%E4%B8%8A%E4%B8%8B%E6%96%87%E5%92%8C%E5%BA%94%E7%94%A8%E4%B8%8A%E4%B8%8B%E6%96%87/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Johnson">
+      <meta itemprop="description" content="Johnson的个人博客">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Johnson的个人博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Flask源码之请求上下文和应用上下文
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-12-24 16:35:34" itemprop="dateCreated datePublished" datetime="2020-12-24T16:35:34+08:00">2020-12-24</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-12-25 17:53:54" itemprop="dateModified" datetime="2020-12-25T17:53:54+08:00">2020-12-25</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/flask/" itemprop="url" rel="index"><span itemprop="name">flask</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">wsgi_app</span><span class="params">(self, environ, start_response)</span>:</span></span><br><span class="line">    </span><br><span class="line">        ctx = self.request_context(environ)</span><br></pre></td></tr></table></figure>
+
+<p>我们继续来看wsgi这个方法，self.request_context这个方法把environ封装成了RequestContext对象，看名字也知道这个是请求上下文</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">request_context</span><span class="params">(self, environ)</span>:</span></span><br><span class="line">  </span><br><span class="line">    <span class="keyword">return</span> RequestContext(self, environ)</span><br></pre></td></tr></table></figure>
+
+<p>简单看一下RequestContext的定义，位置在<code>ctx.py</code>中</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">RequestContext</span><span class="params">(object)</span>:</span></span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, app, environ, request=None, session=None)</span>:</span></span><br><span class="line">        self.app = app</span><br><span class="line">        <span class="keyword">if</span> request <span class="keyword">is</span> <span class="literal">None</span>:</span><br><span class="line">            request = app.request_class(environ)</span><br><span class="line">        self.request = request</span><br><span class="line">        self.url_adapter = <span class="literal">None</span></span><br><span class="line">        <span class="keyword">try</span>:</span><br><span class="line">            self.url_adapter = app.create_url_adapter(self.request)</span><br><span class="line">        <span class="keyword">except</span> HTTPException <span class="keyword">as</span> e:</span><br><span class="line">            self.request.routing_exception = e</span><br><span class="line">        self.flashes = <span class="literal">None</span></span><br><span class="line">        self.session = session</span><br></pre></td></tr></table></figure>
+
+<p>我们看到， 第一个参数是Flask对象，所以传入了self（注意request_context方法是Flask类的方法，所以self就是Flask的实例）</p>
+<p>我们还看到<code>RequestContext</code>有<code>request</code>这个属性</p>
+<p>回到<code>wsgi_app</code>这个方法，我们看到接下来<code>ctx.push</code>这一句调用了<code>RequestContext</code>的push方法</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">wsgi_app</span><span class="params">(self, environ, start_response)</span>:</span></span><br><span class="line">    ctx = self.request_context(environ)</span><br><span class="line">    error = <span class="literal">None</span></span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        <span class="keyword">try</span>:</span><br><span class="line">            ctx.push()</span><br><span class="line">            response = self.full_dispatch_request()</span><br><span class="line">        <span class="keyword">except</span> Exception <span class="keyword">as</span> e:</span><br><span class="line">            error = e</span><br><span class="line">            response = self.handle_exception(e)</span><br><span class="line">        <span class="keyword">except</span>:  <span class="comment"># noqa: B001</span></span><br><span class="line">            error = sys.exc_info()[<span class="number">1</span>]</span><br><span class="line">            <span class="keyword">raise</span></span><br><span class="line">        <span class="keyword">return</span> response(environ, start_response)</span><br><span class="line">    <span class="keyword">finally</span>:</span><br><span class="line">        <span class="keyword">if</span> self.should_ignore_error(error):</span><br><span class="line">            error = <span class="literal">None</span></span><br><span class="line">        ctx.auto_pop(error)</span><br></pre></td></tr></table></figure>
+
+<h3 id="Local和LocalStack"><a href="#Local和LocalStack" class="headerlink" title="Local和LocalStack"></a>Local和LocalStack</h3><p><code>flask</code>中实现了<code>Local</code>和<code>LocalStack</code>两种数据结构，<code>Local</code>的作用是为了提供线程隔离和协程隔离，类似threadlocal</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;<span class="number">12345</span>:RequestContext&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>12345</code>是线程id，<code>RequestContext</code>是请求上下文，这样做是为了在wsgi server是多线程或多协程的情况下，每个线程或协程获取自己的上下文</p>
+<p>但实际上，<code>flask</code>是把<code>RequestContext</code>存储在栈（后进先出）结构中，类似这样</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;<span class="number">12345</span>:&#123;<span class="string">'stack'</span>:[RequestContext]&#125;&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这样做是因为一个请求可能有多个请求上下文，比如服务端重定向的情况（一个请求A视图，我们需要重定向到B视图，这就需要自己再push一个<code>RequestContext</code>）</p>
+<p>此外还有多个应用上下文的情况</p>
+<p>接下来我们再看<code>push</code>方法</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">push</span><span class="params">(self)</span>:</span></span><br><span class="line">    top = _request_ctx_stack.top</span><br></pre></td></tr></table></figure>
+
+<p>首先从<code>_request_ctx_stack</code>的栈顶获取一个请求<code>RequestContext</code></p>
+<p><code>_request_ctx_stack</code>的定义再<code>globals.py</code>中</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">_request_ctx_stack = LocalStack()</span><br></pre></td></tr></table></figure>
+
+<p>它现在还是的状态是这样，栈是空的</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;<span class="number">12345</span>:<span class="string">'stack'</span>:[]&#125;</span><br></pre></td></tr></table></figure>
+
+<p>继续看<code>push</code>方法，如果栈是空的话，我们<code>self</code>也就是<code>RequestContext</code>压入栈，注意<code>push</code>是<code>RequestContext</code>的方法</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">push</span><span class="params">(self)</span>:</span></span><br><span class="line">    top = _request_ctx_stack.top</span><br><span class="line">    <span class="keyword">if</span> top <span class="keyword">is</span> <span class="keyword">not</span> <span class="literal">None</span> <span class="keyword">and</span> top.preserved:</span><br><span class="line">        top.pop(top._preserved_exc)</span><br><span class="line"></span><br><span class="line">    </span><br><span class="line">    app_ctx = _app_ctx_stack.top</span><br><span class="line">    <span class="keyword">if</span> app_ctx <span class="keyword">is</span> <span class="literal">None</span> <span class="keyword">or</span> app_ctx.app != self.app:</span><br><span class="line">        app_ctx = self.app.app_context()</span><br><span class="line">        app_ctx.push()</span><br><span class="line">        self._implicit_app_ctx_stack.append(app_ctx)</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        self._implicit_app_ctx_stack.append(<span class="literal">None</span>)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> hasattr(sys, <span class="string">"exc_clear"</span>):</span><br><span class="line">        sys.exc_clear()</span><br><span class="line">    <span class="comment"># 压入栈</span></span><br><span class="line">    _request_ctx_stack.push(self)</span><br></pre></td></tr></table></figure>
+
+<p>我们还注意到这里还有一个<code>_app_ctx_stack</code>，这也是<code>LocalStack</code>，位置在globals.py</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">_app_ctx_stack = LocalStack()</span><br></pre></td></tr></table></figure>
+
+<p>只不过这个栈里面存储的是应用上下文，也就是说</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;<span class="number">12345</span>:<span class="string">'stack'</span>:[AppContext]&#125;</span><br></pre></td></tr></table></figure>
+
+<p>然后我们也执行了<code>app_ctx.push()</code>方法，也就是把应用上下文压入栈</p>
+<p>到这里我们就知道了，执行<code>RequestContext</code>对象的push方法会把自身压入<code>_request_ctx_stack</code>中，还会把<code>AppContext</code>也压入<code>_app_ctx_stack</code>中</p>
+<h3 id="如何获取请求上下文"><a href="#如何获取请求上下文" class="headerlink" title="如何获取请求上下文"></a>如何获取请求上下文</h3><p>我们常常需要在一个视图函数中获取请求中的参数，例如url，remote_address</p>
+<p>我们当然可以每次手动获取栈顶的<code>RequestContext</code>对象，然后调用<code>RequestContext</code>的<code>request</code>属性，但每次操作栈结构还是有点繁琐</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> flask <span class="keyword">import</span> Flask, request, Request</span><br><span class="line"><span class="keyword">from</span> flask.globals <span class="keyword">import</span> _request_ctx_stack</span><br><span class="line"></span><br><span class="line">flask_app = Flask(__name__)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="meta">@flask_app.route('/')</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">hello_world</span><span class="params">()</span>:</span></span><br><span class="line">    req: Request = _request_ctx_stack.top.request</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="string">"&#123;&#125;"</span>.format(req.remote_addr)</span><br></pre></td></tr></table></figure>
+
+<p><code>flask</code>的做法是使用<code>LocalProxy</code></p>
+<h3 id="LocalProxy"><a href="#LocalProxy" class="headerlink" title="LocalProxy"></a>LocalProxy</h3><p>request就是<code>LocalProxy</code>，它是代理模式在<code>flask</code>中的运用，作用就是代理对<code>RequestContext.request</code>的操作</p>
+<p>例如，我们使用request.remote_addr实际上会先从栈顶获取<code>RequestContext</code>然后获取<code>request</code>属性。</p>
+<p>我们执行<code>request.remote_addr</code>就相当于执行 <code>_request_ctx_stack.top.request.remote_addr</code></p>
+<p>难为什么用<code>LocalProxy</code>而不是直接<code>request=_request_ctx_stack.top.request</code>呢</p>
+<p>原因是这样写，项目启动的时候，这句就执行了，就直接从栈顶获取<code>RequestContext</code>对象了，这时候还没有呢。</p>
+<p>我们看看<code>LocalProxy</code>是怎么做的</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#LocalProxy传入了一个偏函数</span></span><br><span class="line">request = LocalProxy(partial(_lookup_req_object, <span class="string">"request"</span>))</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 这个函数的作用就是从栈顶获取RequestContext，然后获取指定属性</span></span><br><span class="line"><span class="comment"># 例如_lookup_req_object("request")就是获取RequestContext.request</span></span><br><span class="line"><span class="comment"># _lookup_req_object("request")相当于partial(_lookup_req_object, "request")()</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">_lookup_req_object</span><span class="params">(name)</span>:</span></span><br><span class="line">    top = _request_ctx_stack.top</span><br><span class="line">    <span class="keyword">if</span> top <span class="keyword">is</span> <span class="literal">None</span>:</span><br><span class="line">        <span class="keyword">raise</span> RuntimeError(_request_ctx_err_msg)</span><br><span class="line">    <span class="keyword">return</span> getattr(top, name)</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">LocalProxy</span><span class="params">(object)</span>:</span></span><br><span class="line">    __slots__ = (<span class="string">"__local"</span>, <span class="string">"__dict__"</span>, <span class="string">"__name__"</span>, <span class="string">"__wrapped__"</span>)</span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, local, name=None)</span>:</span>     </span><br><span class="line">        object.__setattr__(self, <span class="string">"_LocalProxy__local"</span>, local)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">_get_current_object</span><span class="params">(self)</span>:</span></span><br><span class="line">        <span class="keyword">if</span> <span class="keyword">not</span> hasattr(self.__local, <span class="string">"__release_local__"</span>):</span><br><span class="line">            <span class="keyword">return</span> self.__local()</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__getattr__</span><span class="params">(self, name)</span>:</span></span><br><span class="line">        <span class="keyword">return</span> getattr(self._get_current_object(), name)</span><br></pre></td></tr></table></figure>
+
+<ol>
+<li><p><code>__getattr__</code></p>
+<p>我们request是一个LocalProxy对象，那么<code>request.remote_addr</code>会执行 <code>__getattr__</code> 这个方法，这个方法又会去_get_current_object获取被代理的对象，获取被代理的真实对象，例如 <code>RequestContext.request</code>之后，调用 <code>getattr(self._get_current_object(), name)</code>获取 <code>request</code>的指定属性</p>
+</li>
+<li><p><code>_get_current_object</code></p>
+<p>这个方法执行<code>self.__local()</code>获取被代理对象</p>
+</li>
+<li><p><code>__local</code></p>
+<p>在<code>__init__</code>方法中我们可以看到<code>object.__setattr__(self, &quot;_LocalProxy__local&quot;, local)</code>，也就是<code>__local</code>也就是传入进来 <code>partial(_lookup_req_object, &quot;request&quot;)</code>，<code>self.__local()</code>也就是执行偏函数 <code>partial(_lookup_req_object, &quot;request&quot;)</code></p>
+</li>
+</ol>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>到这里，我们就可以看出<code>flask</code>中的请求上下文是如何存储，获取的</p>
+<p>请求上下文存储在<code>LocalStack</code>结构中，<code>Local</code>是为了线程安全，<code>Stack是为了</code>多请求上下文的场景</p>
+<p>而获取是通过<code>LocalProxy</code>，使用代理模式是为了动态地获取请求上下文，在访问request属性的时候，才会从栈中获取真实的请求上下文，然后代理属性的获取</p>
+<p><code>flask</code>中还有应用上下文，<code>curren_app</code>，我们有时候会通过current_app.config来获取配置信息，原理和请求request请求上下文类似，只不过代理的<code>AppContext</code>对象</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/flask%E6%BA%90%E7%A0%81/" rel="tag"># flask源码</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/flask/flask%E6%BA%90%E7%A0%81%E4%B9%8B%E4%B8%80%E4%B8%AA%E8%AF%B7%E6%B1%82%E7%9A%84%E6%97%85%E7%A8%8B/" rel="prev" title="Flask源码之一个请求的旅程">
+      <i class="fa fa-chevron-left"></i> Flask源码之一个请求的旅程
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/docker/ubuntu18-04%E5%AE%89%E8%A3%85docker/" rel="next" title="ubuntu18.04安装docker">
+      ubuntu18.04安装docker <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+        </div>
+        
+    <div class="comments" id="gitalk-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2020</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Johnson</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.css">
+
+<script>
+NexT.utils.loadComments(document.querySelector('#gitalk-container'), () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : 'a61d3b3dfdac48e1310f',
+      clientSecret: 'e51c7934b18ded8b7d2adfc51cd6af719efdc957',
+      repo        : 'johnson329.github.io',
+      owner       : 'johnson329',
+      admin       : ['johnson329'],
+      id          : '235e3e7d4705c83bea285de10f224230',
+        language: '',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
+
+</body>
+</html>

@@ -205,20 +205,20 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">8</span>
+          <span class="site-state-item-count">11</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
       <div class="site-state-item site-state-categories">
             <a href="/categories/">
           
-        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-count">3</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-count">5</span>
         <span class="site-state-item-name">标签</span></a>
       </div>
   </nav>
@@ -251,6 +251,380 @@
 
         <div class="content index posts-expand">
           
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/docker/ubuntu18-04%E5%AE%89%E8%A3%85docker/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Johnson">
+      <meta itemprop="description" content="Johnson的个人博客">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Johnson的个人博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/docker/ubuntu18-04%E5%AE%89%E8%A3%85docker/" class="post-title-link" itemprop="url">ubuntu18.04安装docker</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2020-12-28 21:10:12 / 修改时间：22:35:11" itemprop="dateCreated datePublished" datetime="2020-12-28T21:10:12+08:00">2020-12-28</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/docker/" itemprop="url" rel="index"><span itemprop="name">docker</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="系统依赖"><a href="#系统依赖" class="headerlink" title="系统依赖"></a>系统依赖</h2><p>对于ubuntu操作系统，Docker Engine目前支持以下几个版本</p>
+<ul>
+<li>Ubuntu Focal 20.04 (LTS)</li>
+<li>Ubuntu Bionic 18.04 (LTS)</li>
+<li>Ubuntu Xenial 16.04 (LTS)</li>
+</ul>
+<p>在系统架构上，Docker Engine目前只支持<code>x86_64</code>or<code>amd64</code>,<code>armhf</code>,<code>arm64</code>等系统架构</p>
+<ul>
+<li>查看自己的系统架构</li>
+</ul>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">arch</span></span><br></pre></td></tr></table></figure>
+
+
+<h2 id="卸载旧的版本"><a href="#卸载旧的版本" class="headerlink" title="卸载旧的版本"></a>卸载旧的版本</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get remove docker docker-engine docker.io containerd runc</span><br></pre></td></tr></table></figure>
+<p>如果提示</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Reading package lists... Done</span><br><span class="line">E: Could not get lock /var/lib/apt/lists/lock - open (11: Resource temporarily unavailable)</span><br><span class="line">E: Unable to lock directory /var/lib/apt/lists/</span><br></pre></td></tr></table></figure>
+<p>很可能是你的ubuntu操作系统开启了每天自动更新，apt-get被占用了，关掉自动更新，或者等他自动更新完<br><a href="https://itsfoss.com/could-not-get-lock-error/" target="_blank" rel="noopener">How to Fix ‘E: Could not get lock /var/lib/dpkg/lock’ Error in Ubuntu Linux</a></p>
+<h2 id="添加docker-官方仓库"><a href="#添加docker-官方仓库" class="headerlink" title="添加docker 官方仓库"></a>添加docker 官方仓库</h2><ol>
+<li><p>更新apt的package index并允许apt使用https</p>
+<p>如果因为网络问题更新速度慢的话，请用你的网络代理工具开启全局代理<br>如果你连网络代理工具也没有的话，自行解决</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">$ sudo apt-get update</span><br><span class="line"></span><br><span class="line">$ sudo apt-get install \</span><br><span class="line">    apt-transport-https \</span><br><span class="line">    ca-certificates \</span><br><span class="line">    curl \</span><br><span class="line">    gnupg-agent \</span><br><span class="line">    software-properties-common</span><br></pre></td></tr></table></figure>
+<ol start="2">
+<li>添加docker官方的GPGkey</li>
+</ol>
+</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -</span><br></pre></td></tr></table></figure>
+<p>验证一下你的key的签名是否<code>9DC8 5822 9FC7 DD38 854A  E2D8 8D81 803C 0EBF CD88</code>.搜索后八位即可</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">$ sudo apt-key fingerprint 0EBFCD88</span><br><span class="line"></span><br><span class="line">pub   rsa4096 2017-02-22 [SCEA]</span><br><span class="line">      9DC8 5822 9FC7 DD38 854A  E2D8 8D81 803C 0EBF CD88</span><br><span class="line">uid           [ unknown] Docker Release (CE deb) &lt;docker@docker.com&gt;</span><br><span class="line">sub   rsa4096 2017-02-22 [S]</span><br></pre></td></tr></table></figure>
+
+<ol start="3">
+<li>添加docker仓库</li>
+</ol>
+<p>根据你的ubuntu的系统架构安装docker engine下面是amd64的安装命令</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$ sudo add-apt-repository \</span><br><span class="line">   <span class="string">"deb [arch=amd64] https://download.docker.com/linux/ubuntu \</span></span><br><span class="line"><span class="string">   <span class="variable">$(lsb_release -cs)</span> \</span></span><br><span class="line"><span class="string">   stable"</span></span><br></pre></td></tr></table></figure>
+<p>其他系统架构的命令请参考<a href="https://docs.docker.com/engine/install/ubuntu/#set-up-the-repository" target="_blank" rel="noopener">官方文档</a></p>
+<h2 id="安装docker-engine"><a href="#安装docker-engine" class="headerlink" title="安装docker engine"></a>安装docker engine</h2><ol>
+<li>继续更新 apt的package index 然后安装docker engine</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ sudo apt-get update</span><br><span class="line">$ sudo apt-get install docker-ce docker-ce-cli containerd.io</span><br></pre></td></tr></table></figure>
+<p>要安装指定版本的docker engine 请参考<a href="https://docs.docker.com/engine/install/ubuntu/#install-docker-engine" target="_blank" rel="noopener">官方文档</a><br>2. 验证docker engine 是否安装成功</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo docker run hello-world</span><br></pre></td></tr></table></figure>
+<p>可以看到这个命令先去本地寻找hello-world:latest镜像，找不到就去dockerhub仓库拉，然后根据拉取镜像生成容器运行，运行结束退出容器<br><img src="https://i.loli.net/2020/12/28/RcqWIN5ymYXfZHS.png" alt="docker hellow-world"><br>Docker 需要用户具有 sudo 权限，为了避免每次命令都输入sudo，可以把用户加入 Docker 用户组，然后重新登陆linux用户就好了，注意是你要注销当前用户再登陆</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo usermod -aG docker <span class="variable">$USER</span></span><br></pre></td></tr></table></figure>
+<p>镜像下载加速<br>使用阿里云镜像源下载</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">sudo mkdir -p /etc/docker</span><br><span class="line">sudo tee /etc/docker/daemon.json &lt;&lt;-<span class="string">'EOF'</span></span><br><span class="line">&#123;</span><br><span class="line">  <span class="string">"registry-mirrors"</span>: [<span class="string">"https://xxx.mirror.aliyuncs.com"</span>]</span><br><span class="line">&#125;</span><br><span class="line">EOF</span><br><span class="line">sudo systemctl daemon-reload</span><br><span class="line">sudo systemctl restart docker</span><br></pre></td></tr></table></figure>
+
+<p><a href="https://cr.console.aliyun.com/cn-hangzhou/instances/mirrors" target="_blank" rel="noopener">docker镜像下载加速</a></p>
+<h2 id="安装docker-compose"><a href="#安装docker-compose" class="headerlink" title="安装docker-compose"></a>安装docker-compose</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">sudo curl -L <span class="string">"https://github.com/docker/compose/releases/download/1.27.4/docker-compose-<span class="variable">$(uname -s)</span>-<span class="variable">$(uname -m)</span>"</span> -o /usr/<span class="built_in">local</span>/bin/docker-compose</span><br><span class="line"></span><br><span class="line">sudo chmod +x /usr/<span class="built_in">local</span>/bin/docker-compose</span><br></pre></td></tr></table></figure>
+
+<h2 id="脚本一键安装"><a href="#脚本一键安装" class="headerlink" title="脚本一键安装"></a>脚本一键安装</h2><p>装不好就算了，我自己写的</p>
+<figure class="highlight crmsh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">git <span class="keyword">clone</span> <span class="title">git</span>@github.com:johnson329/MyUtils.git</span><br><span class="line">cd MyUtils/bin</span><br><span class="line">./install_docker_ubuntu18.<span class="number">04</span>.sh</span><br></pre></td></tr></table></figure>
+
+<h2 id="概念"><a href="#概念" class="headerlink" title="概念"></a>概念</h2><ul>
+<li>image</li>
+</ul>
+<p><strong>Docker 把应用程序及其依赖，打包在 image 文件里面</strong></p>
+<ul>
+<li>container</li>
+</ul>
+<p><strong>根据image生成的容器</strong></p>
+<p>image 文件可以看作是容器的模板。Docker 根据 image 文件生成容器的实例。同一个 image 文件，可以生成多个同时运行的容器实例。</p>
+<p>更多概念请参考<a href="http://www.ruanyifeng.com/blog/2018/02/docker-tutorial.html" target="_blank" rel="noopener">阮一峰的博客</a></p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/flask/flask%E6%BA%90%E7%A0%81%E4%B9%8B%E8%AF%B7%E6%B1%82%E4%B8%8A%E4%B8%8B%E6%96%87%E5%92%8C%E5%BA%94%E7%94%A8%E4%B8%8A%E4%B8%8B%E6%96%87/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Johnson">
+      <meta itemprop="description" content="Johnson的个人博客">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Johnson的个人博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/flask/flask%E6%BA%90%E7%A0%81%E4%B9%8B%E8%AF%B7%E6%B1%82%E4%B8%8A%E4%B8%8B%E6%96%87%E5%92%8C%E5%BA%94%E7%94%A8%E4%B8%8A%E4%B8%8B%E6%96%87/" class="post-title-link" itemprop="url">Flask源码之请求上下文和应用上下文</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-12-24 16:35:34" itemprop="dateCreated datePublished" datetime="2020-12-24T16:35:34+08:00">2020-12-24</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-12-25 17:53:54" itemprop="dateModified" datetime="2020-12-25T17:53:54+08:00">2020-12-25</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/flask/" itemprop="url" rel="index"><span itemprop="name">flask</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">wsgi_app</span><span class="params">(self, environ, start_response)</span>:</span></span><br><span class="line">    </span><br><span class="line">        ctx = self.request_context(environ)</span><br></pre></td></tr></table></figure>
+
+<p>我们继续来看wsgi这个方法，self.request_context这个方法把environ封装成了RequestContext对象，看名字也知道这个是请求上下文</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">request_context</span><span class="params">(self, environ)</span>:</span></span><br><span class="line">  </span><br><span class="line">    <span class="keyword">return</span> RequestContext(self, environ)</span><br></pre></td></tr></table></figure>
+
+<p>简单看一下RequestContext的定义，位置在<code>ctx.py</code>中</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">RequestContext</span><span class="params">(object)</span>:</span></span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, app, environ, request=None, session=None)</span>:</span></span><br><span class="line">        self.app = app</span><br><span class="line">        <span class="keyword">if</span> request <span class="keyword">is</span> <span class="literal">None</span>:</span><br><span class="line">            request = app.request_class(environ)</span><br><span class="line">        self.request = request</span><br><span class="line">        self.url_adapter = <span class="literal">None</span></span><br><span class="line">        <span class="keyword">try</span>:</span><br><span class="line">            self.url_adapter = app.create_url_adapter(self.request)</span><br><span class="line">        <span class="keyword">except</span> HTTPException <span class="keyword">as</span> e:</span><br><span class="line">            self.request.routing_exception = e</span><br><span class="line">        self.flashes = <span class="literal">None</span></span><br><span class="line">        self.session = session</span><br></pre></td></tr></table></figure>
+
+<p>我们看到， 第一个参数是Flask对象，所以传入了self（注意request_context方法是Flask类的方法，所以self就是Flask的实例）</p>
+<p>我们还看到<code>RequestContext</code>有<code>request</code>这个属性</p>
+<p>回到<code>wsgi_app</code>这个方法，我们看到接下来<code>ctx.push</code>这一句调用了<code>RequestContext</code>的push方法</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">wsgi_app</span><span class="params">(self, environ, start_response)</span>:</span></span><br><span class="line">    ctx = self.request_context(environ)</span><br><span class="line">    error = <span class="literal">None</span></span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        <span class="keyword">try</span>:</span><br><span class="line">            ctx.push()</span><br><span class="line">            response = self.full_dispatch_request()</span><br><span class="line">        <span class="keyword">except</span> Exception <span class="keyword">as</span> e:</span><br><span class="line">            error = e</span><br><span class="line">            response = self.handle_exception(e)</span><br><span class="line">        <span class="keyword">except</span>:  <span class="comment"># noqa: B001</span></span><br><span class="line">            error = sys.exc_info()[<span class="number">1</span>]</span><br><span class="line">            <span class="keyword">raise</span></span><br><span class="line">        <span class="keyword">return</span> response(environ, start_response)</span><br><span class="line">    <span class="keyword">finally</span>:</span><br><span class="line">        <span class="keyword">if</span> self.should_ignore_error(error):</span><br><span class="line">            error = <span class="literal">None</span></span><br><span class="line">        ctx.auto_pop(error)</span><br></pre></td></tr></table></figure>
+
+<h3 id="Local和LocalStack"><a href="#Local和LocalStack" class="headerlink" title="Local和LocalStack"></a>Local和LocalStack</h3><p><code>flask</code>中实现了<code>Local</code>和<code>LocalStack</code>两种数据结构，<code>Local</code>的作用是为了提供线程隔离和协程隔离，类似threadlocal</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;<span class="number">12345</span>:RequestContext&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>12345</code>是线程id，<code>RequestContext</code>是请求上下文，这样做是为了在wsgi server是多线程或多协程的情况下，每个线程或协程获取自己的上下文</p>
+<p>但实际上，<code>flask</code>是把<code>RequestContext</code>存储在栈（后进先出）结构中，类似这样</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;<span class="number">12345</span>:&#123;<span class="string">'stack'</span>:[RequestContext]&#125;&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这样做是因为一个请求可能有多个请求上下文，比如服务端重定向的情况（一个请求A视图，我们需要重定向到B视图，这就需要自己再push一个<code>RequestContext</code>）</p>
+<p>此外还有多个应用上下文的情况</p>
+<p>接下来我们再看<code>push</code>方法</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">push</span><span class="params">(self)</span>:</span></span><br><span class="line">    top = _request_ctx_stack.top</span><br></pre></td></tr></table></figure>
+
+<p>首先从<code>_request_ctx_stack</code>的栈顶获取一个请求<code>RequestContext</code></p>
+<p><code>_request_ctx_stack</code>的定义再<code>globals.py</code>中</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">_request_ctx_stack = LocalStack()</span><br></pre></td></tr></table></figure>
+
+<p>它现在还是的状态是这样，栈是空的</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;<span class="number">12345</span>:<span class="string">'stack'</span>:[]&#125;</span><br></pre></td></tr></table></figure>
+
+<p>继续看<code>push</code>方法，如果栈是空的话，我们<code>self</code>也就是<code>RequestContext</code>压入栈，注意<code>push</code>是<code>RequestContext</code>的方法</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">push</span><span class="params">(self)</span>:</span></span><br><span class="line">    top = _request_ctx_stack.top</span><br><span class="line">    <span class="keyword">if</span> top <span class="keyword">is</span> <span class="keyword">not</span> <span class="literal">None</span> <span class="keyword">and</span> top.preserved:</span><br><span class="line">        top.pop(top._preserved_exc)</span><br><span class="line"></span><br><span class="line">    </span><br><span class="line">    app_ctx = _app_ctx_stack.top</span><br><span class="line">    <span class="keyword">if</span> app_ctx <span class="keyword">is</span> <span class="literal">None</span> <span class="keyword">or</span> app_ctx.app != self.app:</span><br><span class="line">        app_ctx = self.app.app_context()</span><br><span class="line">        app_ctx.push()</span><br><span class="line">        self._implicit_app_ctx_stack.append(app_ctx)</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        self._implicit_app_ctx_stack.append(<span class="literal">None</span>)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> hasattr(sys, <span class="string">"exc_clear"</span>):</span><br><span class="line">        sys.exc_clear()</span><br><span class="line">    <span class="comment"># 压入栈</span></span><br><span class="line">    _request_ctx_stack.push(self)</span><br></pre></td></tr></table></figure>
+
+<p>我们还注意到这里还有一个<code>_app_ctx_stack</code>，这也是<code>LocalStack</code>，位置在globals.py</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">_app_ctx_stack = LocalStack()</span><br></pre></td></tr></table></figure>
+
+<p>只不过这个栈里面存储的是应用上下文，也就是说</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;<span class="number">12345</span>:<span class="string">'stack'</span>:[AppContext]&#125;</span><br></pre></td></tr></table></figure>
+
+<p>然后我们也执行了<code>app_ctx.push()</code>方法，也就是把应用上下文压入栈</p>
+<p>到这里我们就知道了，执行<code>RequestContext</code>对象的push方法会把自身压入<code>_request_ctx_stack</code>中，还会把<code>AppContext</code>也压入<code>_app_ctx_stack</code>中</p>
+<h3 id="如何获取请求上下文"><a href="#如何获取请求上下文" class="headerlink" title="如何获取请求上下文"></a>如何获取请求上下文</h3><p>我们常常需要在一个视图函数中获取请求中的参数，例如url，remote_address</p>
+<p>我们当然可以每次手动获取栈顶的<code>RequestContext</code>对象，然后调用<code>RequestContext</code>的<code>request</code>属性，但每次操作栈结构还是有点繁琐</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> flask <span class="keyword">import</span> Flask, request, Request</span><br><span class="line"><span class="keyword">from</span> flask.globals <span class="keyword">import</span> _request_ctx_stack</span><br><span class="line"></span><br><span class="line">flask_app = Flask(__name__)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="meta">@flask_app.route('/')</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">hello_world</span><span class="params">()</span>:</span></span><br><span class="line">    req: Request = _request_ctx_stack.top.request</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="string">"&#123;&#125;"</span>.format(req.remote_addr)</span><br></pre></td></tr></table></figure>
+
+<p><code>flask</code>的做法是使用<code>LocalProxy</code></p>
+<h3 id="LocalProxy"><a href="#LocalProxy" class="headerlink" title="LocalProxy"></a>LocalProxy</h3><p>request就是<code>LocalProxy</code>，它是代理模式在<code>flask</code>中的运用，作用就是代理对<code>RequestContext.request</code>的操作</p>
+<p>例如，我们使用request.remote_addr实际上会先从栈顶获取<code>RequestContext</code>然后获取<code>request</code>属性。</p>
+<p>我们执行<code>request.remote_addr</code>就相当于执行 <code>_request_ctx_stack.top.request.remote_addr</code></p>
+<p>难为什么用<code>LocalProxy</code>而不是直接<code>request=_request_ctx_stack.top.request</code>呢</p>
+<p>原因是这样写，项目启动的时候，这句就执行了，就直接从栈顶获取<code>RequestContext</code>对象了，这时候还没有呢。</p>
+<p>我们看看<code>LocalProxy</code>是怎么做的</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#LocalProxy传入了一个偏函数</span></span><br><span class="line">request = LocalProxy(partial(_lookup_req_object, <span class="string">"request"</span>))</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 这个函数的作用就是从栈顶获取RequestContext，然后获取指定属性</span></span><br><span class="line"><span class="comment"># 例如_lookup_req_object("request")就是获取RequestContext.request</span></span><br><span class="line"><span class="comment"># _lookup_req_object("request")相当于partial(_lookup_req_object, "request")()</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">_lookup_req_object</span><span class="params">(name)</span>:</span></span><br><span class="line">    top = _request_ctx_stack.top</span><br><span class="line">    <span class="keyword">if</span> top <span class="keyword">is</span> <span class="literal">None</span>:</span><br><span class="line">        <span class="keyword">raise</span> RuntimeError(_request_ctx_err_msg)</span><br><span class="line">    <span class="keyword">return</span> getattr(top, name)</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">LocalProxy</span><span class="params">(object)</span>:</span></span><br><span class="line">    __slots__ = (<span class="string">"__local"</span>, <span class="string">"__dict__"</span>, <span class="string">"__name__"</span>, <span class="string">"__wrapped__"</span>)</span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, local, name=None)</span>:</span>     </span><br><span class="line">        object.__setattr__(self, <span class="string">"_LocalProxy__local"</span>, local)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">_get_current_object</span><span class="params">(self)</span>:</span></span><br><span class="line">        <span class="keyword">if</span> <span class="keyword">not</span> hasattr(self.__local, <span class="string">"__release_local__"</span>):</span><br><span class="line">            <span class="keyword">return</span> self.__local()</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__getattr__</span><span class="params">(self, name)</span>:</span></span><br><span class="line">        <span class="keyword">return</span> getattr(self._get_current_object(), name)</span><br></pre></td></tr></table></figure>
+
+<ol>
+<li><p><code>__getattr__</code></p>
+<p>我们request是一个LocalProxy对象，那么<code>request.remote_addr</code>会执行 <code>__getattr__</code> 这个方法，这个方法又会去_get_current_object获取被代理的对象，获取被代理的真实对象，例如 <code>RequestContext.request</code>之后，调用 <code>getattr(self._get_current_object(), name)</code>获取 <code>request</code>的指定属性</p>
+</li>
+<li><p><code>_get_current_object</code></p>
+<p>这个方法执行<code>self.__local()</code>获取被代理对象</p>
+</li>
+<li><p><code>__local</code></p>
+<p>在<code>__init__</code>方法中我们可以看到<code>object.__setattr__(self, &quot;_LocalProxy__local&quot;, local)</code>，也就是<code>__local</code>也就是传入进来 <code>partial(_lookup_req_object, &quot;request&quot;)</code>，<code>self.__local()</code>也就是执行偏函数 <code>partial(_lookup_req_object, &quot;request&quot;)</code></p>
+</li>
+</ol>
+<h3 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h3><p>到这里，我们就可以看出<code>flask</code>中的请求上下文是如何存储，获取的</p>
+<p>请求上下文存储在<code>LocalStack</code>结构中，<code>Local</code>是为了线程安全，<code>Stack是为了</code>多请求上下文的场景</p>
+<p>而获取是通过<code>LocalProxy</code>，使用代理模式是为了动态地获取请求上下文，在访问request属性的时候，才会从栈中获取真实的请求上下文，然后代理属性的获取</p>
+<p><code>flask</code>中还有应用上下文，<code>curren_app</code>，我们有时候会通过current_app.config来获取配置信息，原理和请求request请求上下文类似，只不过代理的<code>AppContext</code>对象</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/flask/flask%E6%BA%90%E7%A0%81%E4%B9%8B%E4%B8%80%E4%B8%AA%E8%AF%B7%E6%B1%82%E7%9A%84%E6%97%85%E7%A8%8B/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Johnson">
+      <meta itemprop="description" content="Johnson的个人博客">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Johnson的个人博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/flask/flask%E6%BA%90%E7%A0%81%E4%B9%8B%E4%B8%80%E4%B8%AA%E8%AF%B7%E6%B1%82%E7%9A%84%E6%97%85%E7%A8%8B/" class="post-title-link" itemprop="url">Flask源码之一个请求的旅程</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2020-12-24 15:05:41 / 修改时间：16:34:49" itemprop="dateCreated datePublished" datetime="2020-12-24T15:05:41+08:00">2020-12-24</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/flask/" itemprop="url" rel="index"><span itemprop="name">flask</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h3 id="入口"><a href="#入口" class="headerlink" title="入口"></a>入口</h3><p>由上一篇文章我们知道 <code>Flask</code> 要有如下函数或者一个实现了 <code>__call__</code>方法的类，才可以被wsgi server调用</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">application</span><span class="params">(environ, start_response)</span>:</span></span><br><span class="line">    start_response(<span class="string">'200 OK'</span>, [(<span class="string">'Content-Type'</span>, <span class="string">'text/html'</span>)])</span><br><span class="line">    <span class="keyword">return</span> [<span class="string">b'&lt;h1&gt;Hello, web!&lt;/h1&gt;'</span>]</span><br></pre></td></tr></table></figure>
+
+<p>我们来看一下简单的 <code>Flask demo</code></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> flask <span class="keyword">import</span> Flask</span><br><span class="line"></span><br><span class="line">flask_app = Flask(__name__)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="meta">@flask_app.route('/')</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">hello_world</span><span class="params">()</span>:</span></span><br><span class="line">    <span class="keyword">return</span> <span class="string">"hello flask"</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment"># python3 my_wsgi_server.py flask_app:flask_app</span></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">'__main__'</span>:</span><br><span class="line">    flask_app.run()</span><br></pre></td></tr></table></figure>
+
+<p>这段代码很简单，先是创建了一个Flask实例（对象），然后调用Flask对象的route方法。启动项目的时候调用Flask对象的run()方法</p>
+<p>我们先不去看run方法内部是如何实现的，因为Flask内置了一个wsgi server，从 <code>run</code>方法进入会涉及到很多 <code>wsgi server</code> 的代码，而生成环境我们一般不用这个 <code>wsgi server</code>。</p>
+<p>在 <code>pycharm</code>按 <code>ctrl</code>然后鼠标左键点击 <code>Flask</code>查看源码</p>
+<p>我们可以看到Flask是一个类，那么他一定实现 <code>__call__</code>方法</p>
+<p><img src="https://i.loli.net/2020/12/24/vYRJB68Xpdy3g2r.png" alt="Flask源码"></p>
+<p>点击 <code>pycharm</code>左侧的 <code>structure</code>我们可以看到果然有 <code>__call__</code>方法，而且这个 <code>__call__</code>方法的参数是 <code>environ,start_response</code>，所以这个方法也就相当于文章开头的 <code>application</code>方法，<code>wsgi server</code>最后调用的也是这个方法（Flask类实现了 <code>__call__</code>方法，那么它就可以像这样 <code>Flask(__name__)(environ,start_response)</code>这样去调用，就像函数一样）。</p>
+<p><img src="https://i.loli.net/2020/12/24/XaSczmoUrh9fOZk.png" alt="image-20201224152301791"></p>
+<p>我们进入到这个方法，打个断点</p>
+<h3 id="启动项目"><a href="#启动项目" class="headerlink" title="启动项目"></a>启动项目</h3><p>接下来我们以 <code>debug</code>的方式启动项目</p>
+<p><img src="https://i.loli.net/2020/12/24/p5SqLCVibvXWm3a.png" alt="image-20201224152851475"></p>
+<p>浏览器访问 <code>http://127.0.0.1:5000/</code>,我们看到 <code>pycharm</code>在 我们的断点处停了下来</p>
+<p><img src="https://i.loli.net/2020/12/24/ZKEONfHDgLvItPV.png" alt="image-20201224153123774"></p>
+<p>再看 <code>wsgi_app</code>方法</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">wsgi_app</span><span class="params">(self, environ, start_response)</span>:</span></span><br><span class="line"></span><br><span class="line">    ctx = self.request_context(environ)</span><br><span class="line">    error = <span class="literal">None</span></span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line"></span><br><span class="line">        <span class="keyword">try</span>:</span><br><span class="line">            ctx.push()</span><br><span class="line">            response = self.full_dispatch_request()</span><br><span class="line">        <span class="keyword">except</span> Exception <span class="keyword">as</span> e:</span><br><span class="line">            error = e</span><br><span class="line">            response = self.handle_exception(e)</span><br><span class="line">        <span class="keyword">except</span>:  <span class="comment"># noqa: B001</span></span><br><span class="line">            error = sys.exc_info()[<span class="number">1</span>]</span><br><span class="line">            <span class="keyword">raise</span></span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> response(environ, start_response)</span><br><span class="line">    <span class="keyword">finally</span>:</span><br><span class="line">        <span class="keyword">if</span> self.should_ignore_error(error):</span><br><span class="line">            error = <span class="literal">None</span></span><br><span class="line">        ctx.auto_pop(error)</span><br></pre></td></tr></table></figure>
+
+<p>这个方法其实就做了以下几件事</p>
+<ol>
+<li>路由：就是根据你的请求，找到对应的视图函数。例如我们的请求 <code>http://127.0.0.1:5000/</code> 会被 <code>@flask_app.route(&#39;/&#39;)</code>匹配到，那么就会调用 <code>hello_world</code>方法</li>
+<li>处理请求上下文和应用上下文</li>
+<li>错误处理</li>
+<li>把返回值转换成 <code>start_response</code> 的参数格式</li>
+</ol>
+<p>接下来分别介绍这几个部分</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
       
   
   
@@ -581,91 +955,6 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/hexo/hexo%E7%BB%9F%E8%AE%A1%E5%8A%9F%E8%83%BD-%E5%9B%9B/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Johnson">
-      <meta itemprop="description" content="Johnson的个人博客">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Johnson的个人博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/hexo/hexo%E7%BB%9F%E8%AE%A1%E5%8A%9F%E8%83%BD-%E5%9B%9B/" class="post-title-link" itemprop="url">hexo统计功能(四)</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2020-07-19 00:48:53" itemprop="dateCreated datePublished" datetime="2020-07-19T00:48:53+08:00">2020-07-19</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-11-27 06:14:01" itemprop="dateModified" datetime="2020-11-27T06:14:01+08:00">2020-11-27</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/hexo/" itemprop="url" rel="index"><span itemprop="name">hexo</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h3 id="安装统计代码"><a href="#安装统计代码" class="headerlink" title="安装统计代码"></a>安装统计代码</h3><p>在<code>themes/next/_config.yml</code>中搜索<code>static</code>\</p>
-<p>找到如下配置</p>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Statistics and Analytics</span></span><br><span class="line"><span class="comment"># See: https://theme-next.js.org/docs/third-party-services/statistics-and-analytics</span></span><br><span class="line"><span class="comment"># ---------------------------------------------------------------</span></span><br></pre></td></tr></table></figure>
-
-<p>跟着<a href="https://theme-next.js.org/docs/third-party-services/statistics-and-analytics" target="_blank" rel="noopener">教程</a>走就行了</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/hexo/hexo%E7%BB%9F%E8%AE%A1%E5%8A%9F%E8%83%BD-%E5%9B%9B/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="http://yoursite.com/hexo/hexo%E8%AF%84%E8%AE%BA%E5%8A%9F%E8%83%BD-%E4%B8%89/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -728,6 +1017,91 @@
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/hexo/hexo%E8%AF%84%E8%AE%BA%E5%8A%9F%E8%83%BD-%E4%B8%89/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/hexo/hexo%E7%BB%9F%E8%AE%A1%E5%8A%9F%E8%83%BD-%E5%9B%9B/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Johnson">
+      <meta itemprop="description" content="Johnson的个人博客">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Johnson的个人博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/hexo/hexo%E7%BB%9F%E8%AE%A1%E5%8A%9F%E8%83%BD-%E5%9B%9B/" class="post-title-link" itemprop="url">hexo统计功能(四)</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-07-19 00:48:53" itemprop="dateCreated datePublished" datetime="2020-07-19T00:48:53+08:00">2020-07-19</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2020-11-27 06:14:01" itemprop="dateModified" datetime="2020-11-27T06:14:01+08:00">2020-11-27</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/hexo/" itemprop="url" rel="index"><span itemprop="name">hexo</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h3 id="安装统计代码"><a href="#安装统计代码" class="headerlink" title="安装统计代码"></a>安装统计代码</h3><p>在<code>themes/next/_config.yml</code>中搜索<code>static</code>\</p>
+<p>找到如下配置</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Statistics and Analytics</span></span><br><span class="line"><span class="comment"># See: https://theme-next.js.org/docs/third-party-services/statistics-and-analytics</span></span><br><span class="line"><span class="comment"># ---------------------------------------------------------------</span></span><br></pre></td></tr></table></figure>
+
+<p>跟着<a href="https://theme-next.js.org/docs/third-party-services/statistics-and-analytics" target="_blank" rel="noopener">教程</a>走就行了</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/hexo/hexo%E7%BB%9F%E8%AE%A1%E5%8A%9F%E8%83%BD-%E5%9B%9B/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -835,106 +1209,11 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/hexo/%E6%90%AD%E5%BB%BA-hexo-%E5%8D%9A%E5%AE%A2-%E4%B8%80/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Johnson">
-      <meta itemprop="description" content="Johnson的个人博客">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Johnson的个人博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/hexo/%E6%90%AD%E5%BB%BA-hexo-%E5%8D%9A%E5%AE%A2-%E4%B8%80/" class="post-title-link" itemprop="url">搭建 hexo 博客(一)</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2020-07-19 00:48:53" itemprop="dateCreated datePublished" datetime="2020-07-19T00:48:53+08:00">2020-07-19</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-11-27 06:14:10" itemprop="dateModified" datetime="2020-11-27T06:14:10+08:00">2020-11-27</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/hexo/" itemprop="url" rel="index"><span itemprop="name">hexo</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h3 id="环境"><a href="#环境" class="headerlink" title="环境"></a>环境</h3><p>ubuntu 20.04</p>
-<p>node 10.21.0</p>
-<h3 id="下载和安装nvm"><a href="#下载和安装nvm" class="headerlink" title="下载和安装nvm"></a>下载和安装nvm</h3><p>nvm是node.js的版本管理器。使用nvm可以避免出现<code>EACCES</code> 权限错误和方便切换node.js和npm版本。</p>
-<ul>
-<li>执行以下命令下载和安装nvm</li>
-</ul>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wget -qO- https://raw.githubusercontent.com/nvm-sh/nvm/v0.35.3/install.sh | bash</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>验证安装</li>
-</ul>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">command</span> -v nvm</span><br><span class="line"><span class="comment">#或者</span></span><br><span class="line">nvm</span><br></pre></td></tr></table></figure>
-
-<ul>
-<li>出现<code>nvm: command not found</code>或者没有输出nvm</li>
-</ul>
-<p>重启terminal或者参考<a href="https://github.com/nvm-sh/nvm/issues/1404" target="_blank" rel="noopener">#1404</a>解决</p>
-<p>仍有问题请google或者参考项目的<a href="https://github.com/nvm-sh/nvm" target="_blank" rel="noopener">README</a>或者<a href="https://github.com/nvm-sh/nvm/issues" target="_blank" rel="noopener">github issue</a>解决</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/hexo/%E6%90%AD%E5%BB%BA-hexo-%E5%8D%9A%E5%AE%A2-%E4%B8%80/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
+  <nav class="pagination">
+    <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="extend next" rel="next" href="/page/2/"><i class="fa fa-angle-right" aria-label="下一页"></i></a>
+  </nav>
 
 
 

@@ -32,7 +32,7 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://i.loli.net/2020/12/28/RcqWIN5ymYXfZHS.png">
 <meta property="article:published_time" content="2020-12-28T13:10:12.000Z">
-<meta property="article:modified_time" content="2020-12-28T14:37:40.666Z">
+<meta property="article:modified_time" content="2020-12-28T15:51:39.242Z">
 <meta property="article:author" content="Johnson">
 <meta property="article:tag" content="docker">
 <meta name="twitter:card" content="summary">
@@ -194,7 +194,7 @@
 
       <!--noindex-->
       <section class="post-toc-wrap sidebar-panel">
-          <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#系统依赖"><span class="nav-number">1.</span> <span class="nav-text">系统依赖</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#卸载旧的版本"><span class="nav-number">2.</span> <span class="nav-text">卸载旧的版本</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#添加docker-官方仓库"><span class="nav-number">3.</span> <span class="nav-text">添加docker 官方仓库</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#安装docker-engine"><span class="nav-number">4.</span> <span class="nav-text">安装docker engine</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#安装docker-compose"><span class="nav-number">5.</span> <span class="nav-text">安装docker-compose</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#脚本一键安装"><span class="nav-number">6.</span> <span class="nav-text">脚本一键安装</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#概念"><span class="nav-number">7.</span> <span class="nav-text">概念</span></a></li></ol></div>
+          <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#系统依赖"><span class="nav-number">1.</span> <span class="nav-text">系统依赖</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#卸载旧的版本"><span class="nav-number">2.</span> <span class="nav-text">卸载旧的版本</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#添加docker-官方仓库"><span class="nav-number">3.</span> <span class="nav-text">添加docker 官方仓库</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#安装docker-engine"><span class="nav-number">4.</span> <span class="nav-text">安装docker engine</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#安装docker-compose"><span class="nav-number">5.</span> <span class="nav-text">安装docker-compose</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#脚本一键安装"><span class="nav-number">6.</span> <span class="nav-text">脚本一键安装</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Image和Container概念"><span class="nav-number">7.</span> <span class="nav-text">Image和Container概念</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#docker安装mysql服务"><span class="nav-number">8.</span> <span class="nav-text">docker安装mysql服务</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#docker-compose安装mysql服务"><span class="nav-number">9.</span> <span class="nav-text">docker-compose安装mysql服务</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#制作自己的image镜像"><span class="nav-number">10.</span> <span class="nav-text">制作自己的image镜像</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#容器管理"><span class="nav-number">11.</span> <span class="nav-text">容器管理</span></a></li></ol></div>
       </section>
       <!--/noindex-->
 
@@ -283,7 +283,7 @@
               <span class="post-meta-item-text">发表于</span>
               
 
-              <time title="创建时间：2020-12-28 21:10:12 / 修改时间：22:37:40" itemprop="dateCreated datePublished" datetime="2020-12-28T21:10:12+08:00">2020-12-28</time>
+              <time title="创建时间：2020-12-28 21:10:12 / 修改时间：23:51:39" itemprop="dateCreated datePublished" datetime="2020-12-28T21:10:12+08:00">2020-12-28</time>
             </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -361,7 +361,7 @@
 <h2 id="脚本一键安装"><a href="#脚本一键安装" class="headerlink" title="脚本一键安装"></a>脚本一键安装</h2><p>装不好就算了，我自己写的</p>
 <figure class="highlight crmsh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">git <span class="keyword">clone</span> <span class="title">git</span>@github.com:johnson329/MyUtils.git</span><br><span class="line">cd MyUtils/bin</span><br><span class="line">./install_docker_ubuntu18.<span class="number">04</span>.sh</span><br></pre></td></tr></table></figure>
 
-<h2 id="概念"><a href="#概念" class="headerlink" title="概念"></a>概念</h2><ul>
+<h2 id="Image和Container概念"><a href="#Image和Container概念" class="headerlink" title="Image和Container概念"></a>Image和Container概念</h2><ul>
 <li>image</li>
 </ul>
 <p><strong>Docker 把应用程序及其依赖，打包在 image 文件里面</strong></p>
@@ -371,6 +371,76 @@
 <p><strong>根据image生成的容器</strong></p>
 <p>image 文件可以看作是容器的模板。Docker 根据 image 文件生成容器的实例。同一个 image 文件，可以生成多个同时运行的容器实例。</p>
 <p>更多概念请参考<a href="http://www.ruanyifeng.com/blog/2018/02/docker-tutorial.html" target="_blank" rel="noopener">阮一峰的博客</a></p>
+<h2 id="docker安装mysql服务"><a href="#docker安装mysql服务" class="headerlink" title="docker安装mysql服务"></a>docker安装mysql服务</h2><p>再看一个真实一点的例子，用docker安装mysql</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 拉取mysql</span></span><br><span class="line">docker pull mysql</span><br><span class="line"><span class="comment"># 启动docker 容器，--name表示容器名叫pwc-mysql -e设置环境变量</span></span><br><span class="line"><span class="comment"># 这个容器会根据环境变量MYSQL_ROOT_PASSWORD设置root用户的密码 </span></span><br><span class="line"><span class="comment"># -p 表示把容器内的3306端口映射到容器外的宿主机 宿主机:容器</span></span><br><span class="line"><span class="comment"># -d表示后台运行，而不是敲完命令我就没地方敲其他命令了</span></span><br><span class="line"><span class="comment"># 最后的mysql是镜像的名字</span></span><br><span class="line">docker run --name pwc-mysql -e MYSQL_ROOT_PASSWORD=123456 -p 3306:3306 -d mysql</span><br></pre></td></tr></table></figure>
+
+<p>这样，一个mysql容器就起来了，我们可以用navicat测试一下连接</p>
+<h2 id="docker-compose安装mysql服务"><a href="#docker-compose安装mysql服务" class="headerlink" title="docker-compose安装mysql服务"></a>docker-compose安装mysql服务</h2><p>每次都要敲命令实在太麻烦了，这次敲完下次又要重新来一遍，简直噩梦</p>
+<p>更噩梦的是如果有多个服务，比如还有redis，rabbitmq，都要去敲命令，那简直累死</p>
+<p>所以，相比于命令式的启动方式</p>
+<p>我们还可以用声明的方式启动vim docker-compose.yml</p>
+<figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">version:</span> <span class="string">'3'</span></span><br><span class="line"><span class="attr">services:</span></span><br><span class="line">  <span class="attr">mysql-db:</span></span><br><span class="line">    <span class="attr">container_name:</span> <span class="string">mysql-docker</span></span><br><span class="line">    <span class="attr">image:</span> <span class="string">mysql:8.0</span></span><br><span class="line">    <span class="attr">ports:</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">"3306:3306"</span></span><br><span class="line">    <span class="attr">environment:</span></span><br><span class="line">      <span class="attr">MYSQL_ROOT_PASSWORD:</span> <span class="number">123456</span></span><br><span class="line">      <span class="attr">MYSQL_DATABASE:</span> <span class="string">test</span></span><br><span class="line">  <span class="attr">rabbitmq:</span></span><br><span class="line">      <span class="attr">image:</span> <span class="string">rabbitmq:3.8.3-management</span></span><br><span class="line">      <span class="attr">container_name:</span> <span class="string">rabbitmq-docker</span></span><br><span class="line">      <span class="attr">restart:</span> <span class="string">always</span></span><br><span class="line">      <span class="attr">hostname:</span> <span class="string">myRabbitmq</span></span><br><span class="line">      <span class="attr">ports:</span></span><br><span class="line">        <span class="comment"># 管理界面</span></span><br><span class="line">        <span class="bullet">-</span> <span class="number">15672</span><span class="string">:15672</span></span><br><span class="line">        <span class="bullet">-</span> <span class="number">5672</span><span class="string">:5672</span></span><br><span class="line">      <span class="attr">volumes:</span></span><br><span class="line">        <span class="bullet">-</span> <span class="string">./rabbitmq/data:/var/lib/rabbitmq</span></span><br><span class="line">      <span class="attr">environment:</span></span><br><span class="line">        <span class="bullet">-</span> <span class="string">RABBITMQ_DEFAULT_USER=root</span></span><br><span class="line">        <span class="bullet">-</span> <span class="string">RABBITMQ_DEFAULT_PASS=123456</span></span><br></pre></td></tr></table></figure>
+
+<p>这里声明了两个service，名字分别为mysql-db和rabbitmq</p>
+<p>剩下的都是对应docker run后面的参数了，注意volumes表示的是把容器内外的文件夹作映射，比如mysql产生的数据我们不能放在容器里面，万一容器被删除了，数据就没了，所以我们一般把容器内的数据用<code>volumes</code>挂在出来。</p>
+<p>而且，<code>mysql</code>需要的配置文件，我们一般会实现写好，然后映射到<code>mysql</code>容器内部，让容器使用这个启动配置文件，这些都是通过<code>volumes</code>实现的</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker-compose -f docker-compose.yml up -d</span><br></pre></td></tr></table></figure>
+
+<p>这样我们就安装了mysql和rabbitmq服务</p>
+<p>当然像这样的<code>docker-compose.yml</code>你可以去网上找，只要你理解了文件的意思即可。这可比以前那种安装包的方式轻松多了</p>
+<h2 id="制作自己的image镜像"><a href="#制作自己的image镜像" class="headerlink" title="制作自己的image镜像"></a>制作自己的image镜像</h2><p>例如我们写了一个 <code>flask</code>项目，像这样 <code>app.py</code></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> flask <span class="keyword">import</span> Flask</span><br><span class="line"></span><br><span class="line">app = Flask(__name__)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="meta">@app.route('/')</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">hello_world</span><span class="params">()</span>:</span></span><br><span class="line">    <span class="keyword">return</span> <span class="string">'Hello World!'</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">'__main__'</span>:</span><br><span class="line">    app.run()</span><br></pre></td></tr></table></figure>
+
+<p><code>requirements.txt</code></p>
+<figure class="highlight angelscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">click==<span class="number">7.1</span><span class="number">.2</span></span><br><span class="line">Flask==<span class="number">1.1</span><span class="number">.2</span></span><br><span class="line">gunicorn==<span class="number">20.0</span><span class="number">.4</span></span><br><span class="line">itsdangerous==<span class="number">1.1</span><span class="number">.0</span></span><br><span class="line">Jinja2==<span class="number">2.11</span><span class="number">.2</span></span><br><span class="line">MarkupSafe==<span class="number">1.1</span><span class="number">.1</span></span><br><span class="line">Werkzeug==<span class="number">1.0</span><span class="number">.1</span></span><br></pre></td></tr></table></figure>
+
+<p>我们可以把代码提交到仓库，然后在部署服务器上拉下代码，然后用gunicorn部署，像这样 <code>gunicorn -w 4 app:app</code></p>
+<p>如果用docker部署呢？</p>
+<ol>
+<li>制作Dockerfile文件</li>
+</ol>
+<figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">FROM</span> python:<span class="number">3.6</span></span><br><span class="line"><span class="comment"># 指定容器内的工作目录</span></span><br><span class="line"><span class="keyword">WORKDIR</span><span class="bash"> /flask_project</span></span><br><span class="line"><span class="comment"># 把宿主机的当前目录下的内容 拷贝到 flask_project目录下面</span></span><br><span class="line"><span class="keyword">COPY</span><span class="bash"> . .</span></span><br><span class="line"><span class="keyword">RUN</span><span class="bash"> pip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 启动命令</span></span><br><span class="line"><span class="keyword">CMD</span><span class="bash"> [<span class="string">"gunicorn"</span>, <span class="string">"-w"</span>, <span class="string">"4"</span>, <span class="string">"app:app"</span>]</span></span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li>打包镜像</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker build -t flask_project_image:0.1 .</span><br></pre></td></tr></table></figure>
+
+<p><code>-t</code>表示给镜像打上flask_project_image:0.1的标签 </p>
+<p>.表示使用当前目录下的Dcokerfile文件</p>
+<ol start="3">
+<li>启动</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run --name flask_project_container -d flask_project_image:0.1</span><br></pre></td></tr></table></figure>
+
+<p>表示以<strong>后台启动</strong>的方式启动一个名为<code>flask_project_container</code>的容器</p>
+<p>镜像是 <code>flask_project_image:0.1</code></p>
+<ul>
+<li>查看日志</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker logs -f flask_project_container</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>进入到容器内部</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker <span class="built_in">exec</span> -it flask_project_container bash</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>停止容器，但是容器没有被删除，只是不运行了</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker stop flask_project_container</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>删除容器</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker rm flask_project_container</span><br></pre></td></tr></table></figure>
+
+<h2 id="容器管理"><a href="#容器管理" class="headerlink" title="容器管理"></a>容器管理</h2><p>使用容器我们可以很方便的部署我们的项目，一般项目是从单体开始，等流量上来以后，我们可以采用单体集群的方式，也就是再启动一个<code>flask</code>项目容器，前面放一个网关，让网关做负载均衡，这样就可以很容易横向扩展，当然前提瓶颈在代码运行环节。</p>
+<p>但流量有高峰有低估，总不能一直跑着几十个容器占用服务器资源</p>
+<p>我们希望我们的容器能根据负载，例如根据cpu占用率或者内存占用率自动扩容（增加容器）缩容（减少容器）</p>
+<p>这就是<code>kubernets</code>又叫<code>k8s</code>做的是`，它是一个容器集群管理系统，可以做到自动化部署、自动扩容和自动缩容</p>
+<p>不过谷歌今年服务也出现了短时间大面积不可用，也不咋地嘛</p>
+<p><code>k8s</code>的教程请看<a href="https://dongwm.com/post/use-kubernetes-2/" target="_blank" rel="noopener">董明伟的博客</a></p>
 
     </div>
 

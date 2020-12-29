@@ -323,7 +323,7 @@
 <h3 id="审计日志"><a href="#审计日志" class="headerlink" title="审计日志"></a>审计日志</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">log</span><span class="params">(action, message=None)</span>:</span></span><br><span class="line">  data = &#123;</span><br><span class="line">        <span class="string">'action'</span>: action</span><br><span class="line">        <span class="string">'timestamp'</span>: datetime.utcnow()</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">if</span> message <span class="keyword">is</span> <span class="keyword">not</span> <span class="literal">None</span>:</span><br><span class="line">         data[<span class="string">'message'</span>] = message</span><br><span class="line">  <span class="keyword">if</span> request:</span><br><span class="line">         data[<span class="string">'ip'</span>] = request.remote_addr</span><br><span class="line">  user = get_current_user()</span><br><span class="line">  <span class="keyword">if</span> user <span class="keyword">is</span> <span class="keyword">not</span> <span class="literal">None</span>:</span><br><span class="line">         data[<span class="string">'user'</span>] = User</span><br><span class="line">  db.session.add(LogMessage(**data))</span><br></pre></td></tr></table></figure>
 
 <p>更多详细信息，请参考</p>
-<p><a href="http://mitsuhiko.pocoo.org/practicalsaas.pdf" target="_blank" rel="noopener">flask多租户实践</a></p>
+<p><a href="http://mitsuhiko.pocoo.org/practicalsaas.pdf" target="_blank" rel="noopener external nofollow noreferrer">flask多租户实践</a></p>
 
     </div>
 
@@ -403,7 +403,7 @@
   </span>
   <span class="author" itemprop="copyrightHolder">Johnson</span>
 </div>
-  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener external nofollow noreferrer" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" class="theme-link" rel="noopener external nofollow noreferrer" target="_blank">NexT.Muse</a> 强力驱动
   </div>
 
         

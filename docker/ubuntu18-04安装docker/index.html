@@ -331,7 +331,7 @@
 <h2 id="卸载旧的版本"><a href="#卸载旧的版本" class="headerlink" title="卸载旧的版本"></a>卸载旧的版本</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get remove docker docker-engine docker.io containerd runc</span><br></pre></td></tr></table></figure>
 <p>如果提示</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Reading package lists... Done</span><br><span class="line">E: Could not get lock /var/lib/apt/lists/lock - open (11: Resource temporarily unavailable)</span><br><span class="line">E: Unable to lock directory /var/lib/apt/lists/</span><br></pre></td></tr></table></figure>
-<p>很可能是你的ubuntu操作系统开启了每天自动更新，apt-get被占用了，关掉自动更新，或者等他自动更新完<br><a href="https://itsfoss.com/could-not-get-lock-error/" target="_blank" rel="noopener">How to Fix ‘E: Could not get lock /var/lib/dpkg/lock’ Error in Ubuntu Linux</a></p>
+<p>很可能是你的ubuntu操作系统开启了每天自动更新，apt-get被占用了，关掉自动更新，或者等他自动更新完<br><a href="https://itsfoss.com/could-not-get-lock-error/" target="_blank" rel="noopener external nofollow noreferrer">How to Fix ‘E: Could not get lock /var/lib/dpkg/lock’ Error in Ubuntu Linux</a></p>
 <h2 id="添加docker-官方仓库"><a href="#添加docker-官方仓库" class="headerlink" title="添加docker 官方仓库"></a>添加docker 官方仓库</h2><ol>
 <li><p>更新apt的package index并允许apt使用https</p>
 <p>如果因为网络问题更新速度慢的话，请用你的网络代理工具开启全局代理<br>如果你连网络代理工具也没有的话，自行解决</p>
@@ -352,19 +352,19 @@
 </ol>
 <p>根据你的ubuntu的系统架构安装docker engine下面是amd64的安装命令</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$ sudo add-apt-repository \</span><br><span class="line">   <span class="string">"deb [arch=amd64] https://download.docker.com/linux/ubuntu \</span></span><br><span class="line"><span class="string">   <span class="variable">$(lsb_release -cs)</span> \</span></span><br><span class="line"><span class="string">   stable"</span></span><br></pre></td></tr></table></figure>
-<p>其他系统架构的命令请参考<a href="https://docs.docker.com/engine/install/ubuntu/#set-up-the-repository" target="_blank" rel="noopener">官方文档</a></p>
+<p>其他系统架构的命令请参考<a href="https://docs.docker.com/engine/install/ubuntu/#set-up-the-repository" target="_blank" rel="noopener external nofollow noreferrer">官方文档</a></p>
 <h2 id="安装docker-engine"><a href="#安装docker-engine" class="headerlink" title="安装docker engine"></a>安装docker engine</h2><ol>
 <li>继续更新 apt的package index 然后安装docker engine</li>
 </ol>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ sudo apt-get update</span><br><span class="line">$ sudo apt-get install docker-ce docker-ce-cli containerd.io</span><br></pre></td></tr></table></figure>
-<p>要安装指定版本的docker engine 请参考<a href="https://docs.docker.com/engine/install/ubuntu/#install-docker-engine" target="_blank" rel="noopener">官方文档</a><br>2. 验证docker engine 是否安装成功</p>
+<p>要安装指定版本的docker engine 请参考<a href="https://docs.docker.com/engine/install/ubuntu/#install-docker-engine" target="_blank" rel="noopener external nofollow noreferrer">官方文档</a><br>2. 验证docker engine 是否安装成功</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo docker run hello-world</span><br></pre></td></tr></table></figure>
 <p>可以看到这个命令先去本地寻找hello-world:latest镜像，找不到就去dockerhub仓库拉，然后根据拉取镜像生成容器运行，运行结束退出容器<br><img src="https://i.loli.net/2020/12/28/RcqWIN5ymYXfZHS.png" alt="docker hellow-world"><br>Docker 需要用户具有 sudo 权限，为了避免每次命令都输入sudo，可以把用户加入 Docker 用户组，然后重新登陆linux用户就好了，注意是你要注销当前用户再登陆</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo usermod -aG docker <span class="variable">$USER</span></span><br></pre></td></tr></table></figure>
 <p>镜像下载加速<br>使用阿里云镜像源下载</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">sudo mkdir -p /etc/docker</span><br><span class="line">sudo tee /etc/docker/daemon.json &lt;&lt;-<span class="string">'EOF'</span></span><br><span class="line">&#123;</span><br><span class="line">  <span class="string">"registry-mirrors"</span>: [<span class="string">"https://xxx.mirror.aliyuncs.com"</span>]</span><br><span class="line">&#125;</span><br><span class="line">EOF</span><br><span class="line">sudo systemctl daemon-reload</span><br><span class="line">sudo systemctl restart docker</span><br></pre></td></tr></table></figure>
 
-<p><a href="https://cr.console.aliyun.com/cn-hangzhou/instances/mirrors" target="_blank" rel="noopener">docker镜像下载加速</a></p>
+<p><a href="https://cr.console.aliyun.com/cn-hangzhou/instances/mirrors" target="_blank" rel="noopener external nofollow noreferrer">docker镜像下载加速</a></p>
 <h2 id="安装docker-compose"><a href="#安装docker-compose" class="headerlink" title="安装docker-compose"></a>安装docker-compose</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">sudo curl -L <span class="string">"https://github.com/docker/compose/releases/download/1.27.4/docker-compose-<span class="variable">$(uname -s)</span>-<span class="variable">$(uname -m)</span>"</span> -o /usr/<span class="built_in">local</span>/bin/docker-compose</span><br><span class="line"></span><br><span class="line">sudo chmod +x /usr/<span class="built_in">local</span>/bin/docker-compose</span><br></pre></td></tr></table></figure>
 
 <h2 id="脚本一键安装"><a href="#脚本一键安装" class="headerlink" title="脚本一键安装"></a>脚本一键安装</h2><p>装不好就算了，我自己写的</p>
@@ -379,7 +379,7 @@
 </ul>
 <p><strong>根据image生成的容器</strong></p>
 <p>image 文件可以看作是容器的模板。Docker 根据 image 文件生成容器的实例。同一个 image 文件，可以生成多个同时运行的容器实例。</p>
-<p>更多概念请参考<a href="http://www.ruanyifeng.com/blog/2018/02/docker-tutorial.html" target="_blank" rel="noopener">阮一峰的博客</a></p>
+<p>更多概念请参考<a href="http://www.ruanyifeng.com/blog/2018/02/docker-tutorial.html" target="_blank" rel="noopener external nofollow noreferrer">阮一峰的博客</a></p>
 <h2 id="docker安装mysql服务"><a href="#docker安装mysql服务" class="headerlink" title="docker安装mysql服务"></a>docker安装mysql服务</h2><p>再看一个真实一点的例子，用docker安装mysql</p>
 <figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 拉取mysql</span></span><br><span class="line">docker pull mysql</span><br><span class="line"><span class="comment"># 启动docker 容器，--name表示容器名叫pwc-mysql -e设置环境变量</span></span><br><span class="line"><span class="comment"># 这个容器会根据环境变量MYSQL_ROOT_PASSWORD设置root用户的密码 </span></span><br><span class="line"><span class="comment"># -p 表示把容器内的3306端口映射到容器外的宿主机 宿主机:容器</span></span><br><span class="line"><span class="comment"># -d表示后台运行，而不是敲完命令我就没地方敲其他命令了</span></span><br><span class="line"><span class="comment"># 最后的mysql是镜像的名字</span></span><br><span class="line">docker run --name pwc-mysql -e MYSQL_ROOT_PASSWORD=123456 -p 3306:3306 -d mysql</span><br></pre></td></tr></table></figure>
 
@@ -449,7 +449,7 @@
 <p>我们希望我们的容器能根据负载，例如根据cpu占用率或者内存占用率自动扩容（增加容器）缩容（减少容器）</p>
 <p>这就是<code>kubernets</code>又叫<code>k8s</code>做的事情，它是一个容器集群管理系统，可以做到自动化部署、自动扩容和自动缩容</p>
 <p>不过谷歌今年服务也出现了短时间大面积不可用，也不咋地嘛</p>
-<p><code>k8s</code>的教程请看<a href="https://dongwm.com/post/use-kubernetes-2/" target="_blank" rel="noopener">董明伟的博客</a></p>
+<p><code>k8s</code>的教程请看<a href="https://dongwm.com/post/use-kubernetes-2/" target="_blank" rel="noopener external nofollow noreferrer">董明伟的博客</a></p>
 
     </div>
 
@@ -529,7 +529,7 @@
   </span>
   <span class="author" itemprop="copyrightHolder">Johnson</span>
 </div>
-  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener external nofollow noreferrer" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" class="theme-link" rel="noopener external nofollow noreferrer" target="_blank">NexT.Muse</a> 强力驱动
   </div>
 
         

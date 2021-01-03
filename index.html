@@ -288,7 +288,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-01-03 22:27:16" itemprop="dateModified" datetime="2021-01-03T22:27:16+08:00">2021-01-03</time>
+                <time title="修改时间：2021-01-04 01:36:03" itemprop="dateModified" datetime="2021-01-04T01:36:03+08:00">2021-01-04</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -316,16 +316,6 @@
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> flask <span class="keyword">import</span> Flask, request</span><br><span class="line"></span><br><span class="line">flask_app = Flask(__name__)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="meta">@flask_app.route('/',endpoint="11")</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">hello_world</span><span class="params">()</span>:</span></span><br><span class="line">    <span class="keyword">return</span> <span class="string">"&#123;&#125;"</span>.format(request.remote_addr)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">'__main__'</span>:</span><br><span class="line">    flask_app.run()</span><br></pre></td></tr></table></figure>
 
 <p>我们很容易想到用字典去做路由，<code>key</code>是 <code>url</code>，<code>value</code>是对应的处理函数或者叫视图函数</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;<span class="string">"/"</span>:hello_world&#125;</span><br></pre></td></tr></table></figure>
-
-<p>但是对于动态路由，这样做就不好实现了</p>
-<p><code>Flask</code>是用<code>Map</code>和<code>Rule</code>这两种数据结构来实现的，<code>Map</code>的结构类似字典，但能处理更复杂的情况，我们姑且认为<code>Map</code>就是字典</p>
-<p>大概像这样</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;<span class="string">'/'</span>: <span class="string">"11"</span>&#125;</span><br></pre></td></tr></table></figure>
-
-<p><code>value</code>不是视图函数名，而是一个字符串，我们叫它<code>endpoint</code>，除非手动指定，它一般是函数名的字符串形式</p>
-<p><code>endpoint</code>和视图函数是对应的，这个字典存储在<code>Flask</code>的<code>view_functions</code>属性中，它是一个字典</p>
-<p>它的结构类似这样</p>
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/flask/flask%E6%BA%90%E7%A0%81%E4%B9%8B%E8%B7%AF%E7%94%B1%E6%9C%BA%E5%88%B6/#more" rel="contents">
@@ -646,7 +636,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-01-03 22:26:30" itemprop="dateModified" datetime="2021-01-03T22:26:30+08:00">2021-01-03</time>
+                <time title="修改时间：2021-01-03 22:28:11" itemprop="dateModified" datetime="2021-01-03T22:28:11+08:00">2021-01-03</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1027,7 +1017,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://johnson329.github.io/hexo/hexo%E8%AF%84%E8%AE%BA%E5%8A%9F%E8%83%BD-%E4%B8%89/">
+    <link itemprop="mainEntityOfPage" href="https://johnson329.github.io/hexo/hexo%E7%BB%9F%E8%AE%A1%E5%8A%9F%E8%83%BD-%E5%9B%9B/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -1041,7 +1031,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/hexo/hexo%E8%AF%84%E8%AE%BA%E5%8A%9F%E8%83%BD-%E4%B8%89/" class="post-title-link" itemprop="url">hexo评论功能(三)</a>
+            <a href="/hexo/hexo%E7%BB%9F%E8%AE%A1%E5%8A%9F%E8%83%BD-%E5%9B%9B/" class="post-title-link" itemprop="url">hexo统计功能(四)</a>
         </h2>
 
         <div class="post-meta">
@@ -1081,14 +1071,14 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h3 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h3><p>​        next主题内置多种第三方评论系统，如disqus</p>
-<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">comments:</span></span><br><span class="line">  <span class="comment"># Available values: tabs | buttons</span></span><br><span class="line">  <span class="attr">style:</span> <span class="string">tabs</span></span><br><span class="line">  <span class="comment"># Choose a comment system to be displayed by default.</span></span><br><span class="line">  <span class="comment"># Available values: changyan | disqus | disqusjs | gitalk | livere | valine</span></span><br></pre></td></tr></table></figure>
+          <h3 id="安装统计代码"><a href="#安装统计代码" class="headerlink" title="安装统计代码"></a>安装统计代码</h3><p>在<code>themes/next/_config.yml</code>中搜索<code>static</code>\</p>
+<p>找到如下配置</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Statistics and Analytics</span></span><br><span class="line"><span class="comment"># See: https://theme-next.js.org/docs/third-party-services/statistics-and-analytics</span></span><br><span class="line"><span class="comment"># ---------------------------------------------------------------</span></span><br></pre></td></tr></table></figure>
 
-<p>但是disqus由于种种原因无法访问，valine需要身份证号码进行实名登记</p>
-<p>所以我选择了gitalk，他是利用github的issue来作为评论，真是github全家桶</p>
+<p>跟着<a href="https://theme-next.js.org/docs/third-party-services/statistics-and-analytics" target="_blank" rel="noopener external nofollow noreferrer">教程</a>走就行了</p>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/hexo/hexo%E8%AF%84%E8%AE%BA%E5%8A%9F%E8%83%BD-%E4%B8%89/#more" rel="contents">
+              <a class="btn" href="/hexo/hexo%E7%BB%9F%E8%AE%A1%E5%8A%9F%E8%83%BD-%E5%9B%9B/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>

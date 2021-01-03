@@ -33,7 +33,7 @@
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://i.loli.net/2020/12/30/zeNT6rGUDj4Wfxa.png">
 <meta property="article:published_time" content="2020-12-30T15:31:47.000Z">
-<meta property="article:modified_time" content="2021-01-03T14:27:16.687Z">
+<meta property="article:modified_time" content="2021-01-03T17:36:03.389Z">
 <meta property="article:author" content="Johnson">
 <meta property="article:tag" content="flask源码">
 <meta name="twitter:card" content="summary">
@@ -290,7 +290,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-01-03 22:27:16" itemprop="dateModified" datetime="2021-01-03T22:27:16+08:00">2021-01-03</time>
+                <time title="修改时间：2021-01-04 01:36:03" itemprop="dateModified" datetime="2021-01-04T01:36:03+08:00">2021-01-04</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -318,6 +318,8 @@
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> flask <span class="keyword">import</span> Flask, request</span><br><span class="line"></span><br><span class="line">flask_app = Flask(__name__)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="meta">@flask_app.route('/',endpoint="11")</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">hello_world</span><span class="params">()</span>:</span></span><br><span class="line">    <span class="keyword">return</span> <span class="string">"&#123;&#125;"</span>.format(request.remote_addr)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">'__main__'</span>:</span><br><span class="line">    flask_app.run()</span><br></pre></td></tr></table></figure>
 
 <p>我们很容易想到用字典去做路由，<code>key</code>是 <code>url</code>，<code>value</code>是对应的处理函数或者叫视图函数</p>
+<a id="more"></a>
+
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;<span class="string">"/"</span>:hello_world&#125;</span><br></pre></td></tr></table></figure>
 
 <p>但是对于动态路由，这样做就不好实现了</p>
@@ -328,8 +330,6 @@
 <p><code>value</code>不是视图函数名，而是一个字符串，我们叫它<code>endpoint</code>，除非手动指定，它一般是函数名的字符串形式</p>
 <p><code>endpoint</code>和视图函数是对应的，这个字典存储在<code>Flask</code>的<code>view_functions</code>属性中，它是一个字典</p>
 <p>它的结构类似这样</p>
-<a id="more"></a>
-
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;<span class="string">'11'</span>:hello_world&#125;</span><br></pre></td></tr></table></figure>
 
 <p><img src="https://i.loli.net/2020/12/30/zeNT6rGUDj4Wfxa.png" alt="image-20201230235156471"></p>
@@ -368,22 +368,36 @@
 
 
 
-<p>我们知道<code>req</code>是从<code>LocalStack</code>中取出的 <code>RequestContext</code>的<code>request</code>属性，保存着请求的信息</p>
-<p><code>request</code>有一个<code>url_rule</code>属性，他就是<code>Rule</code>对象，我们从<code>Rule</code>对象中拿到<code>endpoint</code>,再从 <code>view_functions</code>中拿到视图函数，并传入请求参数，执行之后返回结果就结束了</p>
+
+
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">dispatch_request</span><span class="params">(self)</span>:</span></span><br><span class="line">    req = _request_ctx_stack.top.request</span><br><span class="line">    rule = req.url_rule</span><br><span class="line">    <span class="keyword">return</span> self.view_functions[rule.endpoint](**req.view_args)</span><br></pre></td></tr></table></figure>
 
+<p>我们知道<code>req</code>是从<code>LocalStack</code>中取出的 <code>RequestContext</code>的<code>request</code>属性，保存着请求的信息</p>
+<p><code>request</code>有一个<code>url_rule</code>属性，他就是<code>Rule</code>对象，我们从<code>Rule</code>对象中拿到<code>endpoint</code>,再从 <code>view_functions</code>中根据<code>endpoint</code>拿到视图函数，并传入请求参数，执行之后返回结果就结束了</p>
 <h3 id="一个疑问"><a href="#一个疑问" class="headerlink" title="一个疑问"></a>一个疑问</h3><p>那么<code>req</code>是什么时候有的<code>Rule</code>属性的呢？？？</p>
 <p>是在 <code>RequestContext</code>对象的<code>push</code>方法中，我们知道请求来了第一步就是<code>push</code></p>
 <p>我还是删去了一些无关代码</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">push</span><span class="params">(self)</span>:</span></span><br><span class="line">    <span class="keyword">if</span> self.url_adapter <span class="keyword">is</span> <span class="keyword">not</span> <span class="literal">None</span>:</span><br><span class="line">    	self.match_request()</span><br></pre></td></tr></table></figure>
 
 <p>而<code>match_request</code>做的事情就是用 <code>MapAdapter对象match</code>出<code>Rule</code>和请求参数 <code>view_args</code>，然后绑定到<code>request</code>上，这样<code>request</code>就有了<code>url_rule</code>属性</p>
+<p><code>url_adapter</code>就是<code>MapAdapter</code>对象</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">match_request</span><span class="params">(self)</span>:</span></span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        result = self.url_adapter.match(return_rule=<span class="literal">True</span>)</span><br><span class="line">        self.request.url_rule, self.request.view_args = result</span><br><span class="line">    <span class="keyword">except</span> HTTPException <span class="keyword">as</span> e:</span><br><span class="line">        self.request.routing_exception = e</span><br></pre></td></tr></table></figure>
 
-<p>至于<code>match</code>方法为什么不需要传入当前URL，那是因为<code>url_adapter</code>包含了当前请求的信息了</p>
+<p>至于<code>match</code>方法为什么不需要传入当前请求的URL，那是因为<code>url_adapter</code>已经包含了当前请求的信息了</p>
 <p>在 <code>__init__</code>方法中</p>
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, app, environ, request=None, session=None)</span>:</span></span><br><span class="line">    self.url_adapter = <span class="literal">None</span></span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        self.url_adapter = app.create_url_adapter(self.request)</span><br><span class="line">    <span class="keyword">except</span> HTTPException <span class="keyword">as</span> e:</span><br><span class="line">        self.request.routing_exception = e</span><br></pre></td></tr></table></figure>
 
+
+
+<p>再看 <code>create_url_adapter</code>方法</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">create_url_adapter</span><span class="params">(self, request)</span>:</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> request <span class="keyword">is</span> <span class="keyword">not</span> <span class="literal">None</span>:</span><br><span class="line">        <span class="comment"># If subdomain matching is disabled (the default), use the</span></span><br><span class="line">        <span class="comment"># default subdomain in all cases. This should be the default</span></span><br><span class="line">        <span class="comment"># in Werkzeug but it currently does not have that feature.</span></span><br><span class="line">        subdomain = (</span><br><span class="line">            (self.url_map.default_subdomain <span class="keyword">or</span> <span class="literal">None</span>)</span><br><span class="line">            <span class="keyword">if</span> <span class="keyword">not</span> self.subdomain_matching</span><br><span class="line">            <span class="keyword">else</span> <span class="literal">None</span></span><br><span class="line">        )</span><br><span class="line">        <span class="keyword">return</span> self.url_map.bind_to_environ(</span><br><span class="line">            request.environ,</span><br><span class="line">            server_name=self.config[<span class="string">"SERVER_NAME"</span>],</span><br><span class="line">            subdomain=subdomain,</span><br><span class="line">        )</span><br></pre></td></tr></table></figure>
+
+<p>做的事情就是把<code>Map</code>表绑定到<code>environ</code>上，毕竟你这个<code>Map</code>也就是路由表，要属于某个</p>
+<p>再看 <code>bind_to_environ</code>这个方法，没必要都看明白，需要的时候，再断点调试就好了</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">bind_to_environ</span><span class="params">(self, environ, server_name=None, subdomain=None)</span>:</span></span><br><span class="line">  </span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">_get_wsgi_string</span><span class="params">(name)</span>:</span></span><br><span class="line">        val = environ.get(name)</span><br><span class="line">        <span class="keyword">if</span> val <span class="keyword">is</span> <span class="keyword">not</span> <span class="literal">None</span>:</span><br><span class="line">            <span class="keyword">return</span> wsgi_decoding_dance(val, self.charset)</span><br><span class="line"></span><br><span class="line">    script_name = _get_wsgi_string(<span class="string">"SCRIPT_NAME"</span>)</span><br><span class="line">    path_info = _get_wsgi_string(<span class="string">"PATH_INFO"</span>)</span><br><span class="line">    query_args = _get_wsgi_string(<span class="string">"QUERY_STRING"</span>)</span><br><span class="line">    <span class="keyword">return</span> Map.bind(</span><br><span class="line">        self,</span><br><span class="line">        server_name,</span><br><span class="line">        script_name,</span><br><span class="line">        subdomain,</span><br><span class="line">        scheme,</span><br><span class="line">        environ[<span class="string">"REQUEST_METHOD"</span>],</span><br><span class="line">        path_info,</span><br><span class="line">        query_args=query_args,</span><br><span class="line">    )</span><br></pre></td></tr></table></figure>
+
+<p>我们看到，这个方法把从<code>envirion</code>中取出来的<code>path_info</code>和<code>query_args</code>传到了<code>bind</code>方法中，返回<code>MapAdapter</code>对象，接着就可以用</p>
+<p><code>MapAdapter</code>对象<code>match</code>出<code>Rule</code>了</p>
 
     </div>
 

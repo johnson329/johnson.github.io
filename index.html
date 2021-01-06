@@ -207,7 +207,7 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">15</span>
+          <span class="site-state-item-count">16</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -253,6 +253,63 @@
 
         <div class="content index posts-expand">
           
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://johnson329.github.io/uncategorized/flask%E6%BA%90%E7%A0%81%E4%B9%8Brequest%E5%AF%B9%E8%B1%A1%EF%BC%88%E5%85%AD%EF%BC%89/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Johnson">
+      <meta itemprop="description" content="Johnson的个人博客">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Johnson的个人博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/uncategorized/flask%E6%BA%90%E7%A0%81%E4%B9%8Brequest%E5%AF%B9%E8%B1%A1%EF%BC%88%E5%85%AD%EF%BC%89/" class="post-title-link" itemprop="url">Flask源码之Request对象（六）</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-01-06 23:04:34" itemprop="dateCreated datePublished" datetime="2021-01-06T23:04:34+08:00">2021-01-06</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
       
   
   
@@ -346,7 +403,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-01-06 23:03:17" itemprop="dateModified" datetime="2021-01-06T23:03:17+08:00">2021-01-06</time>
+                <time title="修改时间：2021-01-06 23:06:49" itemprop="dateModified" datetime="2021-01-06T23:06:49+08:00">2021-01-06</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -373,82 +430,14 @@
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> flask <span class="keyword">import</span> Flask, jsonify</span><br><span class="line"></span><br><span class="line">flask_app = Flask(__name__)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="meta">@flask_app.route('/', endpoint="11")</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">hello_world</span><span class="params">()</span>:</span></span><br><span class="line">    a = <span class="number">1</span> / <span class="number">0</span></span><br><span class="line">    <span class="keyword">return</span> jsonify(</span><br><span class="line">        code=<span class="number">0</span>,</span><br><span class="line">        msg=<span class="string">"success"</span>,</span><br><span class="line">        data=[<span class="string">"hello,world!"</span>]</span><br><span class="line">    )</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">'__main__'</span>:</span><br><span class="line">    flask_app.run()</span><br></pre></td></tr></table></figure>
 
 <p>这段代码有一个很显然的未捕捉的异常，就是<code>1/0</code></p>
-<p>再看<code>flask</code>在生产环境中返回了什么，一个状态是<code>500</code>、内容是<code>html</code>的返回</p>
-<p><img src="https://i.loli.net/2021/01/05/QaeZiYGX5CDPwO7.png" alt="image-20210105234225278"></p>
-<p>然而在用<code>json</code>格式交互的前后端分离场景下，前端希望后端仍然返回<code>json</code>格式的数据，而不是<code>html</code></p>
-<p>再考虑到可能以后还有安卓和<code>ios</code>，人家可能都不需要<code>html</code></p>
-<p>所以我们需要在后端服务出现未捕获的异常时候，返回自定义的<code>json</code>格式数据</p>
-<p>修改代码如下</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> flask <span class="keyword">import</span> Flask, jsonify</span><br><span class="line"></span><br><span class="line">flask_app = Flask(__name__)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="meta">@flask_app.route('/', endpoint="11")</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">hello_world</span><span class="params">()</span>:</span></span><br><span class="line">    a = <span class="number">1</span> / <span class="number">0</span></span><br><span class="line">    <span class="keyword">return</span> jsonify(</span><br><span class="line">        code=<span class="number">0</span>,</span><br><span class="line">        msg=<span class="string">"success"</span>,</span><br><span class="line">        data=[<span class="string">"hello,world!"</span>]</span><br><span class="line">    )</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="meta">@flask_app.errorhandler(500)</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">handle_500</span><span class="params">(e)</span>:</span></span><br><span class="line">    <span class="comment"># 可能还要记录一下自定义的日志</span></span><br><span class="line">    <span class="comment"># 也可能还需要回滚一下数据库操作</span></span><br><span class="line">    <span class="keyword">return</span> jsonify(</span><br><span class="line">        code=<span class="number">-1</span>,</span><br><span class="line">        msg=<span class="string">"unknown error"</span></span><br><span class="line">    )</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">'__main__'</span>:</span><br><span class="line">    flask_app.run()</span><br></pre></td></tr></table></figure>
-
-<p>重启服务</p>
-<p><img src="https://i.loli.net/2021/01/05/v4glcPw9Uh6WkEf.png" alt="image-20210105235636806"></p>
-<p>这样，我们的前端、ios和安卓只需要再一个全局的位置，判断一下，如果<code>code</code>等于 <code>-1</code>，就展示<code>unknown error</code>或者自己换个名字 <code>服务器未知异常</code>就好了</p>
-<p>这里我们用到了  <code>flask</code>提供的 <code>errorhandler</code></p>
-<h3 id="为什么建议用errorhandler"><a href="#为什么建议用errorhandler" class="headerlink" title="为什么建议用errorhandler"></a>为什么建议用errorhandler</h3><p>有的人可能会在没有看文档的情况下，写一个装饰器去装饰视图函数，来捕捉未知异常，像这样</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> flask <span class="keyword">import</span> Flask, jsonify</span><br><span class="line"></span><br><span class="line">flask_app = Flask(__name__)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">handle_500</span><span class="params">(func)</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">wrapper</span><span class="params">(*args, **kw)</span>:</span></span><br><span class="line">        <span class="keyword">try</span>:</span><br><span class="line">            rv = func(*args, **kw)</span><br><span class="line">        <span class="keyword">except</span> Exception <span class="keyword">as</span> e:</span><br><span class="line">            <span class="comment"># 可能还要记录一下自定义的日志</span></span><br><span class="line">            <span class="comment"># 可能还需要回滚数据库操作</span></span><br><span class="line">            rv = &#123;</span><br><span class="line">                <span class="string">"code"</span>: <span class="number">-1</span>,</span><br><span class="line">                <span class="string">"msg"</span>: <span class="string">"unknown error"</span></span><br><span class="line">            &#125;</span><br><span class="line">        <span class="keyword">return</span> rv</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> wrapper</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="meta">@flask_app.route('/', endpoint="11")</span></span><br><span class="line"><span class="meta">@handle_500</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">hello_world</span><span class="params">()</span>:</span></span><br><span class="line">    a = <span class="number">1</span> / <span class="number">0</span></span><br><span class="line">    <span class="keyword">return</span> jsonify(</span><br><span class="line">        code=<span class="number">0</span>,</span><br><span class="line">        msg=<span class="string">"success"</span>,</span><br><span class="line">        data=[<span class="string">"hello,world!"</span>]</span><br><span class="line">    )</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment"># @flask_app.errorhandler(500)</span></span><br><span class="line"><span class="comment"># def handle_500(e):</span></span><br><span class="line"><span class="comment">#     # 可能还要记录一下自定义的日志</span></span><br><span class="line"><span class="comment">#     return jsonify(</span></span><br><span class="line"><span class="comment">#         code=-1,</span></span><br><span class="line"><span class="comment">#         msg="unknown error"</span></span><br><span class="line"><span class="comment">#     )</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">'__main__'</span>:</span><br><span class="line">    flask_app.run()</span><br></pre></td></tr></table></figure>
-
-
-
-<p>这样写我个人不太建议:</p>
-<ol>
-<li>官方文档建议用<code>errorhandler</code>的处理方式，最好用这种</li>
-<li><code>handle_500</code>这个装饰器要在<code>@app.route</code>这个装饰器下面才有作用</li>
-<li>如果你用的是函数视图而不是类视图，那么你每个函数都要加这样一个装饰器，产生重复代码，还可能会遗忘。如果你用类视图，可以写一个被装饰的基类</li>
-<li>这个装饰器只能捕捉函数视图或者类视图中的异常，我们在开发中还有 <code>@app.before_request</code>等钩子函数，里面也会出现异常，这个装饰器无法捕捉，但 <code>errorhandler</code>可以</li>
-<li>这样更加解耦</li>
-</ol>
-<p><code>2345</code>的问题<code>errorhandler</code>都可以解决</p>
-<h2 id="源码实现"><a href="#源码实现" class="headerlink" title="源码实现"></a>源码实现</h2><p>这里用断点调试就很简单了</p>
-<p>先在 <code>full_dispatch_request</code> 打断点，<code>ctrl+鼠标左键</code>进入方法内部</p>
-<p><img src="https://i.loli.net/2021/01/06/DJYlMceuOkCyKb2.png" alt="image-20210106003550310"></p>
-<p>在 <code>full_dispatch_request</code>方法内部打断点，注意要打两个断点，然后按<code>f9</code>让程序走到这个断点</p>
-<p><img src="https://i.loli.net/2021/01/06/3k1NQSXU4wbi8hn.png" alt="image-20210106004015653"></p>
-<p>进入<code>dispatch_request</code>内部，在<code>self.view_functions[rule.endpoint](**req.view_args)</code>处打断点</p>
-<p><img src="https://i.loli.net/2021/01/06/JDmrTBp8e4AFKkG.png" alt="image-20210106003750673"></p>
-<p> <code>self.view_functions[rule.endpoint](**req.view_args)</code>，这一步其实就是在执行 <code>hello_world()</code></p>
-<p>我们知道 <code>hello_world</code>这个函数会抛出一个 <code>零不能被除</code>的异常</p>
-<p>那这个异常会被捕捉吗？</p>
-<p>继续往前调试，我们会回到上一层（因为我们在之前<code>full_dispatch_request</code>内部打了两个断点）</p>
-<p><img src="https://i.loli.net/2021/01/06/peXLSnAg9jy2N8W.png" alt="image-20210106004158333"></p>
-<p><code>零不能被除</code>异常在上一层被捕捉到了，这个<code>e</code>就是我们的异常</p>
-<p>我们在这个地方停留一会儿，我们发现这个<code>try</code>内部除了 <code>dispatch_request</code> 还有 <code>rv = self.preprocess_request()</code>这一句，看名字也知道是预处理，什么预处理呢？没错就是之前提到的 <code>@app.before_request</code>装饰的钩子函数，由此可见，钩子函数的异常也会被捕捉到</p>
-<p>继续看<code>except</code>之后的代码</p>
-<p>那么 <code>rv = self.handle_user_exception(e)</code>会帮我们处理这个 <code>division by zero</code>异常吗？</p>
-<p>其实也不会，他会把异常继续往上抛，我们稍后再讲他的作用</p>
-<p>点击调用栈的这个地方，我们要回到上一层，继续打上一个断点，注意看图中 <code>Frames</code>的位置，选择箭头指向的上一层</p>
-<p><img src="https://i.loli.net/2021/01/06/VcnvN93Y7JzIkgB.png" alt="image-20210106004705665"></p>
-<p>在<code>error=e</code>处打断点</p>
-<p><img src="https://i.loli.net/2021/01/06/gTrJm8UVbRoWuNS.png" alt="image-20210106005121465"></p>
-<p>估计你也知道了，<code>零不能被除</code>异常被 <code>handle_user_exception(e)</code>又抛了出来，在上一层的 <code>wsgi_app</code>方法中被捕捉到了，并且交给 <code>handle_exception</code>来处理</p>
-<p>而 <code>handle_exception</code>做的事情也简单</p>
-<p><img src="https://i.loli.net/2021/01/06/tLGvPYHq6ilD3mM.png" alt="image-20210106005403417"></p>
-<p>先打日志，把<strong>出错类型 出错值 出错调用栈</strong>全打出来</p>
-<p>然后再准备报 <code>InternalServerError</code>也就是状态码是<code>500</code>的<code>flask</code>服务器异常</p>
-<p>但是在正式返回之前，会先看一下你有没有 处理<code>500</code>错误的<code>handler</code>,而我们是有的，于是调用你的<code>handle_500</code>函数处理服务器异常</p>
-<p>注意这句 <code>if self.propagate_exception</code>，<code>self.propagate_exception</code>这个属性是为了决定是否传播你的异常，在开发和测试环境下，这个为真，异常会被继续抛到上层，所以我们写的<code>handler</code>会不生效，因此，为了看到我们的<code>500</code>错误处理器生效，记得在生产环境查看</p>
-<p><img src="https://i.loli.net/2021/01/06/MStYG4J2rfZn9eI.png" alt="image-20210106005724883"></p>
-<p>选中 <code>handler</code>右键在弹出菜单中选择<code>evaluate</code>,可以发现这个<code>handler</code>就是我们定义的<code>handle_500</code>函数，<code>handle_500</code>返回的就是我们自定义的<code>json</code>格式</p>
-<h3 id="handle-user-exception处理什么异常"><a href="#handle-user-exception处理什么异常" class="headerlink" title="handle_user_exception处理什么异常"></a>handle_user_exception处理什么异常</h3><p><img src="https://i.loli.net/2021/01/06/9m5kCjGcODFEyYt.png" alt="image-20210106201113736"></p>
-<p>比较容易看出，这个方法主要是处理 <code>HTTPException</code>和用户自定义的非<code>500</code>的异常</p>
-<p>看个例子</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> flask <span class="keyword">import</span> Flask, jsonify</span><br><span class="line"></span><br><span class="line">flask_app = Flask(__name__)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ValidationError</span><span class="params">(ValueError)</span>:</span></span><br><span class="line">    <span class="keyword">pass</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="meta">@flask_app.route('/', endpoint="11", methods=["GET", "POST"])</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">hello_world</span><span class="params">()</span>:</span></span><br><span class="line">    <span class="keyword">raise</span> ValidationError(<span class="string">"参数验证失败"</span>)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="meta">@flask_app.errorhandler(ValidationError)</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">validation_error</span><span class="params">(e)</span>:</span></span><br><span class="line">    <span class="keyword">return</span> jsonify(</span><br><span class="line">        code=<span class="number">1</span>,</span><br><span class="line">        msg=e.args</span><br><span class="line">    )</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">'__main__'</span>:</span><br><span class="line">    flask_app.run()</span><br></pre></td></tr></table></figure>
-
-<p>例如你的代码里面有多处需要抛出和捕获 <code>ValidationError</code>这个错误，进一步说，在orm层会抛出这个异常，<code>view</code>层捕捉，那么写多次<code>try</code>不妨考虑用这种全局异常注册的方式</p>
-<p>现在我们看看源码怎么处理的</p>
-<p><code>handle_user_exception</code>内部打上断点</p>
-<p><img src="https://i.loli.net/2021/01/06/VdOlaRNkW7cPnqD.png" alt="image-20210106224104610"></p>
-<p><img src="https://i.loli.net/2021/01/06/TEHN6APfX1LxrBS.png" alt="image-20210106224222700"></p>
-<p><code>handler</code>就是我们的 <code>validation_error</code>函数，最后返回的实际上是 <code>validation_error</code>函数的执行结果</p>
-<h2 id="后端api格式"><a href="#后端api格式" class="headerlink" title="后端api格式"></a>后端api格式</h2><p>我们都知道<code>rest</code>是一种风格的<code>api</code></p>
-<p>他用<code>http</code> 码来表示状态，但实际中有时候是不够用的，或者前端、<code>ios</code>和安卓都希望不用<code>http</code>的什么<code>400</code>状态码，</p>
-<p>而需要在<code>json</code>数据中再定义自己的状态码，<code>http</code>状态码统一<code>200</code></p>
-<p>像这样</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    <span class="string">"code"</span>:<span class="number">0</span>,</span><br><span class="line">    <span class="string">"msg"</span>:<span class="string">"success"</span>,</span><br><span class="line">    <span class="string">"data"</span>:[]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>这种常见于国内比较大型的项目中</p>
-<p>到底是采用<code>rest</code>风格的<code>api</code>还是自定义状态码，争论很多，具体还是看公司要求</p>
-
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/flask/flask%E6%BA%90%E7%A0%81%E4%B9%8B%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86-%E5%85%BC%E8%AE%BA%E5%AE%9E%E8%B7%B5%E4%B8%AD%E7%9A%84api%E6%8E%A5%E5%8F%A3%E6%A0%BC%E5%BC%8F%EF%BC%88%E4%BA%94%EF%BC%89/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 
@@ -1039,92 +1028,6 @@
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/uncategorized/flask%E6%9E%84%E5%BB%BAsaas%E5%BA%94%E7%94%A8/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://johnson329.github.io/uncategorized/ubuntu18-04%E6%90%AD%E5%BB%BApython%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Johnson">
-      <meta itemprop="description" content="Johnson的个人博客">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Johnson的个人博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/uncategorized/ubuntu18-04%E6%90%AD%E5%BB%BApython%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83/" class="post-title-link" itemprop="url">ubuntu18.04搭建python开发环境</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2020-12-01 12:49:35" itemprop="dateCreated datePublished" datetime="2020-12-01T12:49:35+08:00">2020-12-01</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-12-17 18:48:42" itemprop="dateModified" datetime="2020-12-17T18:48:42+08:00">2020-12-17</time>
-              </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>安装python开发环境包括安装python,pip,pycharm,搜狗输入法</p>
-<h3 id="安装python-pip"><a href="#安装python-pip" class="headerlink" title="安装python,pip"></a>安装python,pip</h3><p>ubuntu18.04内置了python3.6.9</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">python3</span><br><span class="line">Python 3.6.9 (default, Nov  7 2019, 10:44:02) </span><br><span class="line">[GCC 8.3.0] on linux</span><br><span class="line">Type <span class="string">"help"</span>, <span class="string">"copyright"</span>, <span class="string">"credits"</span> or <span class="string">"license"</span> <span class="keyword">for</span> more information.</span><br><span class="line">&gt;&gt;&gt;</span><br></pre></td></tr></table></figure>
-
-<p>但是没有安装pip</p>
-<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt instal python3-pip -y</span><br></pre></td></tr></table></figure>
-
-<p>有了pip3，接下来用pycharm <code>create new project</code>就不会出现<code>ModuleNotFoundError: No module named &#39;distutils.util&#39;</code>错误了</p>
-<ul>
-<li>pip和pip3的区别</li>
-</ul>
-<p>python 有python2和python3的区别<br>那么pip也有pip和pip3的区别<br>大概是这样的<br>1、pip是python的包管理工具，pip和pip3版本不同，都位于Scripts\目录下：<br>2、如果系统中只安装了Python2，那么就只能使用pip。<br>3、如果系统中只安装了Python3，那么既可以使用pip也可以使用pip3，二者是等价的。<br>4、如果系统中同时安装了Python2和Python3，则pip默认给Python2用，pip3指定给Python3用。<br>5、重要：虚拟环境中，若只存在一个python版本，可以认为在用系统中pip和pip3命令都是相同的</p>
-<h3 id="安装pycharm"><a href="#安装pycharm" class="headerlink" title="安装pycharm"></a>安装pycharm</h3><p>安装很简单</p>
-<p>想要创建桌面快捷方式可以在pycharm菜单栏中选择<code>tools</code>-&gt;`Create Desktop Entry..``</p>
-<p>点击左下角Applications就可以看到了</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/uncategorized/ubuntu18-04%E6%90%AD%E5%BB%BApython%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>

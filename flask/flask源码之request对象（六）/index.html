@@ -36,7 +36,7 @@
 <meta property="og:image" content="https://i.loli.net/2021/01/06/b4ypciGuervH6Tn.png">
 <meta property="og:image" content="https://i.loli.net/2021/01/06/eM6VU5nutdcaBF2.png">
 <meta property="article:published_time" content="2021-01-06T15:04:34.000Z">
-<meta property="article:modified_time" content="2021-01-06T16:08:33.482Z">
+<meta property="article:modified_time" content="2021-01-06T16:14:26.612Z">
 <meta property="article:author" content="Johnson">
 <meta property="article:tag" content="flask源码">
 <meta name="twitter:card" content="summary">
@@ -293,7 +293,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-01-07 00:08:33" itemprop="dateModified" datetime="2021-01-07T00:08:33+08:00">2021-01-07</time>
+                <time title="修改时间：2021-01-07 00:14:26" itemprop="dateModified" datetime="2021-01-07T00:14:26+08:00">2021-01-07</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -323,6 +323,8 @@
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">RequestContext</span><span class="params">(object)</span>:</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, app, environ, request=None, session=None)</span>:</span></span><br><span class="line">        self.app = app</span><br><span class="line">        <span class="keyword">if</span> request <span class="keyword">is</span> <span class="literal">None</span>:</span><br><span class="line">            request = app.request_class(environ)</span><br><span class="line">        self.request = request</span><br><span class="line">        self.url_adapter = <span class="literal">None</span></span><br><span class="line">        <span class="keyword">try</span>:</span><br><span class="line">            self.url_adapter = app.create_url_adapter(self.request)</span><br><span class="line">        <span class="keyword">except</span> HTTPException <span class="keyword">as</span> e:</span><br><span class="line">            self.request.routing_exception = e</span><br><span class="line">        self.flashes = <span class="literal">None</span></span><br><span class="line">        self.session = session</span><br></pre></td></tr></table></figure>
 
 <p>那么<code>request</code>属性又是什么什么呢？</p>
+<a id="more"></a>
+
 <h2 id="原理与实现"><a href="#原理与实现" class="headerlink" title="原理与实现"></a>原理与实现</h2><p><img src="https://i.loli.net/2021/01/06/rZFvHm12f84nTQc.png" alt="image-20210106233013649"></p>
 <p>从上面代码可以看出来，<code>request</code>是 <code>request_class</code>的实例，<code>request_class</code>是一个<code>Request</code>类</p>
 <p>定义在<code>flask</code>的<code>wrappers.py</code>中</p>

@@ -288,7 +288,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-01-07 00:08:33" itemprop="dateModified" datetime="2021-01-07T00:08:33+08:00">2021-01-07</time>
+                <time title="修改时间：2021-01-07 00:14:26" itemprop="dateModified" datetime="2021-01-07T00:14:26+08:00">2021-01-07</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -318,43 +318,14 @@
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">RequestContext</span><span class="params">(object)</span>:</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, app, environ, request=None, session=None)</span>:</span></span><br><span class="line">        self.app = app</span><br><span class="line">        <span class="keyword">if</span> request <span class="keyword">is</span> <span class="literal">None</span>:</span><br><span class="line">            request = app.request_class(environ)</span><br><span class="line">        self.request = request</span><br><span class="line">        self.url_adapter = <span class="literal">None</span></span><br><span class="line">        <span class="keyword">try</span>:</span><br><span class="line">            self.url_adapter = app.create_url_adapter(self.request)</span><br><span class="line">        <span class="keyword">except</span> HTTPException <span class="keyword">as</span> e:</span><br><span class="line">            self.request.routing_exception = e</span><br><span class="line">        self.flashes = <span class="literal">None</span></span><br><span class="line">        self.session = session</span><br></pre></td></tr></table></figure>
 
 <p>那么<code>request</code>属性又是什么什么呢？</p>
-<h2 id="原理与实现"><a href="#原理与实现" class="headerlink" title="原理与实现"></a>原理与实现</h2><p><img src="https://i.loli.net/2021/01/06/rZFvHm12f84nTQc.png" alt="image-20210106233013649"></p>
-<p>从上面代码可以看出来，<code>request</code>是 <code>request_class</code>的实例，<code>request_class</code>是一个<code>Request</code>类</p>
-<p>定义在<code>flask</code>的<code>wrappers.py</code>中</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Request</span><span class="params">(RequestBase, JSONMixin)</span>:</span></span><br></pre></td></tr></table></figure>
-
-<p><code>mixin</code>是<code>python</code>多继承的方式，从面向对象的语义来看，表达的是 <code>has</code>关系而不是 <code>is</code>关系，用于为子类提供一些额外的方法</p>
-<p>我们看一下 <code>JSONMixin</code>的实现就好了</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">JSONMixin</span><span class="params">(_JSONMixin)</span>:</span></span><br><span class="line">    json_module = json</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">on_json_loading_failed</span><span class="params">(self, e)</span>:</span></span><br><span class="line">        <span class="keyword">if</span> current_app <span class="keyword">and</span> current_app.debug:</span><br><span class="line">            <span class="keyword">raise</span> BadRequest(<span class="string">"Failed to decode JSON object: &#123;0&#125;"</span>.format(e))</span><br><span class="line"></span><br><span class="line">        <span class="keyword">raise</span> BadRequest()</span><br></pre></td></tr></table></figure>
-
-<p>有一个 <code>on_json_loading_failed</code>方法</p>
-<h3 id="on-json-loading-failed"><a href="#on-json-loading-failed" class="headerlink" title="on_json_loading_failed"></a>on_json_loading_failed</h3><h4 id="作用"><a href="#作用" class="headerlink" title="作用"></a>作用</h4><p>我们知道前后端以<code>json</code>方式交互，对于前端传过来的数据我们要<code>load</code>成字典，失败了就会调用这个函数</p>
-<p>所以，我们可以从 <code>Request</code>继承一个自定义的对象，重写这个方法，并赋值给<code>Flask</code>类</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> flask <span class="keyword">import</span> Flask, jsonify, Request</span><br><span class="line"><span class="keyword">from</span> werkzeug.exceptions <span class="keyword">import</span> BadRequest</span><br><span class="line"></span><br><span class="line">flask_app = Flask(__name__)</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MyRequest</span><span class="params">(Request)</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">on_json_loading_failed</span><span class="params">(self, e)</span>:</span></span><br><span class="line">        <span class="keyword">raise</span> BadRequest()</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">flask_app.request_class = MyRequest</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="meta">@flask_app.route('/', endpoint="11", methods=["GET", "POST"])</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">hello_world</span><span class="params">()</span>:</span></span><br><span class="line">    <span class="keyword">return</span> jsonify(code=<span class="number">0</span>, msg=<span class="string">"success"</span>)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">'__main__'</span>:</span><br><span class="line">    flask_app.run()</span><br></pre></td></tr></table></figure>
-
-<p>这样，当<code>load</code>失败后我们就可以自己决定该怎么办</p>
-<p>值得注意的是，默认情况下，<code>json.load</code>失败了会<code>raise BadRequest</code>,结合<code>flask</code>中的异常处理方式，我们也可以把他用 <code>errorhandler</code>处理，根据实际情况决定是否修改就好 </p>
-<p>按两下 <code>shift</code>搜索这个父类 <code>_JSONMixin</code>，注意他是被重命名了</p>
-<p>定义在 <code>werkzeug</code>中</p>
-<p><img src="https://i.loli.net/2021/01/06/WiIjaN98Zrh1KEV.png" alt="image-20210106234345164"></p>
-<h3 id="继承关系"><a href="#继承关系" class="headerlink" title="继承关系"></a>继承关系</h3><p><img src="https://i.loli.net/2021/01/06/b4ypciGuervH6Tn.png" alt="image-20210106235017437"></p>
-<p><code>werkzeug.wrappers.json.JSONMixin</code>有 <code>json</code>属性，所以我们也可以用 <code>request.json()</code>方式获取前端传来的<code>json</code>数据</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> flask <span class="keyword">import</span> request</span><br><span class="line">json_data=request.json()</span><br></pre></td></tr></table></figure>
-
-
-
-<h2 id="json-module"><a href="#json-module" class="headerlink" title="json_module"></a>json_module</h2><p>此外我们还看到两个 <code>JSONMixin</code>都要 <code>json_module</code>属性</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">JSONMixin</span><span class="params">(_JSONMixin)</span>:</span></span><br><span class="line">    json_module = json</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">on_json_loading_failed</span><span class="params">(self, e)</span>:</span></span><br><span class="line">        <span class="keyword">if</span> current_app <span class="keyword">and</span> current_app.debug:</span><br><span class="line">            <span class="keyword">raise</span> BadRequest(<span class="string">"Failed to decode JSON object: &#123;0&#125;"</span>.format(e))</span><br><span class="line"></span><br><span class="line">        <span class="keyword">raise</span> BadRequest()</span><br></pre></td></tr></table></figure>
-
-<p>查看 <code>json</code> 源码知道，这是<code>json_module</code>指定了序列化反序列化的模块,这个<code>json</code>不是标准库的，自定义的</p>
-<p><img src="https://i.loli.net/2021/01/06/eM6VU5nutdcaBF2.png" alt="image-20210106235551849"></p>
-<p>我们很容易在其中找到<code>loads</code>等方法，注意到其中的<code>_json</code>就是标准库的<code>json</code>库</p>
-<p>当然，我们也可以用自己的<code>json</code>模块</p>
-<p>例如你想不开想使用<code>pickle</code>（跑路吧）</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MyRequest</span><span class="params">(Request)</span>:</span></span><br><span class="line">    json_module=pickle</span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">on_json_loading_failed</span><span class="params">(self, e)</span>:</span></span><br><span class="line">        <span class="keyword">raise</span> BadRequest()</span><br></pre></td></tr></table></figure>
-
-<h2 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h2><p><a href="https://cizixs.com/2017/01/18/flask-insight-request/" target="_blank" rel="noopener external nofollow noreferrer">flask-insight-request</a></p>
-
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/flask/flask%E6%BA%90%E7%A0%81%E4%B9%8Brequest%E5%AF%B9%E8%B1%A1%EF%BC%88%E5%85%AD%EF%BC%89/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 

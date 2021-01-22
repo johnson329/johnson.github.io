@@ -257,6 +257,208 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://johnson329.github.io/flask/flask%E6%BA%90%E7%A0%81%E4%B9%8B%E7%B1%BB%E8%A7%86%E5%9B%BE%EF%BC%88%E4%B9%9D%EF%BC%89/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Johnson">
+      <meta itemprop="description" content="Johnson的个人博客">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Johnson的个人博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/flask/flask%E6%BA%90%E7%A0%81%E4%B9%8B%E7%B1%BB%E8%A7%86%E5%9B%BE%EF%BC%88%E4%B9%9D%EF%BC%89/" class="post-title-link" itemprop="url">flask源码之类视图（九）</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-01-23 02:27:46 / 修改时间：02:54:12" itemprop="dateCreated datePublished" datetime="2021-01-23T02:27:46+08:00">2021-01-23</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/flask/" itemprop="url" rel="index"><span itemprop="name">flask</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h3 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> flask <span class="keyword">import</span> Flask, request, current_app, jsonify</span><br><span class="line"><span class="keyword">import</span> uuid</span><br><span class="line"></span><br><span class="line"><span class="keyword">from</span> flask.views <span class="keyword">import</span> MethodView</span><br><span class="line"></span><br><span class="line">flask_app = Flask(__name__)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">HelloView</span><span class="params">(MethodView)</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">get</span><span class="params">(self)</span>:</span></span><br><span class="line">        <span class="keyword">return</span> jsonify(</span><br><span class="line">            code=<span class="number">-1</span>,</span><br><span class="line">            msg=<span class="string">"success"</span>,</span><br><span class="line">            data=[]</span><br><span class="line">        )</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">flask_app.add_url_rule(<span class="string">"/"</span>, HelloView.as_view(<span class="string">"hello"</span>))</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">'__main__'</span>:</span><br><span class="line">    flask_app.run()</span><br></pre></td></tr></table></figure>
+
+<p>代码很简单，类视图的好处在于，你可以通过写基类，来处理一些公共的操作，你甚至还可以复用一些已经写好的类视图，让你少些很多代码，更多信息请参考<code>django restframework</code></p>
+<h3 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h3><p>源码在 <code>flask.views.py</code></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MethodView</span><span class="params">(with_metaclass<span class="params">(MethodViewType, View)</span>)</span>:</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">dispatch_request</span><span class="params">(self, *args, **kwargs)</span>:</span></span><br><span class="line">        meth = getattr(self, request.method.lower(), <span class="literal">None</span>)</span><br><span class="line"></span><br><span class="line">        <span class="comment"># If the request method is HEAD and we don't have a handler for it</span></span><br><span class="line">        <span class="comment"># retry with GET.</span></span><br><span class="line">        <span class="keyword">if</span> meth <span class="keyword">is</span> <span class="literal">None</span> <span class="keyword">and</span> request.method == <span class="string">"HEAD"</span>:</span><br><span class="line">            meth = getattr(self, <span class="string">"get"</span>, <span class="literal">None</span>)</span><br><span class="line"></span><br><span class="line">        <span class="keyword">assert</span> meth <span class="keyword">is</span> <span class="keyword">not</span> <span class="literal">None</span>, <span class="string">"Unimplemented method %r"</span> % request.method</span><br><span class="line">        <span class="keyword">return</span> meth(*args, **kwargs)</span><br></pre></td></tr></table></figure>
+
+<p>这是一个用到元类来定义自己的类</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">flask_app.add_url_rule(<span class="string">"/"</span>, HelloView.as_view(<span class="string">"hello"</span>))</span><br></pre></td></tr></table></figure>
+
+<p>我们知道，这种方式注册路由，最后<code>flask</code>大概会这样执行</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">obj=HelloView.as_view(<span class="string">"hello"</span>)</span><br><span class="line">rv=obj()</span><br></pre></td></tr></table></figure>
+
+<p>所以我们看看 <code>as_view</code>返回了什么</p>
+<p><code>as_view</code>定义在父类 <code>View</code>中</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">View</span><span class="params">(object)</span>:</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">#: A list of methods this view can handle.</span></span><br><span class="line">    methods = <span class="literal">None</span></span><br><span class="line"></span><br><span class="line">    <span class="comment">#: Setting this disables or force-enables the automatic options handling.</span></span><br><span class="line">    provide_automatic_options = <span class="literal">None</span></span><br><span class="line"></span><br><span class="line">    decorators = ()</span><br><span class="line"></span><br><span class="line"><span class="meta">    @classmethod</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">as_view</span><span class="params">(cls, name, *class_args, **class_kwargs)</span>:</span></span><br><span class="line">        <span class="string">"""Converts the class into an actual view function that can be used</span></span><br><span class="line"><span class="string">        with the routing system.  Internally this generates a function on the</span></span><br><span class="line"><span class="string">        fly which will instantiate the :class:`View` on each request and call</span></span><br><span class="line"><span class="string">        the :meth:`dispatch_request` method on it.</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">        The arguments passed to :meth:`as_view` are forwarded to the</span></span><br><span class="line"><span class="string">        constructor of the class.</span></span><br><span class="line"><span class="string">        """</span></span><br><span class="line"></span><br><span class="line">        <span class="function"><span class="keyword">def</span> <span class="title">view</span><span class="params">(*args, **kwargs)</span>:</span></span><br><span class="line">            self = view.view_class(*class_args, **class_kwargs)</span><br><span class="line">            <span class="keyword">return</span> self.dispatch_request(*args, **kwargs)</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> cls.decorators:</span><br><span class="line">            view.__name__ = name</span><br><span class="line">            view.__module__ = cls.__module__</span><br><span class="line">            <span class="keyword">for</span> decorator <span class="keyword">in</span> cls.decorators:</span><br><span class="line">                view = decorator(view)</span><br><span class="line"></span><br><span class="line">        <span class="comment"># We attach the view class to the view function for two reasons:</span></span><br><span class="line">        <span class="comment"># first of all it allows us to easily figure out what class-based</span></span><br><span class="line">        <span class="comment"># view this thing came from, secondly it's also used for instantiating</span></span><br><span class="line">        <span class="comment"># the view class so you can actually replace it with something else</span></span><br><span class="line">        <span class="comment"># for testing purposes and debugging.</span></span><br><span class="line">        view.view_class = cls</span><br><span class="line">        view.__name__ = name</span><br><span class="line">        view.__doc__ = cls.__doc__</span><br><span class="line">        view.__module__ = cls.__module__</span><br><span class="line">        view.methods = cls.methods</span><br><span class="line">        view.provide_automatic_options = cls.provide_automatic_options</span><br><span class="line">        <span class="keyword">return</span> view</span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">dispatch_request</span><span class="params">(self)</span>:</span></span><br><span class="line">        <span class="string">"""Subclasses have to override this method to implement the</span></span><br><span class="line"><span class="string">        actual view function code.  This method is called with all</span></span><br><span class="line"><span class="string">        the arguments from the URL rule.</span></span><br><span class="line"><span class="string">        """</span></span><br><span class="line">        <span class="keyword">raise</span> NotImplementedError()</span><br></pre></td></tr></table></figure>
+
+<p>原理很简单，就是<code>as_view</code>内部定义了一个闭包，然后返回这个闭包函数，所以最后还是相当于执行了视图函数</p>
+<p>值得注意的时，这里这里的<code>view</code>函数最后调用 <code>dispatch_request</code>方法，而这个方法在<code>View</code>中没有实现</p>
+<p>所以<code>View</code>类不能单独使用，或者要定义 <code>dispatch_request</code>才能使用</p>
+<p>而 <code>MethodView</code>定义了 <code>dispatch_request</code>方法</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MethodView</span><span class="params">(with_metaclass<span class="params">(MethodViewType, View)</span>)</span>:</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">dispatch_request</span><span class="params">(self, *args, **kwargs)</span>:</span></span><br><span class="line">        meth = getattr(self, request.method.lower(), <span class="literal">None</span>)</span><br><span class="line"></span><br><span class="line">        <span class="comment"># If the request method is HEAD and we don't have a handler for it</span></span><br><span class="line">        <span class="comment"># retry with GET.</span></span><br><span class="line">        <span class="keyword">if</span> meth <span class="keyword">is</span> <span class="literal">None</span> <span class="keyword">and</span> request.method == <span class="string">"HEAD"</span>:</span><br><span class="line">            meth = getattr(self, <span class="string">"get"</span>, <span class="literal">None</span>)</span><br><span class="line"></span><br><span class="line">        <span class="keyword">assert</span> meth <span class="keyword">is</span> <span class="keyword">not</span> <span class="literal">None</span>, <span class="string">"Unimplemented method %r"</span> % request.method</span><br><span class="line">        <span class="keyword">return</span> meth(*args, **kwargs)</span><br></pre></td></tr></table></figure>
+
+<p>他的作用很简单，就是拿到<code>HTTP</code>请求的方法之后，转换为小写，调用同名的类方法</p>
+<p>例如 <code>HTTP GET-&gt;&quot;get&quot;-&gt;get方法</code> </p>
+<h3 id="元类"><a href="#元类" class="headerlink" title="元类"></a>元类</h3><p>在<code>python</code>中类也是对象，类是由元类创建的</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MethodView</span><span class="params">(with_metaclass<span class="params">(MethodViewType, View)</span>)</span>:</span></span><br></pre></td></tr></table></figure>
+
+<p>而 <code>MethodView</code>是由元类 <code>MethodViewType</code>创建的</p>
+<p>也就是说它不是你看到的样子，他还有一些属性或者发放是被<code>MethodViewType</code>在创建过程中动态添加的</p>
+<p>所以如何给类动态添加属性，就是元类</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MethodViewType</span><span class="params">(type)</span>:</span></span><br><span class="line">    <span class="string">"""Metaclass for :class:`MethodView` that determines what methods the view</span></span><br><span class="line"><span class="string">    defines.</span></span><br><span class="line"><span class="string">    """</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(cls, name, bases, d)</span>:</span></span><br><span class="line">        super(MethodViewType, cls).__init__(name, bases, d)</span><br><span class="line"></span><br><span class="line">        <span class="keyword">if</span> <span class="string">"methods"</span> <span class="keyword">not</span> <span class="keyword">in</span> d:</span><br><span class="line">            methods = set()</span><br><span class="line"></span><br><span class="line">            <span class="keyword">for</span> base <span class="keyword">in</span> bases:</span><br><span class="line">                <span class="keyword">if</span> getattr(base, <span class="string">"methods"</span>, <span class="literal">None</span>):</span><br><span class="line">                    methods.update(base.methods)</span><br><span class="line"></span><br><span class="line">            <span class="keyword">for</span> key <span class="keyword">in</span> http_method_funcs:</span><br><span class="line">                <span class="keyword">if</span> hasattr(cls, key):</span><br><span class="line">                    methods.add(key.upper())</span><br><span class="line">            <span class="keyword">if</span> methods:</span><br><span class="line">                cls.methods = methods</span><br></pre></td></tr></table></figure>
+
+<p>元类的一个好处是，你可以在方法中拿到你正在创建的类的名字（name），父类（bases），属性（d）</p>
+<p>例如我们用 <code>MethodViewType</code>去创建 <code>MethodView</code>,那这个<code>name</code>就是他的<code>name</code></p>
+<p>去创建 <code>HelloView</code>，那么<code>name</code>就是 这个类的名字</p>
+<p>同时注意<code>d</code>是当前被创建类的属性的集合，不包括父类</p>
+<p>这个元类的作用很简单，就是给你要创建类添加 <code>methods</code>属性，而这个<code>methods</code>属性就相当于你之前在路由中定义的<code>methods</code></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@flask_app.route("/",methods=["GET"])</span></span><br></pre></td></tr></table></figure>
+
+<p>也就是说，在类视图中，我们还可以不在路由中定义所接受的方法</p>
+<p>至于为什么非要用元类，其实也不是必须要用，或许是作者觉得方便</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://johnson329.github.io/flask/flask%E6%BA%90%E7%A0%81%E4%B9%8B%E9%92%A9%E5%AD%90%E5%87%BD%E6%95%B0%EF%BC%88%E5%85%AB%EF%BC%89/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Johnson">
+      <meta itemprop="description" content="Johnson的个人博客">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Johnson的个人博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/flask/flask%E6%BA%90%E7%A0%81%E4%B9%8B%E9%92%A9%E5%AD%90%E5%87%BD%E6%95%B0%EF%BC%88%E5%85%AB%EF%BC%89/" class="post-title-link" itemprop="url">flask源码之钩子函数（八）</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-01-23 02:01:40 / 修改时间：02:27:27" itemprop="dateCreated datePublished" datetime="2021-01-23T02:01:40+08:00">2021-01-23</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/flask/" itemprop="url" rel="index"><span itemprop="name">flask</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <h2 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h2><p>先看这样一个需求，<code>flask</code>在处理一个请求的时候，可能会在多处打日志，反映在日志文件中就是不同行，那不同行的日志怎么判断是一个请求所为呢？</p>
+<p>我们可以给 <code>request</code>对象绑定一个 <code>request_id</code>属性，在打日志的时候带上这个属性</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> flask <span class="keyword">import</span> Flask, request, current_app</span><br><span class="line"><span class="keyword">import</span> uuid</span><br><span class="line"></span><br><span class="line">flask_app = Flask(__name__)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="meta">@flask_app.before_request</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">gen_request_id</span><span class="params">()</span>:</span></span><br><span class="line">    request_id = uuid.uuid1()</span><br><span class="line">    request.request_id = request_id</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="meta">@flask_app.route('/')</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">hello_world</span><span class="params">()</span>:</span></span><br><span class="line">    current_app.logger.warn(<span class="string">"&#123;&#125;"</span>.format(request.request_id))</span><br><span class="line">    <span class="keyword">return</span> <span class="string">"hello flask"</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">'__main__'</span>:</span><br><span class="line">    flask_app.run()</span><br></pre></td></tr></table></figure>
+
+<p>这里我们用到了<code>flask</code>的钩子函数，<code>before_request</code></p>
+<p>它类似与<code>django</code>的中间件或者<code>java</code>的<code>AOP</code>,主要作用是把每个请求公共的一些操作抽取出来统一处理</p>
+<p><img src="https://i.loli.net/2021/01/23/dVkIrvGXFJ9P57Y.png" alt="这里写图片描述"></p>
+<p>重点看一下 <code>teardown_request</code>，它是注册一个函数在每个请求的末尾运行，不管是否有异常, 每次请求的最后都会执行</p>
+<p>而 <code>after_request</code>是在视图函数没有异常情况下才会被调用的钩子函数</p>
+<h2 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h2><h3 id="注册"><a href="#注册" class="headerlink" title="注册"></a>注册</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@flask_app.before_request</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">gen_request_id</span><span class="params">()</span>:</span></span><br><span class="line">    request_id = uuid.uuid1()</span><br><span class="line">    request.request_id = request_id</span><br></pre></td></tr></table></figure>
+
+<p>就是把 <code>gen_request_id</code>存入这个字典中</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;<span class="literal">None</span>:[gen_request_id]&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这个字典是<code>Flask</code>类的属性值，属性是 <code>before_request_funcs</code></p>
+<p>接着在请求运行中，遍历这个字典</p>
+<h3 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h3><p><code>before_request</code>源码</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Flask</span><span class="params">(object)</span>:</span></span><br><span class="line"><span class="meta">   @setupmethod</span></span><br><span class="line">   <span class="function"><span class="keyword">def</span> <span class="title">before_request</span><span class="params">(self, f)</span>:</span></span><br><span class="line">       <span class="string">"""Registers a function to run before each request.</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">       For example, this can be used to open a database connection, or to load</span></span><br><span class="line"><span class="string">       the logged in user from the session.</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">       The function will be called without any arguments. If it returns a</span></span><br><span class="line"><span class="string">       non-None value, the value is handled as if it was the return value from</span></span><br><span class="line"><span class="string">       the view, and further request handling is stopped.</span></span><br><span class="line"><span class="string">       """</span></span><br><span class="line">       self.before_request_funcs.setdefault(<span class="literal">None</span>, []).append(f)</span><br></pre></td></tr></table></figure>
+
+<p>再看 <code>full_dispatch_request</code></p>
+<p><img src="https://i.loli.net/2021/01/23/rhsNg368AuJ9BVD.png" alt="image-20210123022046189"></p>
+<p>这个 <code>preprocess_request</code>就是处理 <code>@flask_app.before_request</code>注册的函数的</p>
+<p><code>preprocess_request</code></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">preprocess_request</span><span class="params">(self)</span>:</span></span><br><span class="line">    bp = _request_ctx_stack.top.request.blueprint</span><br><span class="line">    <span class="comment"># 从字典中获取所有被@flask_app.before_request注册的函数</span></span><br><span class="line">    <span class="comment"># 键是None的表示应用注册的，此外还有蓝图的</span></span><br><span class="line">    funcs = self.before_request_funcs.get(<span class="literal">None</span>, ())</span><br><span class="line">    <span class="keyword">if</span> bp <span class="keyword">is</span> <span class="keyword">not</span> <span class="literal">None</span> <span class="keyword">and</span> bp <span class="keyword">in</span> self.before_request_funcs:</span><br><span class="line">        funcs = chain(funcs, self.before_request_funcs[bp])</span><br><span class="line">    <span class="comment"># 获取所有函数遍历执行，谁return了，就直接返回到客户端，所以这里要注意</span></span><br><span class="line">    <span class="keyword">for</span> func <span class="keyword">in</span> funcs:</span><br><span class="line">        rv = func()</span><br><span class="line">        <span class="keyword">if</span> rv <span class="keyword">is</span> <span class="keyword">not</span> <span class="literal">None</span>:</span><br><span class="line">            <span class="keyword">return</span> rv</span><br></pre></td></tr></table></figure>
+
+<p>其他钩子函数都是类似思路</p>
+<p>值得注意的是<code>teardown_request</code>注册的钩子函数是在 <code>RequestContext</code>被<code>pop</code>的时候执行的，从而实现无论视图函数是否有异常，这里的钩子函数都会被执行</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
     <link itemprop="mainEntityOfPage" href="https://johnson329.github.io/flask/flask%E6%BA%90%E7%A0%81%E4%B9%8B%E9%85%8D%E7%BD%AE%E5%8A%A0%E8%BD%BD-%E5%85%AB/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -288,7 +490,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-01-16 00:28:53" itemprop="dateModified" datetime="2021-01-16T00:28:53+08:00">2021-01-16</time>
+                <time title="修改时间：2021-01-16 19:24:09" itemprop="dateModified" datetime="2021-01-16T19:24:09+08:00">2021-01-16</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -369,7 +571,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-01-16 00:27:33" itemprop="dateModified" datetime="2021-01-16T00:27:33+08:00">2021-01-16</time>
+                <time title="修改时间：2021-01-23 01:54:24" itemprop="dateModified" datetime="2021-01-23T01:54:24+08:00">2021-01-23</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -420,7 +622,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://johnson329.github.io/flask/flask%E6%BA%90%E7%A0%81%E4%B9%8Brequest%E5%AF%B9%E8%B1%A1%EF%BC%88%E5%85%AD%EF%BC%89/">
+    <link itemprop="mainEntityOfPage" href="https://johnson329.github.io/flask/flask%E6%BA%90%E7%A0%81%E4%B9%8B%E8%B7%AF%E7%94%B1%E6%9C%BA%E5%88%B6%EF%BC%88%E5%9B%9B%EF%BC%89/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -434,178 +636,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/flask/flask%E6%BA%90%E7%A0%81%E4%B9%8Brequest%E5%AF%B9%E8%B1%A1%EF%BC%88%E5%85%AD%EF%BC%89/" class="post-title-link" itemprop="url">Flask源码之Request对象（六）</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2021-01-06 23:04:34" itemprop="dateCreated datePublished" datetime="2021-01-06T23:04:34+08:00">2021-01-06</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-01-07 16:07:03" itemprop="dateModified" datetime="2021-01-07T16:07:03+08:00">2021-01-07</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/flask/" itemprop="url" rel="index"><span itemprop="name">flask</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h2><p>我们知道 </p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> flask <span class="keyword">import</span> request</span><br></pre></td></tr></table></figure>
-
-<p>是一个代理对象，实际上代理的是 <code>RequestContext</code>的<code>request</code>属性</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">RequestContext</span><span class="params">(object)</span>:</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, app, environ, request=None, session=None)</span>:</span></span><br><span class="line">        self.app = app</span><br><span class="line">        <span class="keyword">if</span> request <span class="keyword">is</span> <span class="literal">None</span>:</span><br><span class="line">            request = app.request_class(environ)</span><br><span class="line">        self.request = request</span><br><span class="line">        self.url_adapter = <span class="literal">None</span></span><br><span class="line">        <span class="keyword">try</span>:</span><br><span class="line">            self.url_adapter = app.create_url_adapter(self.request)</span><br><span class="line">        <span class="keyword">except</span> HTTPException <span class="keyword">as</span> e:</span><br><span class="line">            self.request.routing_exception = e</span><br><span class="line">        self.flashes = <span class="literal">None</span></span><br><span class="line">        self.session = session</span><br></pre></td></tr></table></figure>
-
-<p>那么<code>request</code>属性又是什么什么呢？</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/flask/flask%E6%BA%90%E7%A0%81%E4%B9%8Brequest%E5%AF%B9%E8%B1%A1%EF%BC%88%E5%85%AD%EF%BC%89/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://johnson329.github.io/flask/flask%E6%BA%90%E7%A0%81%E4%B9%8B%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86-%E5%85%BC%E8%AE%BA%E5%89%8D%E5%90%8E%E7%AB%AF%E5%88%86%E7%A6%BB%E5%9C%BA%E6%99%AF%E4%B8%8B%E7%9A%84%E6%8E%A5%E5%8F%A3%E6%A0%BC%E5%BC%8F%E9%97%AE%E9%A2%98%EF%BC%88%E4%BA%94%EF%BC%89/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Johnson">
-      <meta itemprop="description" content="Johnson的个人博客">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Johnson的个人博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/flask/flask%E6%BA%90%E7%A0%81%E4%B9%8B%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86-%E5%85%BC%E8%AE%BA%E5%89%8D%E5%90%8E%E7%AB%AF%E5%88%86%E7%A6%BB%E5%9C%BA%E6%99%AF%E4%B8%8B%E7%9A%84%E6%8E%A5%E5%8F%A3%E6%A0%BC%E5%BC%8F%E9%97%AE%E9%A2%98%EF%BC%88%E4%BA%94%EF%BC%89/" class="post-title-link" itemprop="url">Flask源码之异常处理-兼论前后端分离场景下的接口格式问题（五）</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">发表于</span>
-
-              <time title="创建时间：2021-01-05 23:35:15" itemprop="dateCreated datePublished" datetime="2021-01-05T23:35:15+08:00">2021-01-05</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-01-07 16:10:36" itemprop="dateModified" datetime="2021-01-07T16:10:36+08:00">2021-01-07</time>
-              </span>
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-folder"></i>
-              </span>
-              <span class="post-meta-item-text">分类于</span>
-                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-                  <a href="/categories/flask/" itemprop="url" rel="index"><span itemprop="name">flask</span></a>
-                </span>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h2><h3 id="问题提出"><a href="#问题提出" class="headerlink" title="问题提出"></a>问题提出</h3><p>先看下面一段代码</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> flask <span class="keyword">import</span> Flask, jsonify</span><br><span class="line"></span><br><span class="line">flask_app = Flask(__name__)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="meta">@flask_app.route('/', endpoint="11")</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">hello_world</span><span class="params">()</span>:</span></span><br><span class="line">    a = <span class="number">1</span> / <span class="number">0</span></span><br><span class="line">    <span class="keyword">return</span> jsonify(</span><br><span class="line">        code=<span class="number">0</span>,</span><br><span class="line">        msg=<span class="string">"success"</span>,</span><br><span class="line">        data=[<span class="string">"hello,world!"</span>]</span><br><span class="line">    )</span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">'__main__'</span>:</span><br><span class="line">    flask_app.run()</span><br></pre></td></tr></table></figure>
-
-<p>这段代码有一个很显然的未捕捉的异常，就是<code>1/0</code></p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/flask/flask%E6%BA%90%E7%A0%81%E4%B9%8B%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86-%E5%85%BC%E8%AE%BA%E5%89%8D%E5%90%8E%E7%AB%AF%E5%88%86%E7%A6%BB%E5%9C%BA%E6%99%AF%E4%B8%8B%E7%9A%84%E6%8E%A5%E5%8F%A3%E6%A0%BC%E5%BC%8F%E9%97%AE%E9%A2%98%EF%BC%88%E4%BA%94%EF%BC%89/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://johnson329.github.io/flask/flask%E6%BA%90%E7%A0%81%E4%B9%8B%E8%B7%AF%E7%94%B1%E6%9C%BA%E5%88%B6/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="Johnson">
-      <meta itemprop="description" content="Johnson的个人博客">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Johnson的个人博客">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/flask/flask%E6%BA%90%E7%A0%81%E4%B9%8B%E8%B7%AF%E7%94%B1%E6%9C%BA%E5%88%B6/" class="post-title-link" itemprop="url">Flask源码之路由机制</a>
+            <a href="/flask/flask%E6%BA%90%E7%A0%81%E4%B9%8B%E8%B7%AF%E7%94%B1%E6%9C%BA%E5%88%B6%EF%BC%88%E5%9B%9B%EF%BC%89/" class="post-title-link" itemprop="url">Flask源码之路由机制（四）</a>
         </h2>
 
         <div class="post-meta">
@@ -622,7 +653,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-01-07 17:13:58" itemprop="dateModified" datetime="2021-01-07T17:13:58+08:00">2021-01-07</time>
+                <time title="修改时间：2021-01-23 01:44:37" itemprop="dateModified" datetime="2021-01-23T01:44:37+08:00">2021-01-23</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -652,7 +683,7 @@
 <p>我们很容易想到用字典去做路由，<code>key</code>是 <code>url</code>，<code>value</code>是对应的处理函数或者叫视图函数</p>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/flask/flask%E6%BA%90%E7%A0%81%E4%B9%8B%E8%B7%AF%E7%94%B1%E6%9C%BA%E5%88%B6/#more" rel="contents">
+              <a class="btn" href="/flask/flask%E6%BA%90%E7%A0%81%E4%B9%8B%E8%B7%AF%E7%94%B1%E6%9C%BA%E5%88%B6%EF%BC%88%E5%9B%9B%EF%BC%89/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -853,7 +884,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://johnson329.github.io/flask/flask%E6%BA%90%E7%A0%81%E4%B9%8B%E8%AF%B7%E6%B1%82%E4%B8%8A%E4%B8%8B%E6%96%87%E5%92%8C%E5%BA%94%E7%94%A8%E4%B8%8A%E4%B8%8B%E6%96%87/">
+    <link itemprop="mainEntityOfPage" href="https://johnson329.github.io/flask/flask%E6%BA%90%E7%A0%81%E4%B9%8B%E8%AF%B7%E6%B1%82%E4%B8%8A%E4%B8%8B%E6%96%87%E5%92%8C%E5%BA%94%E7%94%A8%E4%B8%8A%E4%B8%8B%E6%96%87%EF%BC%88%E4%B8%89%EF%BC%89/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -867,7 +898,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/flask/flask%E6%BA%90%E7%A0%81%E4%B9%8B%E8%AF%B7%E6%B1%82%E4%B8%8A%E4%B8%8B%E6%96%87%E5%92%8C%E5%BA%94%E7%94%A8%E4%B8%8A%E4%B8%8B%E6%96%87/" class="post-title-link" itemprop="url">Flask源码之请求上下文和应用上下文</a>
+            <a href="/flask/flask%E6%BA%90%E7%A0%81%E4%B9%8B%E8%AF%B7%E6%B1%82%E4%B8%8A%E4%B8%8B%E6%96%87%E5%92%8C%E5%BA%94%E7%94%A8%E4%B8%8A%E4%B8%8B%E6%96%87%EF%BC%88%E4%B8%89%EF%BC%89/" class="post-title-link" itemprop="url">Flask源码之请求上下文和应用上下文（三）</a>
         </h2>
 
         <div class="post-meta">
@@ -884,7 +915,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-01-03 22:26:44" itemprop="dateModified" datetime="2021-01-03T22:26:44+08:00">2021-01-03</time>
+                <time title="修改时间：2021-01-23 01:42:21" itemprop="dateModified" datetime="2021-01-23T01:42:21+08:00">2021-01-23</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -907,20 +938,131 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <p>我们继续来看<code>wsgi_app</code>这个方法，我去掉了一些无关代码，那些部分会在其他博文中介绍</p>
-<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">wsgi_app</span><span class="params">(self, environ, start_response)</span>:</span></span><br><span class="line">    <span class="comment"># 调用了self.request_context这个方法</span></span><br><span class="line">    <span class="comment"># 此方法把environ封装成了RequestContext对象，这个对象看名字也知道这个是请求上下文</span></span><br><span class="line">    ctx = self.request_context(environ)</span><br></pre></td></tr></table></figure>
+          <h2 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h2><h3 id="Request"><a href="#Request" class="headerlink" title="Request"></a>Request</h3><p><code>Flask</code>把前端传过来的数据<code>environ</code>封装成了 <code>flask.wrappers.Request</code>类</p>
+<p>这个类的实例又是<code>RequestContext</code>的<code>request</code>属性值</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">RequestContext</span><span class="params">(object)</span>:</span></span><br><span class="line">    request=flask.wrappers.Request(environ)</span><br></pre></td></tr></table></figure>
+
+<p>当然实际的代码是这样</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">RequestContext</span><span class="params">(object)</span>:</span></span><br><span class="line">    request=app.request_class(environ)</span><br></pre></td></tr></table></figure>
+
+<p>这个<code>app.request_class</code>= <code>flask.wrappers.Request</code></p>
+<p>之所以这样写，是为了扩展性，你可以修改<code>Flask</code>的<code>request_class</code>属性来自定义你的<code>Request</code>类</p>
+<p>例如</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> flask</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MyFlask</span><span class="params">(flask.Flask)</span>:</span></span><br><span class="line">    request_class=MyRequest</span><br><span class="line">    </span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MyRequest</span><span class="params">(flask.wrappers.Request)</span>:</span></span><br><span class="line">	<span class="keyword">pass</span></span><br></pre></td></tr></table></figure>
+
+<p>继续来看<code>RequestContext</code>,这个类在源码中实例化了</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ctx=RequestContext(self,envirion)</span><br></pre></td></tr></table></figure>
+
+<p>所以，也就是说以后我们只要拿到这个实例<code>ctx</code>,然后访问<code>ctx.request</code>就相当于访问<code>flask.wrappers.Request</code>了，也就相当于可以访问<code>envirion</code>，，而<code>RequestContext</code>就是请求上下文。</p>
+<p>那<code>ctx</code>存储在哪里呢？怎么访问呢？</p>
+<h3 id="RequestContext"><a href="#RequestContext" class="headerlink" title="RequestContext"></a>RequestContext</h3><h4 id="存储"><a href="#存储" class="headerlink" title="存储"></a>存储</h4><p>实际上，<code>ctx</code>存在栈结构中，也就是后进先出，这是为了处理一个客户端请求需要多个<code>ctx</code>的情况</p>
+<p>用伪代码表示就是</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">stack=[RequestContext(),RequestContext()]</span><br></pre></td></tr></table></figure>
+
+<p>而且，我们知道有的<code>wsgi server</code>对于每个请求都开一个线程，因此为了处理多线程隔离的情况，这个栈结构又存在了<code>local</code>中，这个<code>local</code>数据结构类似<code>ThreadLocal</code>，他们共同组成了<code>LocalStack</code></p>
+<p>用伪代码表示就是</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">localstack=&#123;<span class="number">0</span>:&#123;<span class="string">"stack"</span>:stack&#125;&#125; <span class="comment"># 0是线程id或者协程id</span></span><br></pre></td></tr></table></figure>
+
+<h4 id="访问"><a href="#访问" class="headerlink" title="访问"></a>访问</h4><p>访问<code>ctx.request</code>也不是直接访问的，是通过一个代理类，叫<code>LocalProxy</code>，他是代理模式在<code>flask</code>中的应用</p>
+<p>具体来说你要访问 <code>ctx.request</code> 的某个属性，先访问<code>LocalProxy</code>的对应属性，<code>LocalProxy</code>帮你访问</p>
+<p><code>LocalProxy</code>代理了对 <code>ctx.request</code>的所有操作</p>
+<p>伪代码就是</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 例如flask.wrapper.Request()有一个get_json()方法</span></span><br><span class="line"><span class="comment"># localproxy也实现这个方法，帮我们访问</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">LocalProxy</span><span class="params">(object)</span>:</span></span><br><span class="line">	<span class="function"><span class="keyword">def</span> <span class="title">get_json</span><span class="params">(self)</span>:</span></span><br><span class="line">        <span class="comment"># 从localstack中获取请求上下文</span></span><br><span class="line">        ctx:RequestContext=local[<span class="string">"这次请求的线程id"</span>][<span class="string">"stack"</span>].top</span><br><span class="line">        json_data=ctx.request.get_json()</span><br><span class="line">        <span class="keyword">return</span> json_data</span><br></pre></td></tr></table></figure>
+
+<p>当然这个例子是不真实的，如果对于每个 <code>flask.wrapper.Request</code>的方法我们都在 <code>LocalProxy</code>实现一遍，那太麻烦了</p>
+<h3 id="request"><a href="#request" class="headerlink" title="request"></a>request</h3><p>我们经常会引用这个<code>request</code>对象，它实际上就是<code>LocalProxy</code>的实例，位置在<code>flask.globals.py</code></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> flask <span class="keyword">import</span> request</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">request = LocalProxy(partial(_lookup_req_object, <span class="string">"request"</span>))</span><br></pre></td></tr></table></figure>
+
+<p>他代理了对 <code>RequestContext.request</code>也就是<code>flask.wrappers.Request</code>实例的操作</p>
+<p>而<code>current_app</code>和<code>g</code>则分别代理了对<code>AppContext</code>和 <code>AppContext.g</code>的操作</p>
+<h2 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h2><h3 id="Stack"><a href="#Stack" class="headerlink" title="Stack"></a>Stack</h3><p>一个栈结构，一般要实现 <code>push,top,pop</code>这几个方法</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Stack</span><span class="params">(object)</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self)</span>:</span></span><br><span class="line">        self.items = []</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">push</span><span class="params">(self, item)</span>:</span></span><br><span class="line">        self.items.append(item)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">is_empty</span><span class="params">(self)</span>:</span></span><br><span class="line">        <span class="keyword">return</span> self.items == []</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">pop</span><span class="params">(self)</span>:</span></span><br><span class="line">        <span class="keyword">if</span> self.is_empty():</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">None</span></span><br><span class="line">        <span class="comment"># 后进先出</span></span><br><span class="line">        <span class="keyword">return</span> self.items[<span class="number">-1</span>]</span><br></pre></td></tr></table></figure>
+
+
+
+<pre><code>![image-20210123001932225](https://i.loli.net/2021/01/23/fast1ebwznp45Ol.png)</code></pre><h3 id="Local"><a href="#Local" class="headerlink" title="Local"></a>Local</h3><p><code>local</code>源码，作用就是线程或者协程隔离</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Local</span><span class="params">(object)</span>:</span></span><br><span class="line">    __slots__ = (<span class="string">"__storage__"</span>, <span class="string">"__ident_func__"</span>)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self)</span>:</span></span><br><span class="line">        <span class="comment"># 实例化的时候给self绑定__storage__属性，初始值是&#123;&#125;</span></span><br><span class="line">        object.__setattr__(self, <span class="string">"__storage__"</span>, &#123;&#125;)</span><br><span class="line">        <span class="comment"># 实例化的时候给self绑__ident_func__属性，初始值是get_ident函数，这个方法用于获取当前线程或协程id</span></span><br><span class="line">        object.__setattr__(self, <span class="string">"__ident_func__"</span>, get_ident)</span><br><span class="line">        </span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__setattr__</span><span class="params">(self, name, value)</span>:</span></span><br><span class="line">        <span class="comment"># 这个方法会在属性被设置时调用</span></span><br><span class="line">        <span class="comment"># 因此如果我们这样操作</span></span><br><span class="line">        <span class="comment"># s=Stack()</span></span><br><span class="line">        <span class="comment"># s.a=1</span></span><br><span class="line">        <span class="comment"># 那么self.__storage__属性就变成了 &#123;0:&#123;"a",1&#125;&#125;,0表示当前线程id</span></span><br><span class="line">        ident = self.__ident_func__()</span><br><span class="line">        storage = self.__storage__</span><br><span class="line">        <span class="keyword">try</span>:</span><br><span class="line">            storage[ident][name] = value</span><br><span class="line">        <span class="keyword">except</span> KeyError:</span><br><span class="line">            storage[ident] = &#123;name: value&#125;</span><br><span class="line">            </span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__getattr__</span><span class="params">(self, name)</span>:</span></span><br><span class="line">        <span class="comment"># 获取属性时，该方法会被调用</span></span><br><span class="line">        <span class="comment"># 容易看出，通过把线程或协程id设置为key，可以实现线程或写成隔离</span></span><br><span class="line">        <span class="keyword">try</span>:</span><br><span class="line">            <span class="keyword">return</span> self.__storage__[self.__ident_func__()][name]</span><br><span class="line">        <span class="keyword">except</span> KeyError:</span><br><span class="line">            <span class="keyword">raise</span> AttributeError(name)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__iter__</span><span class="params">(self)</span>:</span></span><br><span class="line">        <span class="comment"># 迭代的时候会被调用</span></span><br><span class="line">        <span class="keyword">return</span> iter(self.__storage__.items())</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__release_local__</span><span class="params">(self)</span>:</span></span><br><span class="line">        <span class="comment"># 清空当前线程的堆栈数据</span></span><br><span class="line">        self.__storage__.pop(self.__ident_func__(), <span class="literal">None</span>)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__delattr__</span><span class="params">(self, name)</span>:</span></span><br><span class="line">        <span class="comment"># 删除属性时候会被调用</span></span><br><span class="line">        <span class="keyword">try</span>:</span><br><span class="line">            <span class="keyword">del</span> self.__storage__[self.__ident_func__()][name]</span><br><span class="line">        <span class="keyword">except</span> KeyError:</span><br><span class="line">            <span class="keyword">raise</span> AttributeError(name)</span><br></pre></td></tr></table></figure>
+
+<h3 id="LocalStack"><a href="#LocalStack" class="headerlink" title="LocalStack"></a>LocalStack</h3><p><code>LocalStack</code>大概相当于</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;<span class="number">0</span>:&#123;<span class="string">"stack"</span>:[ctx,]&#125;&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">LocalStack</span><span class="params">(object)</span>:</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self)</span>:</span></span><br><span class="line">        <span class="comment"># _local属性是Local对象，相当于字典&#123;&#125;</span></span><br><span class="line">        <span class="comment"># push方法就是给_local实例添加一个stack属性，初始值是[]，然后append</span></span><br><span class="line">        <span class="comment"># &#123;0:'stack':[]&#125;</span></span><br><span class="line">        self._local = Local()</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__release_local__</span><span class="params">(self)</span>:</span></span><br><span class="line">        self._local.__release_local__()</span><br><span class="line"></span><br><span class="line"><span class="meta">    @property</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__ident_func__</span><span class="params">(self)</span>:</span></span><br><span class="line">        <span class="keyword">return</span> self._local.__ident_func__</span><br><span class="line"></span><br><span class="line"><span class="meta">    @__ident_func__.setter</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__ident_func__</span><span class="params">(self, value)</span>:</span></span><br><span class="line">        object.__setattr__(self._local, <span class="string">"__ident_func__"</span>, value)</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">push</span><span class="params">(self, obj)</span>:</span></span><br><span class="line">        rv = getattr(self._local, <span class="string">"stack"</span>, <span class="literal">None</span>)</span><br><span class="line">        <span class="keyword">if</span> rv <span class="keyword">is</span> <span class="literal">None</span>:</span><br><span class="line">            self._local.stack = rv = []</span><br><span class="line">        rv.append(obj)</span><br><span class="line">        <span class="keyword">return</span> rv</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">pop</span><span class="params">(self)</span>:</span></span><br><span class="line">        stack = getattr(self._local, <span class="string">"stack"</span>, <span class="literal">None</span>)</span><br><span class="line">        <span class="keyword">if</span> stack <span class="keyword">is</span> <span class="literal">None</span>:</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">None</span></span><br><span class="line">        <span class="keyword">elif</span> len(stack) == <span class="number">1</span>:</span><br><span class="line">            release_local(self._local)</span><br><span class="line">            <span class="keyword">return</span> stack[<span class="number">-1</span>]</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            <span class="keyword">return</span> stack.pop()</span><br><span class="line"></span><br><span class="line"><span class="meta">    @property</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">top</span><span class="params">(self)</span>:</span></span><br><span class="line">        <span class="keyword">try</span>:</span><br><span class="line">            <span class="keyword">return</span> self._local.stack[<span class="number">-1</span>]</span><br><span class="line">        <span class="keyword">except</span> (AttributeError, IndexError):</span><br><span class="line">            <span class="keyword">return</span> <span class="literal">None</span></span><br><span class="line">        </span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__call__</span><span class="params">(self)</span>:</span></span><br><span class="line">        <span class="function"><span class="keyword">def</span> <span class="title">_lookup</span><span class="params">()</span>:</span></span><br><span class="line">            rv = self.top</span><br><span class="line">            <span class="keyword">if</span> rv <span class="keyword">is</span> <span class="literal">None</span>:</span><br><span class="line">                <span class="keyword">raise</span> RuntimeError(<span class="string">"object unbound"</span>)</span><br><span class="line">            <span class="keyword">return</span> rv</span><br><span class="line"></span><br><span class="line">        <span class="keyword">return</span> LocalProxy(_lookup)</span><br></pre></td></tr></table></figure>
+
+<p>值得注意的是，当我们执行如下代码</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ls=LocalStack()</span><br><span class="line">ls()</span><br></pre></td></tr></table></figure>
+
+<p>会调用 <code>__call__</code>方法，返回的是目前栈顶对象的代理对象，栈顶对象例如<code>RequestContext</code></p>
+<h3 id="LocalProxy"><a href="#LocalProxy" class="headerlink" title="LocalProxy"></a>LocalProxy</h3><p><code>LocalProxy</code>就是代理对象了，它可以代理对<code>RequestContext</code>的操作</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">LocalProxy</span><span class="params">(object)</span>:</span></span><br><span class="line">    __slots__ = (<span class="string">"__local"</span>, <span class="string">"__dict__"</span>, <span class="string">"__name__"</span>, <span class="string">"__wrapped__"</span>)</span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, local, name=None)</span>:</span>     </span><br><span class="line">        object.__setattr__(self, <span class="string">"_LocalProxy__local"</span>, local)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">_get_current_object</span><span class="params">(self)</span>:</span></span><br><span class="line">        <span class="keyword">if</span> <span class="keyword">not</span> hasattr(self.__local, <span class="string">"__release_local__"</span>):</span><br><span class="line">            <span class="keyword">return</span> self.__local()</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__getattr__</span><span class="params">(self, name)</span>:</span></span><br><span class="line">        <span class="keyword">return</span> getattr(self._get_current_object(), name)</span><br></pre></td></tr></table></figure>
+
+<p>原理很简单，我们访问 <code>LocalProxy</code>的某个属性，会调用 <code>__getattr__</code>方法，<code>__getattr__</code>方法又会调用 <code>_get_current_object</code>去获取栈顶对象或者栈顶对象的属性，例如获取<code>RequestContext</code>对象或者<code>RequestContext.request</code></p>
+<h3 id="以request对象为例"><a href="#以request对象为例" class="headerlink" title="以request对象为例"></a>以<code>request</code>对象为例</h3><p>他是一个<code>LocalProxy</code>的实例</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">request = LocalProxy(partial(_lookup_req_object, <span class="string">"request"</span>))</span><br></pre></td></tr></table></figure>
+
+<p><code>LocalProxy</code>实例化传入了一个偏函数 <code>_lookup_req_object</code>（偏函数作用就是固定函数的参数），这个函数的作用就是获取栈顶的<code>RequestContext</code>对象的<code>request</code>属性，也就是 <code>flask.wrappers.Request()</code></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">_lookup_req_object</span><span class="params">(name)</span>:</span></span><br><span class="line">    top = _request_ctx_stack.top</span><br><span class="line">    <span class="keyword">if</span> top <span class="keyword">is</span> <span class="literal">None</span>:</span><br><span class="line">        <span class="keyword">raise</span> RuntimeError(_request_ctx_err_msg)</span><br><span class="line">    <span class="keyword">return</span> getattr(top, name)</span><br></pre></td></tr></table></figure>
+
+<p>也就是说 <code>LocalProxy</code>的<code>__local</code>就是 <code>partial(_lookup_req_object, &quot;request&quot;)</code></p>
+<p>那么 <code>_get_current_object</code>实际上就是执行 <code>partial(_lookup_req_object, &quot;request&quot;)()</code>来获取栈顶对象</p>
+<h3 id="入栈"><a href="#入栈" class="headerlink" title="入栈"></a>入栈</h3><p>我们继续来看<code>wsgi_app</code>这个方法，我去掉了一些无关代码，那些部分会在其他博文中介绍</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">wsgi_app</span><span class="params">(self, environ, start_response)</span>:</span></span><br><span class="line">    <span class="comment"># 调用了self.request_context这个方法</span></span><br><span class="line">    <span class="comment"># 此方法把environ封装成了RequestContext对象</span></span><br><span class="line">    ctx = self.request_context(environ)</span><br></pre></td></tr></table></figure>
 
 <figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">request_context</span><span class="params">(self, environ)</span>:</span></span><br><span class="line">    <span class="comment"># 注意request_context是Flask的类方法，那么self就是Flask的实例或者说对象</span></span><br><span class="line">    <span class="comment"># 也就是说下面的 RequestContext 的实例化需要Flask实例和environ参数</span></span><br><span class="line">    <span class="keyword">return</span> RequestContext(self, environ)</span><br></pre></td></tr></table></figure>
 
 <p>简单看一下<code>RequestContext</code>的定义，位置在源码的<code>ctx.py</code>中</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/flask/flask%E6%BA%90%E7%A0%81%E4%B9%8B%E8%AF%B7%E6%B1%82%E4%B8%8A%E4%B8%8B%E6%96%87%E5%92%8C%E5%BA%94%E7%94%A8%E4%B8%8A%E4%B8%8B%E6%96%87/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">RequestContext</span><span class="params">(object)</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, app, environ, request=None, session=None)</span>:</span></span><br><span class="line">        self.app = app</span><br><span class="line">        <span class="keyword">if</span> request <span class="keyword">is</span> <span class="literal">None</span>:</span><br><span class="line">            request = app.request_class(environ)</span><br><span class="line">        self.request = request</span><br></pre></td></tr></table></figure>
+
+
+
+<p>回到<code>wsgi_app</code>这个方法，我们看到接下来<code>ctx.push</code>这一句调用了<code>RequestContext</code>的<code>push</code>方法，这个方法就是把自身也就是 <code>RequestContext</code>实例压入到 <code>LocalStack</code>这个数据结构中</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">wsgi_app</span><span class="params">(self, environ, start_response)</span>:</span></span><br><span class="line">    <span class="comment"># ctx是 RequestContext 实例</span></span><br><span class="line">    ctx = self.request_context(environ)</span><br><span class="line">    error = <span class="literal">None</span></span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        <span class="keyword">try</span>:</span><br><span class="line">            <span class="comment"># 只看这一句</span></span><br><span class="line">            ctx.push()</span><br><span class="line">            response = self.full_dispatch_request()</span><br><span class="line">        <span class="keyword">except</span> Exception <span class="keyword">as</span> e:</span><br><span class="line">            error = e</span><br><span class="line">            response = self.handle_exception(e)</span><br><span class="line">        <span class="keyword">except</span>:  <span class="comment"># noqa: B001</span></span><br><span class="line">            error = sys.exc_info()[<span class="number">1</span>]</span><br><span class="line">            <span class="keyword">raise</span></span><br><span class="line">        <span class="keyword">return</span> response(environ, start_response)</span><br><span class="line">    <span class="keyword">finally</span>:</span><br><span class="line">        <span class="keyword">if</span> self.should_ignore_error(error):</span><br><span class="line">            error = <span class="literal">None</span></span><br><span class="line">        ctx.auto_pop(error)</span><br></pre></td></tr></table></figure>
+
+<p><code>push</code>方法</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">push</span><span class="params">(self)</span>:</span></span><br><span class="line">    top = _request_ctx_stack.top</span><br></pre></td></tr></table></figure>
+
+<p><code>_request_ctx_stack</code>的定义在<code>globals.py</code>中，就是创建了一个空的本地栈</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">_request_ctx_stack = LocalStack()</span><br></pre></td></tr></table></figure>
+
+<p>它现在的状态是这样，栈是空的</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;<span class="number">0</span>:<span class="string">'stack'</span>:[]&#125;</span><br></pre></td></tr></table></figure>
+
+
+
+<p>如果栈是空的话，我们把<code>self</code>也就是<code>RequestContext</code>压入栈（最后一句），注意<code>push</code>是<code>RequestContext</code>的方法，所以<code>self</code>就是<code>RequestContext</code>的实例</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">push</span><span class="params">(self)</span>:</span></span><br><span class="line">    top = _request_ctx_stack.top</span><br><span class="line">    </span><br><span class="line">    app_ctx = _app_ctx_stack.top</span><br><span class="line">    <span class="keyword">if</span> app_ctx <span class="keyword">is</span> <span class="literal">None</span> <span class="keyword">or</span> app_ctx.app != self.app:</span><br><span class="line">        app_ctx = self.app.app_context()</span><br><span class="line">        app_ctx.push()</span><br><span class="line">        self._implicit_app_ctx_stack.append(app_ctx)</span><br><span class="line">    <span class="keyword">else</span>:</span><br><span class="line">        self._implicit_app_ctx_stack.append(<span class="literal">None</span>)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">    <span class="comment"># 压入栈</span></span><br><span class="line">    _request_ctx_stack.push(self)</span><br></pre></td></tr></table></figure>
+
+<p>我们还注意到这里还有一个<code>_app_ctx_stack</code>，这也是<code>LocalStack</code>，位置在<code>globals.py</code>，他现在也是空的</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">_app_ctx_stack = LocalStack()</span><br></pre></td></tr></table></figure>
+
+<p>只不过这个栈里面存储的是应用上下文，类似下面的字典</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;<span class="number">0</span>:<span class="string">'stack'</span>:[AppContext]&#125;</span><br></pre></td></tr></table></figure>
+
+<p>然后我们也执行了<code>app_ctx.push()</code>方法，也就是把应用上下文压入栈</p>
+<p>到这里我们就知道了，执行<code>RequestContext</code>对象的<code>push</code>方法会把<code>RequestContext</code>的实例压入<code>_request_ctx_stack</code>中，还会把<code>AppContext</code>的实例压入<code>_app_ctx_stack</code>中</p>
+<h2 id="为什么要用LocalProxy"><a href="#为什么要用LocalProxy" class="headerlink" title="为什么要用LocalProxy"></a>为什么要用LocalProxy</h2><p>我们常常需要在一个视图函数中获取客户端请求中的参数，例如<code>url</code>，<code>remote_address</code></p>
+<p>我们当然可以每次手动获取<code>_request_ctx_stack</code>栈顶的<code>RequestContext</code>对象，然后调用<code>RequestContext</code>的<code>request</code>属性，但每次操作栈结构还是有点繁琐，像下面这样</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> flask <span class="keyword">import</span> Flask, request, Request</span><br><span class="line"><span class="keyword">from</span> flask.globals <span class="keyword">import</span> _request_ctx_stack</span><br><span class="line"></span><br><span class="line">flask_app = Flask(__name__)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="meta">@flask_app.route('/')</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">hello_world</span><span class="params">()</span>:</span></span><br><span class="line">    req: Request = _request_ctx_stack.top.request</span><br><span class="line">    remote_addr=req.remote_addr</span><br><span class="line">    <span class="keyword">return</span> <span class="string">"&#123;&#125;"</span>.format(remote_addr)</span><br></pre></td></tr></table></figure>
+
+<p><code>flask</code>的做法是使用<code>LocalProxy</code></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> flask <span class="keyword">import</span> Flask, request</span><br></pre></td></tr></table></figure>
+
+
+
+<p>我们执行<code>request.remote_addr</code>就相当于执行 <code>_request_ctx_stack.top.request.remote_addr</code></p>
+<p>那为什么用<code>LocalProxy</code>而不是直接<code>request=_request_ctx_stack.top.request</code>呢？</p>
+<p>原因是这样写，项目<code>run</code>的时候，这句 <code>request=_request_ctx_stack.top.request</code> 就已经执行了（因为被引用了），但是项目启动的时候<code>_request_ctx_stack.top</code>还是<code>None</code>，因为还没有请求进来，<code>push</code>方法还没执行。这就导致了<code>request</code>固定成了<code>None</code>，这显然不行</p>
+<p>而<code>LocalProxy</code> <code>重写了__getattr__</code>方法，让每次执行 <code>request.remote_addr</code>会先去 <code>LocalStack</code>中拿到 <code>RequestContext</code>，然后执行 <code>RequestContext.request.remote_addr</code>,获取其他属性也是一样</p>
+<p>也就是说，代理模式延迟了 <strong>被代理对象</strong>的获取，代理对象<code>Localproxy</code>创建的时候不会获取，获取<strong>被代理对象属性</strong>的时候才会获取<strong>被代理对象</strong></p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>到这里，我们就可以看出<code>flask</code>中的请求上下文是如何存储和获取的</p>
+<p>请求上下文存储在<code>LocalStack</code>结构中，<code>Local</code>是为了线程安全，<code>LocalStack</code>是为了多请求上下文的场景</p>
+<p>而获取是通过<code>LocalProxy</code>，使用代理模式是为了动态地获取请求上下文，在访问request属性的时候，才会从栈中获取真实的请求上下文，然后代理 属性的获取</p>
+<p><code>flask</code>中还有应用上下文，<code>current_app</code>，我们有时候会通过<code>current_app.config</code>来获取配置信息，原理和<code>request</code>类似，只不过代理的是<code>AppContext</code>对象</p>
+<p>说了这么多，<code>wsgi_app</code>的第一步，也就是请求的第一步，就是先把请求上下文和应用上下文入栈</p>
+
       
     </div>
 
@@ -939,7 +1081,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://johnson329.github.io/flask/flask%E6%BA%90%E7%A0%81%E4%B9%8B%E4%B8%80%E4%B8%AA%E8%AF%B7%E6%B1%82%E7%9A%84%E6%97%85%E7%A8%8B/">
+    <link itemprop="mainEntityOfPage" href="https://johnson329.github.io/flask/flask%E6%BA%90%E7%A0%81%E4%B9%8B%E4%B8%80%E4%B8%AA%E8%AF%B7%E6%B1%82%E7%9A%84%E6%97%85%E7%A8%8B%EF%BC%88%E4%BA%8C%EF%BC%89/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -953,7 +1095,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/flask/flask%E6%BA%90%E7%A0%81%E4%B9%8B%E4%B8%80%E4%B8%AA%E8%AF%B7%E6%B1%82%E7%9A%84%E6%97%85%E7%A8%8B/" class="post-title-link" itemprop="url">Flask源码之一个请求的旅程</a>
+            <a href="/flask/flask%E6%BA%90%E7%A0%81%E4%B9%8B%E4%B8%80%E4%B8%AA%E8%AF%B7%E6%B1%82%E7%9A%84%E6%97%85%E7%A8%8B%EF%BC%88%E4%BA%8C%EF%BC%89/" class="post-title-link" itemprop="url">Flask源码之一个请求的旅程（二）</a>
         </h2>
 
         <div class="post-meta">
@@ -970,7 +1112,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2021-01-07 16:11:33" itemprop="dateModified" datetime="2021-01-07T16:11:33+08:00">2021-01-07</time>
+                <time title="修改时间：2021-01-22 19:16:45" itemprop="dateModified" datetime="2021-01-22T19:16:45+08:00">2021-01-22</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1001,7 +1143,7 @@
 <p>那 <code>Flask</code>是怎么做的呢？ 我们来看一下简单的 <code>Flask demo</code></p>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/flask/flask%E6%BA%90%E7%A0%81%E4%B9%8B%E4%B8%80%E4%B8%AA%E8%AF%B7%E6%B1%82%E7%9A%84%E6%97%85%E7%A8%8B/#more" rel="contents">
+              <a class="btn" href="/flask/flask%E6%BA%90%E7%A0%81%E4%B9%8B%E4%B8%80%E4%B8%AA%E8%AF%B7%E6%B1%82%E7%9A%84%E6%97%85%E7%A8%8B%EF%BC%88%E4%BA%8C%EF%BC%89/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -1025,7 +1167,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://johnson329.github.io/flask/flask%E6%BA%90%E7%A0%81%E4%B9%8B%E4%BB%8Ewsgi%E5%8D%8F%E8%AE%AE%E8%AF%B4%E8%B5%B7/">
+    <link itemprop="mainEntityOfPage" href="https://johnson329.github.io/flask/flask%E6%BA%90%E7%A0%81%E4%B9%8B%E4%BB%8Ewsgi%E5%8D%8F%E8%AE%AE%E8%AF%B4%E8%B5%B7-%E4%B8%80/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -1039,7 +1181,7 @@
       <header class="post-header">
         <h2 class="post-title" itemprop="name headline">
           
-            <a href="/flask/flask%E6%BA%90%E7%A0%81%E4%B9%8B%E4%BB%8Ewsgi%E5%8D%8F%E8%AE%AE%E8%AF%B4%E8%B5%B7/" class="post-title-link" itemprop="url">Flask源码之从WSGI协议说起</a>
+            <a href="/flask/flask%E6%BA%90%E7%A0%81%E4%B9%8B%E4%BB%8Ewsgi%E5%8D%8F%E8%AE%AE%E8%AF%B4%E8%B5%B7-%E4%B8%80/" class="post-title-link" itemprop="url">Flask源码之从WSGI协议说起(一)</a>
         </h2>
 
         <div class="post-meta">
@@ -1056,7 +1198,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">更新于</span>
-                <time title="修改时间：2020-12-30 20:06:23" itemprop="dateModified" datetime="2020-12-30T20:06:23+08:00">2020-12-30</time>
+                <time title="修改时间：2021-01-22 19:12:46" itemprop="dateModified" datetime="2021-01-22T19:12:46+08:00">2021-01-22</time>
               </span>
             <span class="post-meta-item">
               <span class="post-meta-item-icon">
@@ -1089,12 +1231,12 @@
 <p>可以看到这一过程我们需要接受、解析HTTP请求和发送HTTP响应，如果这些都由我们自己来写的话，我们需要自己处理包括建立TCP连接（HTTP协议是建立在TCP之上）、解析原始HTTP请求等工作，这太麻烦了。所以我们需要：</p>
 <ol>
 <li>一个HTTP服务器软件帮我们处理这些工作</li>
-<li>Web应用框架处理业务逻辑</li>
+<li>Web应用框架专注于处理业务逻辑</li>
 </ol>
 <p>而WSGI就是约定HTTP服务器软件和Web应用框架交互的协议</p>
           <!--noindex-->
             <div class="post-button">
-              <a class="btn" href="/flask/flask%E6%BA%90%E7%A0%81%E4%B9%8B%E4%BB%8Ewsgi%E5%8D%8F%E8%AE%AE%E8%AF%B4%E8%B5%B7/#more" rel="contents">
+              <a class="btn" href="/flask/flask%E6%BA%90%E7%A0%81%E4%B9%8B%E4%BB%8Ewsgi%E5%8D%8F%E8%AE%AE%E8%AF%B4%E8%B5%B7-%E4%B8%80/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>

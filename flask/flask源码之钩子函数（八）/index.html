@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+<meta name="google-site-verification" content="sYVNv2cK_IPimIvXEgacyGxMpJ3uoEIFNpK8wPrR35w" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+  
+  <link rel="stylesheet" href="/lib/animate-css/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"johnson329.github.io","root":"/","scheme":"Muse","version":"8.0.0-rc.4","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+<script data-ad-client="ca-pub-5647031416661489" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+
+  <meta name="description" content="引言先看这样一个需求，flask在处理一个请求的时候，可能会在多处打日志，反映在日志文件中就是不同行，那不同行的日志怎么判断是一个请求所为呢？ 我们可以给 request对象绑定一个 request_id属性，在打日志的时候带上这个属性 1234567891011121314151617181920from flask import Flask, request, current_appimpor">
+<meta property="og:type" content="article">
+<meta property="og:title" content="flask源码之钩子函数（八）">
+<meta property="og:url" content="https://johnson329.github.io/flask/flask%E6%BA%90%E7%A0%81%E4%B9%8B%E9%92%A9%E5%AD%90%E5%87%BD%E6%95%B0%EF%BC%88%E5%85%AB%EF%BC%89/index.html">
+<meta property="og:site_name" content="Johnson的个人博客">
+<meta property="og:description" content="引言先看这样一个需求，flask在处理一个请求的时候，可能会在多处打日志，反映在日志文件中就是不同行，那不同行的日志怎么判断是一个请求所为呢？ 我们可以给 request对象绑定一个 request_id属性，在打日志的时候带上这个属性 1234567891011121314151617181920from flask import Flask, request, current_appimpor">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://i.loli.net/2021/01/23/dVkIrvGXFJ9P57Y.png">
+<meta property="og:image" content="https://i.loli.net/2021/01/23/rhsNg368AuJ9BVD.png">
+<meta property="article:published_time" content="2021-01-22T18:01:40.000Z">
+<meta property="article:modified_time" content="2021-01-22T18:27:27.313Z">
+<meta property="article:author" content="Johnson">
+<meta property="article:tag" content="flask源码">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://i.loli.net/2021/01/23/dVkIrvGXFJ9P57Y.png">
+
+<link rel="canonical" href="https://johnson329.github.io/flask/flask%E6%BA%90%E7%A0%81%E4%B9%8B%E9%92%A9%E5%AD%90%E5%87%BD%E6%95%B0%EF%BC%88%E5%85%AB%EF%BC%89/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>flask源码之钩子函数（八） | Johnson的个人博客</title>
+  
+
+
+  <script>
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?1d1705f6a65cb7060130e6deef362fde";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <main class="main">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+        <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+        <span class="toggle-line toggle-line-first"></span>
+        <span class="toggle-line toggle-line-middle"></span>
+        <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">Johnson的个人博客</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Johnson的个人博客</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <section class="post-toc-wrap sidebar-panel">
+          <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#引言"><span class="nav-number">1.</span> <span class="nav-text">引言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#原理"><span class="nav-number">2.</span> <span class="nav-text">原理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#注册"><span class="nav-number">2.1.</span> <span class="nav-text">注册</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#实现"><span class="nav-number">2.2.</span> <span class="nav-text">实现</span></a></li></ol></li></ol></div>
+      </section>
+      <!--/noindex-->
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Johnson</p>
+  <div class="site-description" itemprop="description">Johnson的个人博客</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">17</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </section>
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </header>
+
+      
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div id="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+      <div class="main-inner">
+        
+
+        <div class="content post posts-expand">
+          
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://johnson329.github.io/flask/flask%E6%BA%90%E7%A0%81%E4%B9%8B%E9%92%A9%E5%AD%90%E5%87%BD%E6%95%B0%EF%BC%88%E5%85%AB%EF%BC%89/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Johnson">
+      <meta itemprop="description" content="Johnson的个人博客">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Johnson的个人博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          flask源码之钩子函数（八）
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-01-23 02:01:40 / 修改时间：02:27:27" itemprop="dateCreated datePublished" datetime="2021-01-23T02:01:40+08:00">2021-01-23</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/flask/" itemprop="url" rel="index"><span itemprop="name">flask</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h2><p>先看这样一个需求，<code>flask</code>在处理一个请求的时候，可能会在多处打日志，反映在日志文件中就是不同行，那不同行的日志怎么判断是一个请求所为呢？</p>
+<p>我们可以给 <code>request</code>对象绑定一个 <code>request_id</code>属性，在打日志的时候带上这个属性</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> flask <span class="keyword">import</span> Flask, request, current_app</span><br><span class="line"><span class="keyword">import</span> uuid</span><br><span class="line"></span><br><span class="line">flask_app = Flask(__name__)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="meta">@flask_app.before_request</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">gen_request_id</span><span class="params">()</span>:</span></span><br><span class="line">    request_id = uuid.uuid1()</span><br><span class="line">    request.request_id = request_id</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="meta">@flask_app.route('/')</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">hello_world</span><span class="params">()</span>:</span></span><br><span class="line">    current_app.logger.warn(<span class="string">"&#123;&#125;"</span>.format(request.request_id))</span><br><span class="line">    <span class="keyword">return</span> <span class="string">"hello flask"</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">'__main__'</span>:</span><br><span class="line">    flask_app.run()</span><br></pre></td></tr></table></figure>
+
+<p>这里我们用到了<code>flask</code>的钩子函数，<code>before_request</code></p>
+<p>它类似与<code>django</code>的中间件或者<code>java</code>的<code>AOP</code>,主要作用是把每个请求公共的一些操作抽取出来统一处理</p>
+<p><img src="https://i.loli.net/2021/01/23/dVkIrvGXFJ9P57Y.png" alt="这里写图片描述"></p>
+<p>重点看一下 <code>teardown_request</code>，它是注册一个函数在每个请求的末尾运行，不管是否有异常, 每次请求的最后都会执行</p>
+<p>而 <code>after_request</code>是在视图函数没有异常情况下才会被调用的钩子函数</p>
+<h2 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h2><h3 id="注册"><a href="#注册" class="headerlink" title="注册"></a>注册</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">@flask_app.before_request</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">gen_request_id</span><span class="params">()</span>:</span></span><br><span class="line">    request_id = uuid.uuid1()</span><br><span class="line">    request.request_id = request_id</span><br></pre></td></tr></table></figure>
+
+<p>就是把 <code>gen_request_id</code>存入这个字典中</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;<span class="literal">None</span>:[gen_request_id]&#125;</span><br></pre></td></tr></table></figure>
+
+<p>这个字典是<code>Flask</code>类的属性值，属性是 <code>before_request_funcs</code></p>
+<p>接着在请求运行中，遍历这个字典</p>
+<h3 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h3><p><code>before_request</code>源码</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Flask</span><span class="params">(object)</span>:</span></span><br><span class="line"><span class="meta">   @setupmethod</span></span><br><span class="line">   <span class="function"><span class="keyword">def</span> <span class="title">before_request</span><span class="params">(self, f)</span>:</span></span><br><span class="line">       <span class="string">"""Registers a function to run before each request.</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">       For example, this can be used to open a database connection, or to load</span></span><br><span class="line"><span class="string">       the logged in user from the session.</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">       The function will be called without any arguments. If it returns a</span></span><br><span class="line"><span class="string">       non-None value, the value is handled as if it was the return value from</span></span><br><span class="line"><span class="string">       the view, and further request handling is stopped.</span></span><br><span class="line"><span class="string">       """</span></span><br><span class="line">       self.before_request_funcs.setdefault(<span class="literal">None</span>, []).append(f)</span><br></pre></td></tr></table></figure>
+
+<p>再看 <code>full_dispatch_request</code></p>
+<p><img src="https://i.loli.net/2021/01/23/rhsNg368AuJ9BVD.png" alt="image-20210123022046189"></p>
+<p>这个 <code>preprocess_request</code>就是处理 <code>@flask_app.before_request</code>注册的函数的</p>
+<p><code>preprocess_request</code></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">preprocess_request</span><span class="params">(self)</span>:</span></span><br><span class="line">    bp = _request_ctx_stack.top.request.blueprint</span><br><span class="line">    <span class="comment"># 从字典中获取所有被@flask_app.before_request注册的函数</span></span><br><span class="line">    <span class="comment"># 键是None的表示应用注册的，此外还有蓝图的</span></span><br><span class="line">    funcs = self.before_request_funcs.get(<span class="literal">None</span>, ())</span><br><span class="line">    <span class="keyword">if</span> bp <span class="keyword">is</span> <span class="keyword">not</span> <span class="literal">None</span> <span class="keyword">and</span> bp <span class="keyword">in</span> self.before_request_funcs:</span><br><span class="line">        funcs = chain(funcs, self.before_request_funcs[bp])</span><br><span class="line">    <span class="comment"># 获取所有函数遍历执行，谁return了，就直接返回到客户端，所以这里要注意</span></span><br><span class="line">    <span class="keyword">for</span> func <span class="keyword">in</span> funcs:</span><br><span class="line">        rv = func()</span><br><span class="line">        <span class="keyword">if</span> rv <span class="keyword">is</span> <span class="keyword">not</span> <span class="literal">None</span>:</span><br><span class="line">            <span class="keyword">return</span> rv</span><br></pre></td></tr></table></figure>
+
+<p>其他钩子函数都是类似思路</p>
+<p>值得注意的是<code>teardown_request</code>注册的钩子函数是在 <code>RequestContext</code>被<code>pop</code>的时候执行的，从而实现无论视图函数是否有异常，这里的钩子函数都会被执行</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/flask%E6%BA%90%E7%A0%81/" rel="tag"># flask源码</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/flask/flask%E6%BA%90%E7%A0%81%E4%B9%8B%E9%85%8D%E7%BD%AE%E5%8A%A0%E8%BD%BD-%E5%85%AB/" rel="prev" title="flask源码之配置加载(八)">
+      <i class="fa fa-chevron-left"></i> flask源码之配置加载(八)
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/flask/flask%E6%BA%90%E7%A0%81%E4%B9%8B%E7%B1%BB%E8%A7%86%E5%9B%BE%EF%BC%88%E4%B9%9D%EF%BC%89/" rel="next" title="flask源码之类视图（九）">
+      flask源码之类视图（九） <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+        </div>
+        
+    <div class="comments" id="gitalk-container"></div>
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Johnson</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener external nofollow noreferrer" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" class="theme-link" rel="noopener external nofollow noreferrer" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+  
+  <script>
+    (function(){
+      var bp = document.createElement('script');
+      var curProtocol = window.location.protocol.split(':')[0];
+      bp.src = (curProtocol === 'https') ? 'https://zz.bdstatic.com/linksubmit/push.js' : 'http://push.zhanzhang.baidu.com/push.js';
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(bp, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.css">
+
+<script>
+NexT.utils.loadComments(document.querySelector('#gitalk-container'), () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : 'a61d3b3dfdac48e1310f',
+      clientSecret: 'e51c7934b18ded8b7d2adfc51cd6af719efdc957',
+      repo        : 'johnson329.github.io',
+      owner       : 'johnson329',
+      admin       : ['johnson329'],
+      id          : '4047155dcaeab0ad81aac4d3ac8e7dcb',
+        language: '',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
+
+</body>
+</html>

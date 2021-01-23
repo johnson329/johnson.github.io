@@ -27,7 +27,7 @@
   <meta name="description" content="Johnson的个人博客">
 <meta property="og:type" content="website">
 <meta property="og:title" content="Johnson的个人博客">
-<meta property="og:url" content="https://johnson329.github.io/tags/flask%E6%BA%90%E7%A0%81/page/2/index.html">
+<meta property="og:url" content="https://johnson329.github.io/page/3/index.html">
 <meta property="og:site_name" content="Johnson的个人博客">
 <meta property="og:description" content="Johnson的个人博客">
 <meta property="og:locale" content="zh_CN">
@@ -38,20 +38,20 @@
 <meta property="article:tag" content="hexo">
 <meta name="twitter:card" content="summary">
 
-<link rel="canonical" href="https://johnson329.github.io/tags/flask%E6%BA%90%E7%A0%81/page/2/">
+<link rel="canonical" href="https://johnson329.github.io/page/3/">
 
 
 <script class="page-configurations">
   // https://hexo.io/docs/variables.html
   CONFIG.page = {
     sidebar: "",
-    isHome : false,
+    isHome : true,
     isPost : false,
     lang   : 'zh-CN'
   };
 </script>
 
-  <title>标签: flask源码 | Johnson的个人博客</title>
+  <title>Johnson的个人博客</title>
   
 
 
@@ -251,54 +251,111 @@
       <div class="main-inner">
         
 
-        <div class="content tag">
+        <div class="content index posts-expand">
+          
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://johnson329.github.io/hexo/%E6%90%AD%E5%BB%BA-hexo-%E5%8D%9A%E5%AE%A2-%E4%B8%80/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Johnson">
+      <meta itemprop="description" content="Johnson的个人博客">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Johnson的个人博客">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/hexo/%E6%90%AD%E5%BB%BA-hexo-%E5%8D%9A%E5%AE%A2-%E4%B8%80/" class="post-title-link" itemprop="url">搭建 hexo 博客(一)</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-07-19 00:48:53" itemprop="dateCreated datePublished" datetime="2020-07-19T00:48:53+08:00">2020-07-19</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2021-01-07 17:51:01" itemprop="dateModified" datetime="2021-01-07T17:51:01+08:00">2021-01-07</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/hexo/" itemprop="url" rel="index"><span itemprop="name">hexo</span></a>
+                </span>
+            </span>
+
           
 
-  
-  
-  
-  <div class="post-block">
-    <div class="posts-collapse">
-      <div class="collection-title">
-        <h2 class="collection-header">flask源码
-          <small>标签</small>
-        </h2>
-      </div>
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
 
       
-    <div class="collection-year">
-      <span class="collection-header">2020</span>
+          <h3 id="环境"><a href="#环境" class="headerlink" title="环境"></a>环境</h3><p>ubuntu 20.04</p>
+<p>node 10.21.0</p>
+<h3 id="下载和安装nvm"><a href="#下载和安装nvm" class="headerlink" title="下载和安装nvm"></a>下载和安装nvm</h3><p>nvm是node.js的版本管理器。使用nvm可以避免出现<code>EACCES</code> 权限错误和方便切换node.js和npm版本。</p>
+<ul>
+<li>执行以下命令下载和安装nvm</li>
+</ul>
+<p>注意可能由于网络问题这个命令执行没成功，请在代理环境下执行以下命令</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wget -qO- https://raw.githubusercontent.com/nvm-sh/nvm/v0.35.3/install.sh | bash</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>验证安装</li>
+</ul>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">command</span> -v nvm</span><br><span class="line"><span class="comment">#或者</span></span><br><span class="line">nvm</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>出现<code>nvm: command not found</code>或者没有输出nvm</li>
+</ul>
+<p>重启terminal或者参考<a href="https://github.com/nvm-sh/nvm/issues/1404" target="_blank" rel="noopener external nofollow noreferrer">#1404</a>解决</p>
+<p>仍有问题请google或者参考项目的<a href="https://github.com/nvm-sh/nvm" target="_blank" rel="noopener external nofollow noreferrer">README</a>或者<a href="https://github.com/nvm-sh/nvm/issues" target="_blank" rel="noopener external nofollow noreferrer">github issue</a>解决</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/hexo/%E6%90%AD%E5%BB%BA-hexo-%E5%8D%9A%E5%AE%A2-%E4%B8%80/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
     </div>
 
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
-
-      <div class="post-meta">
-        <time itemprop="dateCreated"
-              datetime="2020-12-22T22:05:39+08:00"
-              content="2020-12-22">
-          12-22
-        </time>
-      </div>
-
-      <div class="post-title">
-          <a class="post-title-link" href="/flask/flask%E6%BA%90%E7%A0%81%E4%B9%8B%E4%BB%8Ewsgi%E5%8D%8F%E8%AE%AE%E8%AF%B4%E8%B5%B7-%E4%B8%80/" itemprop="url">
-            <span itemprop="name">Flask源码之从WSGI协议说起(一)</span>
-          </a>
-      </div>
-
-    </header>
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
   </article>
+  
+  
+  
 
-    </div>
-  </div>
-  
-  
-  
 
   
   <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/tags/flask%E6%BA%90%E7%A0%81/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/tags/flask%E6%BA%90%E7%A0%81/">1</a><span class="page-number current">2</span>
+    <a class="extend prev" rel="prev" href="/page/2/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><span class="page-number current">3</span>
   </nav>
 
 

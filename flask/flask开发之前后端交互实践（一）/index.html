@@ -24,21 +24,20 @@
   </script>
 <script data-ad-client="ca-pub-5647031416661489" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
 
-  <meta name="description" content="Johnson的个人博客">
-<meta property="og:type" content="website">
-<meta property="og:title" content="Johnson的个人博客">
-<meta property="og:url" content="https://johnson329.github.io/tags/flask%E6%BA%90%E7%A0%81/page/2/index.html">
+  <meta name="description" content="引言我们知道flask内置了jinja2模板引擎用来渲染前端页面，但在企业合作开发中，我们一般不使用这种方式，原因如下  与前端合作困难。前端写完页面，你再去改，添加诸如{}这样的模板变量，你改完，前端还得要在那些模板变量基础上改，想想都觉得不应该采用这种方式 耦合较高，html由flask渲染产生，内置了一些逻辑语句  这种方式一般适合个人全栈开发，也有很多优点  seo友好，数据全在服务端渲染">
+<meta property="og:type" content="article">
+<meta property="og:title" content="flask开发之前后端交互实践（一）">
+<meta property="og:url" content="https://johnson329.github.io/flask/flask%E5%BC%80%E5%8F%91%E4%B9%8B%E5%89%8D%E5%90%8E%E7%AB%AF%E4%BA%A4%E4%BA%92%E5%AE%9E%E8%B7%B5%EF%BC%88%E4%B8%80%EF%BC%89/index.html">
 <meta property="og:site_name" content="Johnson的个人博客">
-<meta property="og:description" content="Johnson的个人博客">
+<meta property="og:description" content="引言我们知道flask内置了jinja2模板引擎用来渲染前端页面，但在企业合作开发中，我们一般不使用这种方式，原因如下  与前端合作困难。前端写完页面，你再去改，添加诸如{}这样的模板变量，你改完，前端还得要在那些模板变量基础上改，想想都觉得不应该采用这种方式 耦合较高，html由flask渲染产生，内置了一些逻辑语句  这种方式一般适合个人全栈开发，也有很多优点  seo友好，数据全在服务端渲染">
 <meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2021-01-23T14:27:57.000Z">
+<meta property="article:modified_time" content="2021-01-23T14:48:44.763Z">
 <meta property="article:author" content="Johnson">
-<meta property="article:tag" content="python">
-<meta property="article:tag" content="flask">
-<meta property="article:tag" content="django">
-<meta property="article:tag" content="hexo">
+<meta property="article:tag" content="flask开发">
 <meta name="twitter:card" content="summary">
 
-<link rel="canonical" href="https://johnson329.github.io/tags/flask%E6%BA%90%E7%A0%81/page/2/">
+<link rel="canonical" href="https://johnson329.github.io/flask/flask%E5%BC%80%E5%8F%91%E4%B9%8B%E5%89%8D%E5%90%8E%E7%AB%AF%E4%BA%A4%E4%BA%92%E5%AE%9E%E8%B7%B5%EF%BC%88%E4%B8%80%EF%BC%89/">
 
 
 <script class="page-configurations">
@@ -46,12 +45,12 @@
   CONFIG.page = {
     sidebar: "",
     isHome : false,
-    isPost : false,
+    isPost : true,
     lang   : 'zh-CN'
   };
 </script>
 
-  <title>标签: flask源码 | Johnson的个人博客</title>
+  <title>flask开发之前后端交互实践（一） | Johnson的个人博客</title>
   
 
 
@@ -182,7 +181,7 @@
 
   <aside class="sidebar">
 
-    <div class="sidebar-inner sidebar-overview-active">
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
       <ul class="sidebar-nav">
         <li class="sidebar-nav-toc">
           文章目录
@@ -194,6 +193,7 @@
 
       <!--noindex-->
       <section class="post-toc-wrap sidebar-panel">
+          <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#引言"><span class="nav-number">1.</span> <span class="nav-text">引言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#前后端分离"><span class="nav-number">2.</span> <span class="nav-text">前后端分离</span></a></li></ol></div>
       </section>
       <!--/noindex-->
 
@@ -251,60 +251,111 @@
       <div class="main-inner">
         
 
-        <div class="content tag">
+        <div class="content post posts-expand">
           
 
+    
   
   
-  
-  <div class="post-block">
-    <div class="posts-collapse">
-      <div class="collection-title">
-        <h2 class="collection-header">flask源码
-          <small>标签</small>
-        </h2>
-      </div>
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://johnson329.github.io/flask/flask%E5%BC%80%E5%8F%91%E4%B9%8B%E5%89%8D%E5%90%8E%E7%AB%AF%E4%BA%A4%E4%BA%92%E5%AE%9E%E8%B7%B5%EF%BC%88%E4%B8%80%EF%BC%89/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Johnson">
+      <meta itemprop="description" content="Johnson的个人博客">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Johnson的个人博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          flask开发之前后端交互实践（一）
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+              
+
+              <time title="创建时间：2021-01-23 22:27:57 / 修改时间：22:48:44" itemprop="dateCreated datePublished" datetime="2021-01-23T22:27:57+08:00">2021-01-23</time>
+            </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/flask/" itemprop="url" rel="index"><span itemprop="name">flask</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
 
       
-    <div class="collection-year">
-      <span class="collection-header">2020</span>
+        <h2 id="引言"><a href="#引言" class="headerlink" title="引言"></a>引言</h2><p>我们知道<code>flask</code>内置了<code>jinja2</code>模板引擎用来渲染前端页面，但在企业合作开发中，我们一般不使用这种方式，原因如下</p>
+<ol>
+<li>与前端合作困难。前端写完页面，你再去改，添加诸如{}这样的模板变量，你改完，前端还得要在那些模板变量基础上改，想想都觉得不应该采用这种方式</li>
+<li>耦合较高，<code>html</code>由<code>flask</code>渲染产生，内置了一些逻辑语句</li>
+</ol>
+<p>这种方式一般适合个人全栈开发，也有很多优点</p>
+<ol>
+<li><code>seo</code>友好，数据全在服务端渲染，数据就在页面中，方便<code>seo</code>优化</li>
+<li>部署方便，没有跨域问题，前端模板和后端在一个域下面</li>
+</ol>
+<h2 id="前后端分离"><a href="#前后端分离" class="headerlink" title="前后端分离"></a>前后端分离</h2><p>在企业实践中，一般采用前后端分离的方式协作，前端写页面，同过<code>ajax</code>或者<code>axios</code>等<code>http</code>库向服务端请求数据再渲染页面。</p>
+<p>服务端只需要写<code>api</code>接口，把数据提供给前端。前后端交互的数据格式一般用<code>json</code></p>
+<p>目前常用的前端框架是 <code>vue,angular,react</code>，他们都是单页面框架。</p>
+<p>以 <code>vue</code>为例，它只有一个<code>html</code>页面，你看到的页面变化之不过是不同的<code>vue</code>组件在切换</p>
+<p>数据一般通过<code>axios</code>向后端请求。但问题在于，这样的<code>html</code>没有任何数据，不利于<code>seo</code>优化</p>
+<p>解决的办法有很多，一种方式就是前端依然不使用这三大框架，而是手写<code>html</code>页面，这里面就包括了一些写死的数据，一些需要服务端提供的数据，通过<code>ajax</code>和服务端交互</p>
+
     </div>
 
-  <article itemscope itemtype="http://schema.org/Article">
-    <header class="post-header">
+    
+    
+    
 
-      <div class="post-meta">
-        <time itemprop="dateCreated"
-              datetime="2020-12-22T22:05:39+08:00"
-              content="2020-12-22">
-          12-22
-        </time>
-      </div>
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/flask%E5%BC%80%E5%8F%91/" rel="tag"># flask开发</a>
+          </div>
 
-      <div class="post-title">
-          <a class="post-title-link" href="/flask/flask%E6%BA%90%E7%A0%81%E4%B9%8B%E4%BB%8Ewsgi%E5%8D%8F%E8%AE%AE%E8%AF%B4%E8%B5%B7-%E4%B8%80/" itemprop="url">
-            <span itemprop="name">Flask源码之从WSGI协议说起(一)</span>
-          </a>
-      </div>
+        
 
-    </header>
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/flask/flask%E6%BA%90%E7%A0%81%E4%B9%8B%E8%93%9D%E5%9B%BE%EF%BC%88%E5%8D%81%E4%B8%80%EF%BC%89/" rel="prev" title="flask源码之蓝图（十一）">
+      <i class="fa fa-chevron-left"></i> flask源码之蓝图（十一）
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
   </article>
-
-    </div>
-  </div>
   
   
   
-
-  
-  <nav class="pagination">
-    <a class="extend prev" rel="prev" href="/tags/flask%E6%BA%90%E7%A0%81/"><i class="fa fa-angle-left" aria-label="上一页"></i></a><a class="page-number" href="/tags/flask%E6%BA%90%E7%A0%81/">1</a><span class="page-number current">2</span>
-  </nav>
 
 
 
         </div>
         
+    <div class="comments" id="gitalk-container"></div>
 
 <script>
   window.addEventListener('tabs:register', () => {
@@ -405,6 +456,25 @@
 
   
 
+<link rel="stylesheet" href="//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.css">
+
+<script>
+NexT.utils.loadComments(document.querySelector('#gitalk-container'), () => {
+  NexT.utils.getScript('//cdn.jsdelivr.net/npm/gitalk@1/dist/gitalk.min.js', () => {
+    var gitalk = new Gitalk({
+      clientID    : 'a61d3b3dfdac48e1310f',
+      clientSecret: 'e51c7934b18ded8b7d2adfc51cd6af719efdc957',
+      repo        : 'johnson329.github.io',
+      owner       : 'johnson329',
+      admin       : ['johnson329'],
+      id          : 'd4b9d05e8cb5bb4b0ca173771b6ef6ca',
+        language: '',
+      distractionFreeMode: true
+    });
+    gitalk.render('gitalk-container');
+  }, window.Gitalk);
+});
+</script>
 
 </body>
 </html>

@@ -1,11 +1,3 @@
----
-title: 用github actions自动部署博客到github pages.md
-date: 2023-06-17 18:18:00
-tags:
-categories:
----
-
-
 创建.github/workflows/pages.yml
 
 ```yml
@@ -49,9 +41,8 @@ jobs:  # 工作流程中的作业
 
 
 ```
-这个工作流会把hexo生成的public目录下的文件push到gh-pages分支
-actions运行结果如下图
 
-![](https://files.mdnice.com/user/45206/a69d5fbd-0876-4ea6-a558-220b066ef6e1.png)
+这个工作流会把 hexo 生成的 public 目录下的文件 push 到 gh-pages 分支
+actions 运行结果如下图
 
-
+![image-20230617192254695](https://raw.githubusercontent.com/johnson329/picture_bed/master/image-20230617192254695.png)

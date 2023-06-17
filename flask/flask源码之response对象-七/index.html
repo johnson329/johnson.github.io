@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+<meta name="google-site-verification" content="sYVNv2cK_IPimIvXEgacyGxMpJ3uoEIFNpK8wPrR35w" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+  
+  <link rel="stylesheet" href="/lib/animate-css/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"johnson329.github.io","root":"/","scheme":"Muse","version":"8.0.0-rc.4","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+<script data-ad-client="ca-pub-5647031416661489" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+
+  <meta name="description" content="原理 实现">
+<meta property="og:type" content="article">
+<meta property="og:title" content="flask源码之Response对象(七)">
+<meta property="og:url" content="https://johnson329.github.io/flask/flask%E6%BA%90%E7%A0%81%E4%B9%8Bresponse%E5%AF%B9%E8%B1%A1-%E4%B8%83/index.html">
+<meta property="og:site_name" content="Johnson的个人博客">
+<meta property="og:description" content="原理 实现">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://i.loli.net/2021/01/15/xJOnfBLewgpsUbY.png">
+<meta property="og:image" content="https://i.loli.net/2021/01/15/Imc5eBVTUFQ7iKZ.png">
+<meta property="og:image" content="https://i.loli.net/2021/01/15/RxJWtNSTufI3sdU.png">
+<meta property="og:image" content="https://i.loli.net/2021/01/15/rBpN1JfXC5WI7Eh.png">
+<meta property="article:published_time" content="2021-01-15T14:46:09.000Z">
+<meta property="article:modified_time" content="2023-06-17T09:06:28.430Z">
+<meta property="article:author" content="Johnson">
+<meta property="article:tag" content="flask源码">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://i.loli.net/2021/01/15/xJOnfBLewgpsUbY.png">
+
+<link rel="canonical" href="https://johnson329.github.io/flask/flask%E6%BA%90%E7%A0%81%E4%B9%8Bresponse%E5%AF%B9%E8%B1%A1-%E4%B8%83/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>flask源码之Response对象(七) | Johnson的个人博客</title>
+  
+
+
+  <script>
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?1d1705f6a65cb7060130e6deef362fde";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <main class="main">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+        <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+        <span class="toggle-line toggle-line-first"></span>
+        <span class="toggle-line toggle-line-middle"></span>
+        <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">Johnson的个人博客</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Johnson的个人博客</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <section class="post-toc-wrap sidebar-panel">
+          <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#原理"><span class="nav-number">1.</span> <span class="nav-text">原理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#实现"><span class="nav-number">2.</span> <span class="nav-text">实现</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Response定义"><span class="nav-number">3.</span> <span class="nav-text">Response定义</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#自定义Response对象"><span class="nav-number">4.</span> <span class="nav-text">自定义Response对象</span></a></li></ol></div>
+      </section>
+      <!--/noindex-->
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Johnson</p>
+  <div class="site-description" itemprop="description">Johnson的个人博客</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">22</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </section>
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </header>
+
+      
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div id="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+      <div class="main-inner">
+        
+
+        <div class="content post posts-expand">
+          
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://johnson329.github.io/flask/flask%E6%BA%90%E7%A0%81%E4%B9%8Bresponse%E5%AF%B9%E8%B1%A1-%E4%B8%83/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Johnson">
+      <meta itemprop="description" content="Johnson的个人博客">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Johnson的个人博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          flask源码之Response对象(七)
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2021-01-15 22:46:09" itemprop="dateCreated datePublished" datetime="2021-01-15T22:46:09+08:00">2021-01-15</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2023-06-17 17:06:28" itemprop="dateModified" datetime="2023-06-17T17:06:28+08:00">2023-06-17</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/flask/" itemprop="url" rel="index"><span itemprop="name">flask</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h3 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h3><p><img src="https://i.loli.net/2021/01/15/xJOnfBLewgpsUbY.png" alt="image-20210115225826137"></p>
+<h3 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h3><a id="more"></a>
+
+<p><code>full_dispatch_request</code>方法</p>
+<p><img src="https://i.loli.net/2021/01/15/Imc5eBVTUFQ7iKZ.png" alt="image-20210115230023316"></p>
+<p>回到<code>wsgi_app</code>方法</p>
+<p><img src="https://i.loli.net/2021/01/15/RxJWtNSTufI3sdU.png" alt="image-20210115230235510"></p>
+<p>回顾一下<code>wsgi</code>协议</p>
+<p>你要被<code>wsgi server</code>调用，那么你的返回值，应该是可以被迭代的，例如下面的<code>list</code></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">application</span><span class="params">(environ, start_response)</span>:</span></span><br><span class="line">    start_response(<span class="string">'200 OK'</span>, [(<span class="string">'Content-Type'</span>, <span class="string">'text/html'</span>)])</span><br><span class="line">    <span class="keyword">return</span> [<span class="string">b'&lt;h1&gt;Hello, web!&lt;/h1&gt;'</span>]</span><br></pre></td></tr></table></figure>
+
+<p>也就是在<code>flask</code>里面，这个<code>Response</code>对象，执行 <code>__call__</code>方法之后返回的是一个类似 <code>list</code>的可迭代对象</p>
+<p>我们知道既然<code>Response</code>对象是被<code>finalize_request</code>方法返回的，那他的实例化过程应该就在这个方法中</p>
+<p>我们找到 <code>finalize_request</code>方法</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">finalize_request</span><span class="params">(self, rv, from_error_handler=False)</span>:</span></span><br><span class="line">    response = self.make_response(rv)</span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        response = self.process_response(response)</span><br><span class="line">        request_finished.send(self, response=response)</span><br><span class="line">    <span class="keyword">except</span> Exception:</span><br><span class="line">        <span class="keyword">if</span> <span class="keyword">not</span> from_error_handler:</span><br><span class="line">            <span class="keyword">raise</span></span><br><span class="line">        self.logger.exception(</span><br><span class="line">            <span class="string">"Request finalizing failed with an error while handling an error"</span></span><br><span class="line">        )</span><br><span class="line">    <span class="keyword">return</span> response</span><br></pre></td></tr></table></figure>
+
+
+
+<p>再看 <code>make_response</code>，代码有点多</p>
+<p>这个函数的大概逻辑就是，你的rv是视图函数的返回值</p>
+<p>如果返回值本身就是 Response 实例，就直接使用它；如果返回值是字符串类型，就把它作为响应的 body，并自动设置状态码和头部信息；<br>如果返回值是 tuple，会尝试用 (response, status, headers) 或者 (response, headers) 去解析。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">make_response</span><span class="params">(self, rv)</span>:</span></span><br><span class="line"></span><br><span class="line">    <span class="comment"># make sure the body is an instance of the response class</span></span><br><span class="line">    <span class="comment"># 看这里就好了，</span></span><br><span class="line">    <span class="keyword">if</span> <span class="keyword">not</span> isinstance(rv, self.response_class):</span><br><span class="line">        <span class="keyword">if</span> isinstance(rv, (text_type, bytes, bytearray)):</span><br><span class="line">            <span class="comment"># let the response class set the status and headers instead of</span></span><br><span class="line">            <span class="comment"># waiting to do it manually, so that the class can handle any</span></span><br><span class="line">            <span class="comment"># special logic</span></span><br><span class="line">            rv = self.response_class(rv, status=status, headers=headers)</span><br><span class="line">            status = headers = <span class="literal">None</span></span><br><span class="line">        <span class="keyword">elif</span> isinstance(rv, dict):</span><br><span class="line">            rv = jsonify(rv)</span><br><span class="line">        <span class="keyword">elif</span> isinstance(rv, BaseResponse) <span class="keyword">or</span> callable(rv):</span><br><span class="line">            <span class="comment"># evaluate a WSGI callable, or coerce a different response</span></span><br><span class="line">            <span class="comment"># class to the correct type</span></span><br><span class="line">            <span class="keyword">try</span>:</span><br><span class="line">                rv = self.response_class.force_type(rv, request.environ)</span><br><span class="line">            <span class="keyword">except</span> TypeError <span class="keyword">as</span> e:</span><br><span class="line">                new_error = TypeError(</span><br><span class="line">                    <span class="string">"&#123;e&#125;\nThe view function did not return a valid"</span></span><br><span class="line">                    <span class="string">" response. The return type must be a string, dict, tuple,"</span></span><br><span class="line">                    <span class="string">" Response instance, or WSGI callable, but it was a"</span></span><br><span class="line">                    <span class="string">" &#123;rv.__class__.__name__&#125;."</span>.format(e=e, rv=rv)</span><br><span class="line">                )</span><br><span class="line">                reraise(TypeError, new_error, sys.exc_info()[<span class="number">2</span>])</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            <span class="keyword">raise</span> TypeError(</span><br><span class="line">                <span class="string">"The view function did not return a valid"</span></span><br><span class="line">                <span class="string">" response. The return type must be a string, dict, tuple,"</span></span><br><span class="line">                <span class="string">" Response instance, or WSGI callable, but it was a"</span></span><br><span class="line">                <span class="string">" &#123;rv.__class__.__name__&#125;."</span>.format(rv=rv)</span><br><span class="line">            )</span><br><span class="line"></span><br><span class="line">    <span class="comment"># prefer the status if it was provided</span></span><br><span class="line">    <span class="keyword">if</span> status <span class="keyword">is</span> <span class="keyword">not</span> <span class="literal">None</span>:</span><br><span class="line">        <span class="keyword">if</span> isinstance(status, (text_type, bytes, bytearray)):</span><br><span class="line">            rv.status = status</span><br><span class="line">        <span class="keyword">else</span>:</span><br><span class="line">            rv.status_code = status</span><br><span class="line"></span><br><span class="line">    <span class="comment"># extend existing headers with provided headers</span></span><br><span class="line">    <span class="keyword">if</span> headers:</span><br><span class="line">        rv.headers.extend(headers)</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> rv</span><br></pre></td></tr></table></figure>
+
+<p>我们还可以看出来，<code>Response</code>对象就是 <code>response_class</code>的实例，点进去就可以看到定义了</p>
+<h3 id="Response定义"><a href="#Response定义" class="headerlink" title="Response定义"></a>Response定义</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Response</span><span class="params">(ResponseBase, JSONMixin)</span>:</span></span><br><span class="line">    default_mimetype = <span class="string">"text/html"</span></span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">_get_data_for_json</span><span class="params">(self, cache)</span>:</span></span><br><span class="line">        <span class="keyword">return</span> self.get_data()</span><br><span class="line"></span><br><span class="line"><span class="meta">    @property</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">max_cookie_size</span><span class="params">(self)</span>:</span></span><br><span class="line">        <span class="string">"""Read-only view of the :data:`MAX_COOKIE_SIZE` config key.</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">        See :attr:`~werkzeug.wrappers.BaseResponse.max_cookie_size` in</span></span><br><span class="line"><span class="string">        Werkzeug's docs.</span></span><br><span class="line"><span class="string">        """</span></span><br><span class="line">        <span class="keyword">if</span> current_app:</span><br><span class="line">            <span class="keyword">return</span> current_app.config[<span class="string">"MAX_COOKIE_SIZE"</span>]</span><br><span class="line"></span><br><span class="line">        <span class="comment"># return Werkzeug's default when not in an app context</span></span><br><span class="line">        <span class="keyword">return</span> super(Response, self).max_cookie_size</span><br></pre></td></tr></table></figure>
+
+<p>又是<code>mixin</code>实现多继承</p>
+<p>别忘了，我们的目的是看他的 <code>__call__</code>方法返回的是否是迭代对象</p>
+<p>不用大海捞针去父类找，<code>pycharm</code>已经帮我们找好了，在左侧<code>structure</code>中找</p>
+<p><img src="https://i.loli.net/2021/01/15/rBpN1JfXC5WI7Eh.png" alt="image-20210115231514061"></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">__call__</span><span class="params">(self, environ, start_response)</span>:</span></span><br><span class="line">    <span class="string">"""Process this response as WSGI application.</span></span><br><span class="line"><span class="string"></span></span><br><span class="line"><span class="string">    :param environ: the WSGI environment.</span></span><br><span class="line"><span class="string">    :param start_response: the response callable provided by the WSGI</span></span><br><span class="line"><span class="string">                           server.</span></span><br><span class="line"><span class="string">    :return: an application iterator</span></span><br><span class="line"><span class="string">    """</span></span><br><span class="line">    app_iter, status, headers = self.get_wsgi_response(environ)</span><br><span class="line">    start_response(status, headers)</span><br><span class="line">    <span class="keyword">return</span> app_iter</span><br></pre></td></tr></table></figure>
+
+<p><strong>看名字也知道，<code>app_iter</code>是可迭代对象，可以被<code>wsgi server</code>迭代调用</strong></p>
+<p><code>start_response</code>是 <code>wsgi server</code>提供的回调函数，我们调用就好了，<code>wsgi server</code>会帮我们返回<code>http response</code></p>
+<p>再看一眼 <code>wsgi</code>协议的<code>demo</code></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">application</span><span class="params">(environ, start_response)</span>:</span></span><br><span class="line">    start_response(<span class="string">'200 OK'</span>, [(<span class="string">'Content-Type'</span>, <span class="string">'text/html'</span>)])</span><br><span class="line">    <span class="keyword">return</span> [<span class="string">b'&lt;h1&gt;Hello, web!&lt;/h1&gt;'</span>]</span><br></pre></td></tr></table></figure>
+
+<p>可以发现 <code>header</code>的格式要是<code>list</code>套 <code>tuple</code>这种</p>
+<p><code>werkzeug</code>实现了<code>Headers</code>数据结构</p>
+<p>定义在</p>
+<figure class="highlight elm"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="title">fro</span> werkzeug.datastructures <span class="keyword">import</span> Headers</span><br></pre></td></tr></table></figure>
+
+<p>他是一个类似字典的数据结构，只不过支持多个相同的<code>key</code>以及<code>key</code>的有序</p>
+<p>参考<a href="https://cizixs.com/2017/01/22/flask-insight-response/" target="_blank" rel="noopener external nofollow noreferrer">Headers对象</a></p>
+<h3 id="自定义Response对象"><a href="#自定义Response对象" class="headerlink" title="自定义Response对象"></a>自定义<code>Response</code>对象</h3><p>我们知道<code>Reseponse</code>对象是在 <code>make_response</code> 种这样被实例化的</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rv = self.response_class(rv, status=status, headers=headers)</span><br></pre></td></tr></table></figure>
+
+
+
+<p>因此我们只需要</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> flask <span class="keyword">import</span> Flask, Response</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">MyResponse</span><span class="params">(Response)</span>:</span></span><br><span class="line">    <span class="keyword">pass</span></span><br><span class="line"></span><br><span class="line">app = Flask(__name__)</span><br><span class="line">app.response_class = MyResponse</span><br></pre></td></tr></table></figure>
+
+<p>便可以定义我们自己的Response对象</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/flask%E6%BA%90%E7%A0%81/" rel="tag"># flask源码</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/flask/flask%E6%BA%90%E7%A0%81%E4%B9%8Brequest%E5%AF%B9%E8%B1%A1%EF%BC%88%E5%85%AD%EF%BC%89/" rel="prev" title="Flask源码之Request对象（六）">
+      <i class="fa fa-chevron-left"></i> Flask源码之Request对象（六）
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/flask/flask%E6%BA%90%E7%A0%81%E4%B9%8B%E9%85%8D%E7%BD%AE%E5%8A%A0%E8%BD%BD-%E5%85%AB/" rel="next" title="flask源码之配置加载(八)">
+      flask源码之配置加载(八) <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+        </div>
+        
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Johnson</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener external nofollow noreferrer" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" class="theme-link" rel="noopener external nofollow noreferrer" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+  
+  <script>
+    (function(){
+      var bp = document.createElement('script');
+      var curProtocol = window.location.protocol.split(':')[0];
+      bp.src = (curProtocol === 'https') ? 'https://zz.bdstatic.com/linksubmit/push.js' : 'http://push.zhanzhang.baidu.com/push.js';
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(bp, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

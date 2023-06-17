@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+<meta name="google-site-verification" content="sYVNv2cK_IPimIvXEgacyGxMpJ3uoEIFNpK8wPrR35w" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+  
+  <link rel="stylesheet" href="/lib/animate-css/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"johnson329.github.io","root":"/","scheme":"Muse","version":"8.0.0-rc.4","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+<script data-ad-client="ca-pub-5647031416661489" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+
+  <meta name="description" content="系统依赖对于ubuntu操作系统，Docker Engine目前支持以下几个版本  Ubuntu Focal 20.04 (LTS) Ubuntu Bionic 18.04 (LTS) Ubuntu Xenial 16.04 (LTS)  在系统架构上，Docker Engine目前只支持x86_64oramd64,armhf,arm64等系统架构">
+<meta property="og:type" content="article">
+<meta property="og:title" content="ubuntu18.04安装docker">
+<meta property="og:url" content="https://johnson329.github.io/docker/ubuntu18-04%E5%AE%89%E8%A3%85docker/index.html">
+<meta property="og:site_name" content="Johnson的个人博客">
+<meta property="og:description" content="系统依赖对于ubuntu操作系统，Docker Engine目前支持以下几个版本  Ubuntu Focal 20.04 (LTS) Ubuntu Bionic 18.04 (LTS) Ubuntu Xenial 16.04 (LTS)  在系统架构上，Docker Engine目前只支持x86_64oramd64,armhf,arm64等系统架构">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://i.loli.net/2020/12/28/RcqWIN5ymYXfZHS.png">
+<meta property="article:published_time" content="2020-12-28T13:10:12.000Z">
+<meta property="article:modified_time" content="2023-06-17T09:06:28.430Z">
+<meta property="article:author" content="Johnson">
+<meta property="article:tag" content="docker">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://i.loli.net/2020/12/28/RcqWIN5ymYXfZHS.png">
+
+<link rel="canonical" href="https://johnson329.github.io/docker/ubuntu18-04%E5%AE%89%E8%A3%85docker/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>ubuntu18.04安装docker | Johnson的个人博客</title>
+  
+
+
+  <script>
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?1d1705f6a65cb7060130e6deef362fde";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <main class="main">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+        <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+        <span class="toggle-line toggle-line-first"></span>
+        <span class="toggle-line toggle-line-middle"></span>
+        <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">Johnson的个人博客</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Johnson的个人博客</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <section class="post-toc-wrap sidebar-panel">
+          <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#系统依赖"><span class="nav-number">1.</span> <span class="nav-text">系统依赖</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#卸载旧的版本"><span class="nav-number">2.</span> <span class="nav-text">卸载旧的版本</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#添加docker-官方仓库"><span class="nav-number">3.</span> <span class="nav-text">添加docker 官方仓库</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#安装docker-engine"><span class="nav-number">4.</span> <span class="nav-text">安装docker engine</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#安装docker-compose"><span class="nav-number">5.</span> <span class="nav-text">安装docker-compose</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#脚本一键安装"><span class="nav-number">6.</span> <span class="nav-text">脚本一键安装</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Image和Container概念"><span class="nav-number">7.</span> <span class="nav-text">Image和Container概念</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#docker安装mysql服务"><span class="nav-number">8.</span> <span class="nav-text">docker安装mysql服务</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#docker-compose安装mysql服务"><span class="nav-number">9.</span> <span class="nav-text">docker-compose安装mysql服务</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#制作自己的image镜像"><span class="nav-number">10.</span> <span class="nav-text">制作自己的image镜像</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#容器管理"><span class="nav-number">11.</span> <span class="nav-text">容器管理</span></a></li></ol></div>
+      </section>
+      <!--/noindex-->
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Johnson</p>
+  <div class="site-description" itemprop="description">Johnson的个人博客</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">22</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </section>
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </header>
+
+      
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div id="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+      <div class="main-inner">
+        
+
+        <div class="content post posts-expand">
+          
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://johnson329.github.io/docker/ubuntu18-04%E5%AE%89%E8%A3%85docker/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Johnson">
+      <meta itemprop="description" content="Johnson的个人博客">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Johnson的个人博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          ubuntu18.04安装docker
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-12-28 21:10:12" itemprop="dateCreated datePublished" datetime="2020-12-28T21:10:12+08:00">2020-12-28</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2023-06-17 17:06:28" itemprop="dateModified" datetime="2023-06-17T17:06:28+08:00">2023-06-17</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/docker/" itemprop="url" rel="index"><span itemprop="name">docker</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="系统依赖"><a href="#系统依赖" class="headerlink" title="系统依赖"></a>系统依赖</h2><p>对于ubuntu操作系统，Docker Engine目前支持以下几个版本</p>
+<ul>
+<li>Ubuntu Focal 20.04 (LTS)</li>
+<li>Ubuntu Bionic 18.04 (LTS)</li>
+<li>Ubuntu Xenial 16.04 (LTS)</li>
+</ul>
+<p>在系统架构上，Docker Engine目前只支持<code>x86_64</code>or<code>amd64</code>,<code>armhf</code>,<code>arm64</code>等系统架构</p>
+<a id="more"></a>
+
+<ul>
+<li>查看自己的系统架构</li>
+</ul>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="string">arch</span></span><br></pre></td></tr></table></figure>
+
+
+<h2 id="卸载旧的版本"><a href="#卸载旧的版本" class="headerlink" title="卸载旧的版本"></a>卸载旧的版本</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-get remove docker docker-engine docker.io containerd runc</span><br></pre></td></tr></table></figure>
+<p>如果提示</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">Reading package lists... Done</span><br><span class="line">E: Could not get lock /var/lib/apt/lists/lock - open (11: Resource temporarily unavailable)</span><br><span class="line">E: Unable to lock directory /var/lib/apt/lists/</span><br></pre></td></tr></table></figure>
+<p>很可能是你的ubuntu操作系统开启了每天自动更新，apt-get被占用了，关掉自动更新，或者等他自动更新完<br><a href="https://itsfoss.com/could-not-get-lock-error/" target="_blank" rel="noopener external nofollow noreferrer">How to Fix ‘E: Could not get lock /var/lib/dpkg/lock’ Error in Ubuntu Linux</a></p>
+<h2 id="添加docker-官方仓库"><a href="#添加docker-官方仓库" class="headerlink" title="添加docker 官方仓库"></a>添加docker 官方仓库</h2><ol>
+<li><p>更新apt的package index并允许apt使用https</p>
+<p>如果因为网络问题更新速度慢的话，请用你的网络代理工具开启全局代理<br>如果你连网络代理工具也没有的话，自行解决</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">$ sudo apt-get update</span><br><span class="line"></span><br><span class="line">$ sudo apt-get install \</span><br><span class="line">    apt-transport-https \</span><br><span class="line">    ca-certificates \</span><br><span class="line">    curl \</span><br><span class="line">    gnupg-agent \</span><br><span class="line">    software-properties-common</span><br></pre></td></tr></table></figure>
+
+
+</li>
+</ol>
+<ol start="2">
+<li>添加docker官方的GPGkey</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -</span><br></pre></td></tr></table></figure>
+<p>验证一下你的key的签名是否<code>9DC8 5822 9FC7 DD38 854A  E2D8 8D81 803C 0EBF CD88</code>.搜索后八位即可</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">$ sudo apt-key fingerprint 0EBFCD88</span><br><span class="line"></span><br><span class="line">pub   rsa4096 2017-02-22 [SCEA]</span><br><span class="line">      9DC8 5822 9FC7 DD38 854A  E2D8 8D81 803C 0EBF CD88</span><br><span class="line">uid           [ unknown] Docker Release (CE deb) &lt;docker@docker.com&gt;</span><br><span class="line">sub   rsa4096 2017-02-22 [S]</span><br></pre></td></tr></table></figure>
+
+<ol start="3">
+<li>添加docker仓库</li>
+</ol>
+<p>根据你的ubuntu的系统架构安装docker engine下面是amd64的安装命令</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$ sudo add-apt-repository \</span><br><span class="line">   <span class="string">"deb [arch=amd64] https://download.docker.com/linux/ubuntu \</span></span><br><span class="line"><span class="string">   <span class="variable">$(lsb_release -cs)</span> \</span></span><br><span class="line"><span class="string">   stable"</span></span><br></pre></td></tr></table></figure>
+<p>其他系统架构的命令请参考<a href="https://docs.docker.com/engine/install/ubuntu/#set-up-the-repository" target="_blank" rel="noopener external nofollow noreferrer">官方文档</a></p>
+<h2 id="安装docker-engine"><a href="#安装docker-engine" class="headerlink" title="安装docker engine"></a>安装docker engine</h2><ol>
+<li>继续更新 apt的package index 然后安装docker engine</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ sudo apt-get update</span><br><span class="line">$ sudo apt-get install docker-ce docker-ce-cli containerd.io</span><br></pre></td></tr></table></figure>
+<p>要安装指定版本的docker engine 请参考<a href="https://docs.docker.com/engine/install/ubuntu/#install-docker-engine" target="_blank" rel="noopener external nofollow noreferrer">官方文档</a><br>2. 验证docker engine 是否安装成功</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ sudo docker run hello-world</span><br></pre></td></tr></table></figure>
+<p>可以看到这个命令先去本地寻找hello-world:latest镜像，找不到就去dockerhub仓库拉，然后根据拉取镜像生成容器运行，运行结束退出容器<br><img src="https://i.loli.net/2020/12/28/RcqWIN5ymYXfZHS.png" alt="docker hellow-world"><br>Docker 需要用户具有 sudo 权限，为了避免每次命令都输入sudo，可以把用户加入 Docker 用户组，然后重新登陆linux用户就好了，注意是你要注销当前用户再登陆</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo usermod -aG docker <span class="variable">$USER</span></span><br></pre></td></tr></table></figure>
+<p>镜像下载加速<br>使用阿里云镜像源下载</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">sudo mkdir -p /etc/docker</span><br><span class="line">sudo tee /etc/docker/daemon.json &lt;&lt;-<span class="string">'EOF'</span></span><br><span class="line">&#123;</span><br><span class="line">  <span class="string">"registry-mirrors"</span>: [<span class="string">"https://xxx.mirror.aliyuncs.com"</span>]</span><br><span class="line">&#125;</span><br><span class="line">EOF</span><br><span class="line">sudo systemctl daemon-reload</span><br><span class="line">sudo systemctl restart docker</span><br></pre></td></tr></table></figure>
+
+<p><a href="https://cr.console.aliyun.com/cn-hangzhou/instances/mirrors" target="_blank" rel="noopener external nofollow noreferrer">docker镜像下载加速</a></p>
+<h2 id="安装docker-compose"><a href="#安装docker-compose" class="headerlink" title="安装docker-compose"></a>安装docker-compose</h2><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">sudo curl -L <span class="string">"https://github.com/docker/compose/releases/download/1.27.4/docker-compose-<span class="variable">$(uname -s)</span>-<span class="variable">$(uname -m)</span>"</span> -o /usr/<span class="built_in">local</span>/bin/docker-compose</span><br><span class="line"></span><br><span class="line">sudo chmod +x /usr/<span class="built_in">local</span>/bin/docker-compose</span><br></pre></td></tr></table></figure>
+
+<h2 id="脚本一键安装"><a href="#脚本一键安装" class="headerlink" title="脚本一键安装"></a>脚本一键安装</h2><p>装不好就算了，我自己写的</p>
+<figure class="highlight crmsh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">git <span class="keyword">clone</span> <span class="title">git</span>@github.com:johnson329/MyUtils.git</span><br><span class="line">cd MyUtils/bin</span><br><span class="line">./install_docker_ubuntu18.<span class="number">04</span>.sh</span><br></pre></td></tr></table></figure>
+
+<h2 id="Image和Container概念"><a href="#Image和Container概念" class="headerlink" title="Image和Container概念"></a>Image和Container概念</h2><ul>
+<li>image</li>
+</ul>
+<p><strong>Docker 把应用程序及其依赖，打包在 image 文件里面</strong></p>
+<ul>
+<li>container</li>
+</ul>
+<p><strong>根据image生成的容器</strong></p>
+<p>image 文件可以看作是容器的模板。Docker 根据 image 文件生成容器的实例。同一个 image 文件，可以生成多个同时运行的容器实例。</p>
+<p>更多概念请参考<a href="http://www.ruanyifeng.com/blog/2018/02/docker-tutorial.html" target="_blank" rel="noopener external nofollow noreferrer">阮一峰的博客</a></p>
+<h2 id="docker安装mysql服务"><a href="#docker安装mysql服务" class="headerlink" title="docker安装mysql服务"></a>docker安装mysql服务</h2><p>再看一个真实一点的例子，用docker安装mysql</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 拉取mysql</span></span><br><span class="line">docker pull mysql</span><br><span class="line"><span class="comment"># 启动docker 容器，--name表示容器名叫pwc-mysql -e设置环境变量</span></span><br><span class="line"><span class="comment"># 这个容器会根据环境变量MYSQL_ROOT_PASSWORD设置root用户的密码 </span></span><br><span class="line"><span class="comment"># -p 表示把容器内的3306端口映射到容器外的宿主机 宿主机:容器</span></span><br><span class="line"><span class="comment"># -d表示后台运行，而不是敲完命令我就没地方敲其他命令了</span></span><br><span class="line"><span class="comment"># 最后的mysql是镜像的名字</span></span><br><span class="line">docker run --name pwc-mysql -e MYSQL_ROOT_PASSWORD=123456 -p 3306:3306 -d mysql</span><br></pre></td></tr></table></figure>
+
+<p>这样，一个mysql容器就起来了，我们可以用navicat测试一下连接</p>
+<h2 id="docker-compose安装mysql服务"><a href="#docker-compose安装mysql服务" class="headerlink" title="docker-compose安装mysql服务"></a>docker-compose安装mysql服务</h2><p>每次都要敲命令实在太麻烦了，这次敲完下次又要重新来一遍，简直噩梦</p>
+<p>更噩梦的是如果有多个服务，比如还有redis，rabbitmq，都要去敲命令，那简直累死</p>
+<p>所以，相比于命令式的启动方式</p>
+<p>我们还可以用声明的方式启动vim docker-compose.yml</p>
+<figure class="highlight yml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="attr">version:</span> <span class="string">'3'</span></span><br><span class="line"><span class="attr">services:</span></span><br><span class="line">  <span class="attr">mysql-db:</span></span><br><span class="line">    <span class="attr">container_name:</span> <span class="string">mysql-docker</span></span><br><span class="line">    <span class="attr">image:</span> <span class="string">mysql:8.0</span></span><br><span class="line">    <span class="attr">ports:</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">"3306:3306"</span></span><br><span class="line">    <span class="attr">environment:</span></span><br><span class="line">      <span class="attr">MYSQL_ROOT_PASSWORD:</span> <span class="number">123456</span></span><br><span class="line">      <span class="attr">MYSQL_DATABASE:</span> <span class="string">test</span></span><br><span class="line">  <span class="attr">rabbitmq:</span></span><br><span class="line">      <span class="attr">image:</span> <span class="string">rabbitmq:3.8.3-management</span></span><br><span class="line">      <span class="attr">container_name:</span> <span class="string">rabbitmq-docker</span></span><br><span class="line">      <span class="attr">restart:</span> <span class="string">always</span></span><br><span class="line">      <span class="attr">hostname:</span> <span class="string">myRabbitmq</span></span><br><span class="line">      <span class="attr">ports:</span></span><br><span class="line">        <span class="comment"># 管理界面</span></span><br><span class="line">        <span class="bullet">-</span> <span class="number">15672</span><span class="string">:15672</span></span><br><span class="line">        <span class="bullet">-</span> <span class="number">5672</span><span class="string">:5672</span></span><br><span class="line">      <span class="attr">volumes:</span></span><br><span class="line">        <span class="bullet">-</span> <span class="string">./rabbitmq/data:/var/lib/rabbitmq</span></span><br><span class="line">      <span class="attr">environment:</span></span><br><span class="line">        <span class="bullet">-</span> <span class="string">RABBITMQ_DEFAULT_USER=root</span></span><br><span class="line">        <span class="bullet">-</span> <span class="string">RABBITMQ_DEFAULT_PASS=123456</span></span><br></pre></td></tr></table></figure>
+
+<p>这里声明了两个service，名字分别为mysql-db和rabbitmq</p>
+<p>剩下的都是对应docker run后面的参数了，注意volumes表示的是把容器内外的文件夹作映射，比如mysql产生的数据我们不能放在容器里面，万一容器被删除了，数据就没了，所以我们一般把容器内的数据用<code>volumes</code>挂在出来。</p>
+<p>而且，<code>mysql</code>需要的配置文件，我们一般会实现写好，然后映射到<code>mysql</code>容器内部，让容器使用这个启动配置文件，这些都是通过<code>volumes</code>实现的</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker-compose -f docker-compose.yml up -d</span><br></pre></td></tr></table></figure>
+
+<p>这样我们就安装了mysql和rabbitmq服务</p>
+<p>当然像这样的<code>docker-compose.yml</code>你可以去网上找，只要你理解了文件的意思即可。这可比以前那种安装包的方式轻松多了</p>
+<h2 id="制作自己的image镜像"><a href="#制作自己的image镜像" class="headerlink" title="制作自己的image镜像"></a>制作自己的image镜像</h2><p>例如我们写了一个 <code>flask</code>项目，像这样 <code>app.py</code></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> flask <span class="keyword">import</span> Flask</span><br><span class="line"></span><br><span class="line">app = Flask(__name__)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="meta">@app.route('/')</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">hello_world</span><span class="params">()</span>:</span></span><br><span class="line">    <span class="keyword">return</span> <span class="string">'Hello World!'</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">'__main__'</span>:</span><br><span class="line">    app.run()</span><br></pre></td></tr></table></figure>
+
+<p><code>requirements.txt</code></p>
+<figure class="highlight angelscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">click==<span class="number">7.1</span><span class="number">.2</span></span><br><span class="line">Flask==<span class="number">1.1</span><span class="number">.2</span></span><br><span class="line">gunicorn==<span class="number">20.0</span><span class="number">.4</span></span><br><span class="line">itsdangerous==<span class="number">1.1</span><span class="number">.0</span></span><br><span class="line">Jinja2==<span class="number">2.11</span><span class="number">.2</span></span><br><span class="line">MarkupSafe==<span class="number">1.1</span><span class="number">.1</span></span><br><span class="line">Werkzeug==<span class="number">1.0</span><span class="number">.1</span></span><br></pre></td></tr></table></figure>
+
+<p>我们可以把代码提交到仓库，然后在部署服务器上拉下代码，然后用gunicorn部署，像这样 <code>gunicorn -w 4 app:app</code></p>
+<p>如果用docker部署呢？</p>
+<ol>
+<li>制作Dockerfile文件</li>
+</ol>
+<figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">FROM</span> python:<span class="number">3.6</span></span><br><span class="line"><span class="comment"># 指定容器内的工作目录</span></span><br><span class="line"><span class="keyword">WORKDIR</span><span class="bash"> /flask_project</span></span><br><span class="line"><span class="comment"># 把宿主机的当前目录下的内容 拷贝到 flask_project目录下面</span></span><br><span class="line"><span class="keyword">COPY</span><span class="bash"> . .</span></span><br><span class="line"><span class="keyword">RUN</span><span class="bash"> pip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 启动命令</span></span><br><span class="line"><span class="keyword">CMD</span><span class="bash"> [<span class="string">"gunicorn"</span>, <span class="string">"-w"</span>, <span class="string">"4"</span>, <span class="string">"app:app"</span>]</span></span><br></pre></td></tr></table></figure>
+
+<ol start="2">
+<li>打包镜像</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker build -t flask_project_image:0.1 .</span><br></pre></td></tr></table></figure>
+
+<p><code>-t</code>表示给镜像打上flask_project_image:0.1的标签 </p>
+<p>.表示使用当前目录下的Dcokerfile文件</p>
+<ol start="3">
+<li>启动</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run --name flask_project_container -d flask_project_image:0.1</span><br></pre></td></tr></table></figure>
+
+<p>表示以<strong>后台启动</strong>的方式启动一个名为<code>flask_project_container</code>的容器</p>
+<p>镜像是 <code>flask_project_image:0.1</code></p>
+<ul>
+<li>查看日志</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker logs -f flask_project_container</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>进入到容器内部</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker <span class="built_in">exec</span> -it flask_project_container bash</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>停止容器，但是容器没有被删除，只是不运行了</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker stop flask_project_container</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>删除容器</li>
+</ul>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker rm flask_project_container</span><br></pre></td></tr></table></figure>
+
+<h2 id="容器管理"><a href="#容器管理" class="headerlink" title="容器管理"></a>容器管理</h2><p>使用容器我们可以很方便的部署我们的项目，一般项目是从单体开始，等流量上来以后，我们可以采用单体集群的方式，也就是再启动一个<code>flask</code>项目容器，前面放一个网关，让网关做负载均衡，这样就可以很容易横向扩展，当然前提瓶颈在代码运行环节。</p>
+<p>但流量有高峰有低估，总不能一直跑着几十个容器占用服务器资源</p>
+<p>我们希望我们的容器能根据负载，例如根据cpu占用率或者内存占用率自动扩容（增加容器）缩容（减少容器）</p>
+<p>这就是<code>kubernets</code>又叫<code>k8s</code>做的事情，它是一个容器集群管理系统，可以做到自动化部署、自动扩容和自动缩容</p>
+<p>不过谷歌今年服务也出现了短时间大面积不可用，也不咋地嘛</p>
+<p><code>k8s</code>的教程请看<a href="https://dongwm.com/post/use-kubernetes-2/" target="_blank" rel="noopener external nofollow noreferrer">董明伟的博客</a></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/docker/" rel="tag"># docker</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/flask/flask%E6%BA%90%E7%A0%81%E4%B9%8B%E8%AF%B7%E6%B1%82%E4%B8%8A%E4%B8%8B%E6%96%87%E5%92%8C%E5%BA%94%E7%94%A8%E4%B8%8A%E4%B8%8B%E6%96%87%EF%BC%88%E4%B8%89%EF%BC%89/" rel="prev" title="Flask源码之请求上下文和应用上下文（三）">
+      <i class="fa fa-chevron-left"></i> Flask源码之请求上下文和应用上下文（三）
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/hexo/hexo%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2%E7%9A%84seo%E4%BC%98%E5%8C%96/" rel="next" title="hexo个人博客的SEO优化">
+      hexo个人博客的SEO优化 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+        </div>
+        
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Johnson</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener external nofollow noreferrer" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" class="theme-link" rel="noopener external nofollow noreferrer" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+  
+  <script>
+    (function(){
+      var bp = document.createElement('script');
+      var curProtocol = window.location.protocol.split(':')[0];
+      bp.src = (curProtocol === 'https') ? 'https://zz.bdstatic.com/linksubmit/push.js' : 'http://push.zhanzhang.baidu.com/push.js';
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(bp, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>

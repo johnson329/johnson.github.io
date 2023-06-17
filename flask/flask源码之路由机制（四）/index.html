@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 4.2.1">
+<meta name="google-site-verification" content="sYVNv2cK_IPimIvXEgacyGxMpJ3uoEIFNpK8wPrR35w" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+  
+  <link rel="stylesheet" href="/lib/animate-css/animate.min.css">
+
+<script class="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"johnson329.github.io","root":"/","scheme":"Muse","version":"8.0.0-rc.4","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12},"copycode":true,"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+<script data-ad-client="ca-pub-5647031416661489" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+
+  <meta name="description" content="原理一个 web 应用中，不同的路径会有不同的处理函数，路由就是根据请求的 URL 找到对应处理函数的过程。 在下面的例子中，就是根据”&#x2F;“找到hello_world的过程 123456789101112from flask import Flask, requestflask_app &#x3D; Flask(__name__)@flask_app.route(&#39;&#x2F;&#39;,endpoint&#x3D;&quot;11&quot;)def">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Flask源码之路由机制（四）">
+<meta property="og:url" content="https://johnson329.github.io/flask/flask%E6%BA%90%E7%A0%81%E4%B9%8B%E8%B7%AF%E7%94%B1%E6%9C%BA%E5%88%B6%EF%BC%88%E5%9B%9B%EF%BC%89/index.html">
+<meta property="og:site_name" content="Johnson的个人博客">
+<meta property="og:description" content="原理一个 web 应用中，不同的路径会有不同的处理函数，路由就是根据请求的 URL 找到对应处理函数的过程。 在下面的例子中，就是根据”&#x2F;“找到hello_world的过程 123456789101112from flask import Flask, requestflask_app &#x3D; Flask(__name__)@flask_app.route(&#39;&#x2F;&#39;,endpoint&#x3D;&quot;11&quot;)def">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://i.loli.net/2020/12/30/zeNT6rGUDj4Wfxa.png">
+<meta property="og:image" content="https://i.loli.net/2021/01/07/RC2WYrGvcDAaJhN.png">
+<meta property="article:published_time" content="2020-12-30T15:31:47.000Z">
+<meta property="article:modified_time" content="2023-06-17T09:06:28.430Z">
+<meta property="article:author" content="Johnson">
+<meta property="article:tag" content="flask源码">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://i.loli.net/2020/12/30/zeNT6rGUDj4Wfxa.png">
+
+<link rel="canonical" href="https://johnson329.github.io/flask/flask%E6%BA%90%E7%A0%81%E4%B9%8B%E8%B7%AF%E7%94%B1%E6%9C%BA%E5%88%B6%EF%BC%88%E5%9B%9B%EF%BC%89/">
+
+
+<script class="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'zh-CN'
+  };
+</script>
+
+  <title>Flask源码之路由机制（四） | Johnson的个人博客</title>
+  
+
+
+  <script>
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?1d1705f6a65cb7060130e6deef362fde";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+  <noscript>
+  <style>
+  body { margin-top: 2rem; }
+
+  .use-motion .menu-item,
+  .use-motion .sidebar,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header {
+    visibility: visible;
+  }
+
+  .use-motion .header,
+  .use-motion .site-brand-container .toggle,
+  .use-motion .footer { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle,
+  .use-motion .custom-logo-image {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line {
+    transform: scaleX(1);
+  }
+
+  .search-pop-overlay, .sidebar-nav { display: none; }
+  .sidebar-panel { display: block; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <main class="main">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+        <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏">
+        <span class="toggle-line toggle-line-first"></span>
+        <span class="toggle-line toggle-line-middle"></span>
+        <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">Johnson的个人博客</h1>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">Johnson的个人博客</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a>
+
+  </li>
+        <li class="menu-item menu-item-categories">
+
+    <a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <section class="post-toc-wrap sidebar-panel">
+          <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#原理"><span class="nav-number">1.</span> <span class="nav-text">原理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#匹配"><span class="nav-number">1.1.</span> <span class="nav-text">匹配</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#为什么要endpoint？"><span class="nav-number">1.2.</span> <span class="nav-text">为什么要endpoint？</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#实现"><span class="nav-number">2.</span> <span class="nav-text">实现</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Rule和Map"><span class="nav-number">2.1.</span> <span class="nav-text">Rule和Map</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#route方法"><span class="nav-number">2.2.</span> <span class="nav-text">route方法</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#匹配-1"><span class="nav-number">2.3.</span> <span class="nav-text">匹配</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#一个疑问"><span class="nav-number">2.4.</span> <span class="nav-text">一个疑问</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#流程图"><span class="nav-number">2.5.</span> <span class="nav-text">流程图</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#参考文章"><span class="nav-number">3.</span> <span class="nav-text">参考文章</span></a></li></ol></div>
+      </section>
+      <!--/noindex-->
+
+      <section class="site-overview-wrap sidebar-panel">
+        <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Johnson</p>
+  <div class="site-description" itemprop="description">Johnson的个人博客</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">22</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+            <a href="/categories/">
+          
+        <span class="site-state-item-count">3</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </section>
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </header>
+
+      
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div id="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+      <div class="main-inner">
+        
+
+        <div class="content post posts-expand">
+          
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://johnson329.github.io/flask/flask%E6%BA%90%E7%A0%81%E4%B9%8B%E8%B7%AF%E7%94%B1%E6%9C%BA%E5%88%B6%EF%BC%88%E5%9B%9B%EF%BC%89/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Johnson">
+      <meta itemprop="description" content="Johnson的个人博客">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Johnson的个人博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Flask源码之路由机制（四）
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              <time title="创建时间：2020-12-30 23:31:47" itemprop="dateCreated datePublished" datetime="2020-12-30T23:31:47+08:00">2020-12-30</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">更新于</span>
+                <time title="修改时间：2023-06-17 17:06:28" itemprop="dateModified" datetime="2023-06-17T17:06:28+08:00">2023-06-17</time>
+              </span>
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-folder"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/flask/" itemprop="url" rel="index"><span itemprop="name">flask</span></a>
+                </span>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="原理"><a href="#原理" class="headerlink" title="原理"></a>原理</h2><p>一个 web 应用中，不同的路径会有不同的处理函数，<strong>路由就是根据请求的 URL 找到对应处理函数的过程。</strong></p>
+<p>在下面的例子中，就是根据”/“找到<code>hello_world</code>的过程</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> flask <span class="keyword">import</span> Flask, request</span><br><span class="line"></span><br><span class="line">flask_app = Flask(__name__)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="meta">@flask_app.route('/',endpoint="11")</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">hello_world</span><span class="params">()</span>:</span></span><br><span class="line">    <span class="keyword">return</span> <span class="string">"&#123;&#125;"</span>.format(request.remote_addr)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">if</span> __name__ == <span class="string">'__main__'</span>:</span><br><span class="line">    flask_app.run()</span><br></pre></td></tr></table></figure>
+
+<p>我们很容易想到用字典去做路由，<code>key</code>是 <code>url</code>，<code>value</code>是对应的处理函数或者叫视图函数</p>
+<a id="more"></a>
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;<span class="string">"/"</span>:hello_world&#125;</span><br></pre></td></tr></table></figure>
+
+<p>但是对于动态路由，这样做就不好实现了</p>
+<p><code>Flask</code>是用<code>Map</code>和<code>Rule</code>这两种数据结构来实现的，<code>Map</code>的结构类似字典，但能处理更复杂的情况，我们姑且认为<code>Map</code>就是字典</p>
+<p>大概像这样</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;<span class="string">'/'</span>: <span class="string">"11"</span>&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>value</code>不是视图函数名，而是一个字符串，我们叫它<code>endpoint</code>，除非手动指定，它一般是函数名的字符串形式</p>
+<p><code>endpoint</code>和视图函数是对应的，这个字典存储在<code>Flask</code>的<code>view_functions</code>属性中，它是一个字典</p>
+<p>它的结构类似这样</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;<span class="string">'11'</span>:hello_world&#125;</span><br></pre></td></tr></table></figure>
+
+<p><img src="https://i.loli.net/2020/12/30/zeNT6rGUDj4Wfxa.png" alt="image-20201230235156471"></p>
+<p>以上就是在执行 <code>@flask_app.route(&#39;/&#39;)</code>的时候发生的事情，<code>Map</code>和<code>view_functions</code>会形成上面的样子</p>
+<h3 id="匹配"><a href="#匹配" class="headerlink" title="匹配"></a>匹配</h3><p><code>flask</code>有一个<code>url_map</code>属性，这个属性就是<code>Map</code>实例，你可以认为是一个空字典。<code>route</code>的作用就是在项目启动的时候往里面添加<code>Rule</code>对象，就是<code>url</code>规则</p>
+<p>当一个请求来的时候，<code>Flask</code>会根据<code>url</code>在<code>Map</code>找到对应的<code>Rule</code>,再由<code>Rule</code>获取<code>endpoint</code>，再根据<code>endpoint</code>找到对应的<code>function</code>，然后执行 <code>function()</code></p>
+<h3 id="为什么要endpoint？"><a href="#为什么要endpoint？" class="headerlink" title="为什么要endpoint？"></a>为什么要<code>endpoint</code>？</h3><p>直接用视图函数名不好吗？</p>
+<p>有时候我们需要根据视图函数的名字来获取这个视图函数的<code>url</code></p>
+<p><code>Flask</code>内置了<code>url_for</code>函数，参数就是<code>endpoint</code>的名字，例如  <code>url_for(&quot;11&quot;)</code>返回的就是 <code>&quot;/&quot;</code></p>
+<p>如果没有<code>endpoint</code>而使用函数名的字符串<code>hellow_world</code>，例如<code>url_for(&quot;hello_world&quot;)</code>,万一你的同事把函数名给改了，你的<code>url_for</code>就要报错了，而<code>endpoint</code>一般不会去改，谁改带他周末去爬山</p>
+<p>参考<a href="https://stackoverflow.com/questions/19261833/what-is-an-endpoint-in-flask" target="_blank" rel="noopener external nofollow noreferrer">What is an ‘endpoint’ in Flask?</a></p>
+<h2 id="实现"><a href="#实现" class="headerlink" title="实现"></a>实现</h2><h3 id="Rule和Map"><a href="#Rule和Map" class="headerlink" title="Rule和Map"></a>Rule和Map</h3><p><code>Rule</code>和<code>Map</code>都定义在 <code>werkzeug/routing.py</code>中</p>
+<p>测试以下代码</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> werkzeug.routing <span class="keyword">import</span> Map, Rule</span><br><span class="line"></span><br><span class="line">m = Map([</span><br><span class="line">    Rule(<span class="string">'/'</span>, endpoint=<span class="string">'index'</span>),</span><br><span class="line">    Rule(<span class="string">'/downloads/'</span>, endpoint=<span class="string">'downloads/index'</span>),</span><br><span class="line"></span><br><span class="line">])</span><br><span class="line"><span class="comment"># 添加一个Rule</span></span><br><span class="line">m.add(</span><br><span class="line">    Rule(<span class="string">'/downloads/&lt;int:id&gt;'</span>, endpoint=<span class="string">'downloads/show'</span>)</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line"><span class="comment"># 把Map绑定到某个域名，返回MapAdapter对象</span></span><br><span class="line">urls = m.bind(<span class="string">"example.com"</span>, <span class="string">"/"</span>)</span><br><span class="line"></span><br><span class="line">print(urls.match(<span class="string">"/downloads/42"</span>))</span><br><span class="line"><span class="comment"># 返回('downloads/show', &#123;'id': 42&#125;)</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line">print(urls.match(<span class="string">"/downloads/42"</span>, return_rule=<span class="literal">True</span>))</span><br><span class="line"><span class="comment"># 返回 (&lt;Rule '/downloads/&lt;id&gt;' -&gt; downloads/show&gt;, &#123;'id': 42&#125;)</span></span><br><span class="line">print(urls.match( return_rule=<span class="literal">True</span>))</span><br><span class="line"><span class="comment"># 也可以不填原始url字符，直接匹配出当前请求的Rule</span></span><br></pre></td></tr></table></figure>
+
+<p>我们可以知道</p>
+<ol>
+<li><code>Map</code>中的元素是<code>Rule</code>对象，<code>Rule</code>对象其实就是<code>URL</code>规则和<code>endpoint</code>的封装对象</li>
+<li><code>Map</code>要绑定到某个域名下，实际上也可以绑定到<code>environ</code>，毕竟<code>environ</code>中有域名信息</li>
+<li><code>Map</code>的<code>bind</code>方法返回 <code>MapAdapter</code>对象，<code>MapAdapter</code>对象执行实际的匹配工作，它可以根据请求的URL匹配出<code>（Rule，请求参数）</code>，也就是<code>match</code>方法做的事情</li>
+</ol>
+<h3 id="route方法"><a href="#route方法" class="headerlink" title="route方法"></a>route方法</h3><p><code>route</code>方法做的事情就是向<code>Map</code>里面<code>add</code> <code>Rule对象</code></p>
+<p>我们看<code>route</code>方法执行这一句 <code>@flask_app.route(&#39;/&#39;,endpoint=&quot;11&quot;)</code></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">route</span><span class="params">(self, rule, **options)</span>:</span></span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">decorator</span><span class="params">(f)</span>:</span></span><br><span class="line">        endpoint = options.pop(<span class="string">"endpoint"</span>, <span class="literal">None</span>)</span><br><span class="line">        <span class="comment"># here</span></span><br><span class="line">        self.add_url_rule(rule, endpoint, f, **options)</span><br><span class="line">        <span class="keyword">return</span> f</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> decorator</span><br></pre></td></tr></table></figure>
+
+<p>再看 <code>add_url_rule</code></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">add_url_rule</span><span class="params">(</span></span></span><br><span class="line"><span class="function"><span class="params">    self,</span></span></span><br><span class="line"><span class="function"><span class="params">    rule,</span></span></span><br><span class="line"><span class="function"><span class="params">    endpoint=None,</span></span></span><br><span class="line"><span class="function"><span class="params">    view_func=None,</span></span></span><br><span class="line"><span class="function"><span class="params">    provide_automatic_options=None,</span></span></span><br><span class="line"><span class="function"><span class="params">    **options</span></span></span><br><span class="line"><span class="function"><span class="params">)</span>:</span></span><br><span class="line">    <span class="comment"># 1.没有指定endpoint，那么他就是函数名的字符串形式</span></span><br><span class="line">    <span class="keyword">if</span> endpoint <span class="keyword">is</span> <span class="literal">None</span>:</span><br><span class="line">        endpoint = _endpoint_from_view_func(view_func)</span><br><span class="line">    options[<span class="string">"endpoint"</span>] = endpoint</span><br><span class="line">    <span class="comment"># 2.HTTP请求方法，没有指定那就是GET</span></span><br><span class="line">    methods = options.pop(<span class="string">"methods"</span>, <span class="literal">None</span>)</span><br><span class="line">    <span class="keyword">if</span> methods <span class="keyword">is</span> <span class="literal">None</span>:</span><br><span class="line">        methods = getattr(view_func, <span class="string">"methods"</span>, <span class="literal">None</span>) <span class="keyword">or</span> (<span class="string">"GET"</span>,)</span><br><span class="line">    <span class="comment"># 3.把字符串形式的URL规则转换成Rule对象，例如"/"转换成Rule("/")</span></span><br><span class="line">    rule = self.url_rule_class(rule, methods=methods, **options)</span><br><span class="line">    </span><br><span class="line">    <span class="comment"># 4.把Rule添加到Map中，注意Flask对象有一个url_map属性，值一开始就是空的Map对象</span></span><br><span class="line">    self.url_map.add(rule)</span><br><span class="line">    <span class="keyword">if</span> view_func <span class="keyword">is</span> <span class="keyword">not</span> <span class="literal">None</span>:</span><br><span class="line">        old_func = self.view_functions.get(endpoint)</span><br><span class="line">        <span class="keyword">if</span> old_func <span class="keyword">is</span> <span class="keyword">not</span> <span class="literal">None</span> <span class="keyword">and</span> old_func != view_func:</span><br><span class="line">            <span class="keyword">raise</span> AssertionError(</span><br><span class="line">                <span class="string">"View function mapping is overwriting an "</span></span><br><span class="line">                <span class="string">"existing endpoint function: %s"</span> % endpoint</span><br><span class="line">            )</span><br><span class="line">        <span class="comment"># 5.把endpoint和视图函数放到view_fuctions这个字典中    </span></span><br><span class="line">        self.view_functions[endpoint] = view_func</span><br></pre></td></tr></table></figure>
+
+<p>就是为了第4、5两步</p>
+<h3 id="匹配-1"><a href="#匹配-1" class="headerlink" title="匹配"></a>匹配</h3><p>匹配的过程就是根据请求的<code>URL</code>去<code>match</code>出<code>Rule</code>对象，再根据<code>Rule</code>对象找到视图函数</p>
+<p><code>full_dispatch_request-&gt;dispatch_request-&gt;dispatch_request</code></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">wsgi_app</span><span class="params">(self, environ, start_response)</span>:</span></span><br><span class="line">    ctx = self.request_context(environ)</span><br><span class="line">    error = <span class="literal">None</span></span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        <span class="keyword">try</span>:</span><br><span class="line">            ctx.push()</span><br><span class="line">            <span class="comment"># 看这里</span></span><br><span class="line">            response = self.full_dispatch_request()</span><br><span class="line">        <span class="keyword">except</span> Exception <span class="keyword">as</span> e:</span><br><span class="line">            error = e</span><br><span class="line">            response = self.handle_exception(e)</span><br><span class="line">        <span class="keyword">except</span>:  <span class="comment"># noqa: B001</span></span><br><span class="line">            error = sys.exc_info()[<span class="number">1</span>]</span><br><span class="line">            <span class="keyword">raise</span></span><br><span class="line">        <span class="keyword">return</span> response(environ, start_response)</span><br><span class="line">    <span class="keyword">finally</span>:</span><br><span class="line">        <span class="keyword">if</span> self.should_ignore_error(error):</span><br><span class="line">            error = <span class="literal">None</span></span><br><span class="line">        ctx.auto_pop(error)</span><br></pre></td></tr></table></figure>
+
+
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">full_dispatch_request</span><span class="params">(self)</span>:</span></span><br><span class="line">    self.try_trigger_before_first_request_functions()</span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        request_started.send(self)</span><br><span class="line">        rv = self.preprocess_request()</span><br><span class="line">        <span class="keyword">if</span> rv <span class="keyword">is</span> <span class="literal">None</span>:</span><br><span class="line">            <span class="comment"># 看这里，rv就是视图函数的返回结果</span></span><br><span class="line">            rv = self.dispatch_request()</span><br><span class="line">    <span class="keyword">except</span> Exception <span class="keyword">as</span> e:</span><br><span class="line">        rv = self.handle_user_exception(e)</span><br><span class="line">    <span class="keyword">return</span> self.finalize_request(rv)</span><br></pre></td></tr></table></figure>
+
+
+
+<p>重点看这个方法，请求到这里之后</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">dispatch_request</span><span class="params">(self)</span>:</span></span><br><span class="line">    req = _request_ctx_stack.top.request</span><br><span class="line">    rule = req.url_rule</span><br><span class="line">    <span class="keyword">return</span> self.view_functions[rule.endpoint](**req.view_args)</span><br></pre></td></tr></table></figure>
+
+<p>我们知道<code>req</code>是从<code>LocalStack</code>中取出的 <code>RequestContext</code>的<code>request</code>属性，保存着请求的信息</p>
+<p><code>request</code>有一个<code>url_rule</code>属性，他就是<code>Rule</code>对象，我们从<code>Rule</code>对象中拿到<code>endpoint</code>,再从 <code>view_functions</code>中根据<code>endpoint</code>拿到视图函数，并传入请求参数，执行之后返回结果就结束了</p>
+<h3 id="一个疑问"><a href="#一个疑问" class="headerlink" title="一个疑问"></a>一个疑问</h3><p>那么<code>req</code>是什么时候有的<code>Rule</code>属性的呢？？？</p>
+<p>是在 <code>RequestContext</code>对象的<code>push</code>方法中，我们知道请求来了第一步就是<code>push</code></p>
+<p>我还是删去了一些无关代码</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">push</span><span class="params">(self)</span>:</span></span><br><span class="line">    <span class="keyword">if</span> self.url_adapter <span class="keyword">is</span> <span class="keyword">not</span> <span class="literal">None</span>:</span><br><span class="line">    	self.match_request()</span><br></pre></td></tr></table></figure>
+
+<p>而<code>match_request</code>做的事情就是用 <code>MapAdapter对象match</code>出当前请求的<code>Rule</code>和请求参数 <code>view_args</code>，然后绑定到<code>request</code>上，这样<code>request</code>就有了<code>url_rule</code>属性</p>
+<h3 id="流程图"><a href="#流程图" class="headerlink" title="流程图"></a>流程图</h3><p>图随手画的，有什么好的画图工具可以推荐一下</p>
+<p><img src="https://i.loli.net/2021/01/07/RC2WYrGvcDAaJhN.png" alt="image-20210107170309038.png"></p>
+<p><code>url_adapter</code>就是<code>MapAdapter</code>对象</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">match_request</span><span class="params">(self)</span>:</span></span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        result = self.url_adapter.match(return_rule=<span class="literal">True</span>)</span><br><span class="line">        self.request.url_rule, self.request.view_args = result</span><br><span class="line">    <span class="keyword">except</span> HTTPException <span class="keyword">as</span> e:</span><br><span class="line">        self.request.routing_exception = e</span><br></pre></td></tr></table></figure>
+
+<p>至于<code>match</code>方法为什么不需要传入当前请求的URL，那是因为<code>url_adapter</code>已经包含了当前请求的信息了</p>
+<p>在<code>RequestContext</code>的 <code>__init__</code>方法中我们可以看到， <code>self.url_adapter = app.create_url_adapter(self.request)</code></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">__init__</span><span class="params">(self, app, environ, request=None, session=None)</span>:</span></span><br><span class="line">    self.url_adapter = <span class="literal">None</span></span><br><span class="line">    <span class="keyword">try</span>:</span><br><span class="line">        self.url_adapter = app.create_url_adapter(self.request)</span><br><span class="line">    <span class="keyword">except</span> HTTPException <span class="keyword">as</span> e:</span><br><span class="line">        self.request.routing_exception = e</span><br></pre></td></tr></table></figure>
+
+
+
+<p>再看 <code>create_url_adapter</code>方法，会用<code>Map</code>对象 <code>bind_to_environ</code></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">create_url_adapter</span><span class="params">(self, request)</span>:</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> request <span class="keyword">is</span> <span class="keyword">not</span> <span class="literal">None</span>:</span><br><span class="line">        <span class="comment"># If subdomain matching is disabled (the default), use the</span></span><br><span class="line">        <span class="comment"># default subdomain in all cases. This should be the default</span></span><br><span class="line">        <span class="comment"># in Werkzeug but it currently does not have that feature.</span></span><br><span class="line">        subdomain = (</span><br><span class="line">            (self.url_map.default_subdomain <span class="keyword">or</span> <span class="literal">None</span>)</span><br><span class="line">            <span class="keyword">if</span> <span class="keyword">not</span> self.subdomain_matching</span><br><span class="line">            <span class="keyword">else</span> <span class="literal">None</span></span><br><span class="line">        )</span><br><span class="line">        <span class="keyword">return</span> self.url_map.bind_to_environ(</span><br><span class="line">            request.environ,</span><br><span class="line">            server_name=self.config[<span class="string">"SERVER_NAME"</span>],</span><br><span class="line">            subdomain=subdomain,</span><br><span class="line">        )</span><br></pre></td></tr></table></figure>
+
+<p>做的事情就是把<code>Map</code>表绑定到<code>environ</code>上，毕竟你这个<code>Map</code>也就是路由表，要属于某个域名</p>
+<p>再看 <code>bind_to_environ</code>这个方法，没必要都看明白，需要的时候，再断点调试就好了</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">bind_to_environ</span><span class="params">(self, environ, server_name=None, subdomain=None)</span>:</span></span><br><span class="line">  </span><br><span class="line">    <span class="function"><span class="keyword">def</span> <span class="title">_get_wsgi_string</span><span class="params">(name)</span>:</span></span><br><span class="line">        val = environ.get(name)</span><br><span class="line">        <span class="keyword">if</span> val <span class="keyword">is</span> <span class="keyword">not</span> <span class="literal">None</span>:</span><br><span class="line">            <span class="keyword">return</span> wsgi_decoding_dance(val, self.charset)</span><br><span class="line"></span><br><span class="line">    script_name = _get_wsgi_string(<span class="string">"SCRIPT_NAME"</span>)</span><br><span class="line">    path_info = _get_wsgi_string(<span class="string">"PATH_INFO"</span>)</span><br><span class="line">    query_args = _get_wsgi_string(<span class="string">"QUERY_STRING"</span>)</span><br><span class="line">    <span class="keyword">return</span> Map.bind(</span><br><span class="line">        self,</span><br><span class="line">        server_name,</span><br><span class="line">        script_name,</span><br><span class="line">        subdomain,</span><br><span class="line">        scheme,</span><br><span class="line">        environ[<span class="string">"REQUEST_METHOD"</span>],</span><br><span class="line">        <span class="comment">#here</span></span><br><span class="line">        path_info,</span><br><span class="line">        <span class="comment"># here</span></span><br><span class="line">        query_args=query_args,</span><br><span class="line">    )</span><br></pre></td></tr></table></figure>
+
+<p>我们看到，这个方法把从<code>envirion</code>中取出来的<code>path_info</code>和<code>query_args</code>传到了<code>bind</code>方法中，然后返回<code>MapAdapter</code>对象，接着就可以用<code>MapAdapter</code>对象<code>match</code>出<code>Rule</code>了</p>
+<p>也就是说我们从 <code>Map</code>构造<code>MapAdapter</code>，然后就可以直接用<code>match</code>方法匹配出当前请求的<code>Rule</code>，再根据<code>Rule</code>获取<code>endpoint</code>，再由此获取视图函数然后调用就好了</p>
+<h2 id="参考文章"><a href="#参考文章" class="headerlink" title="参考文章"></a>参考文章</h2><p><a href="https://cizixs.com/2017/01/12/flask-insight-routing/" target="_blank" rel="noopener external nofollow noreferrer">flask 源码解析：路由</a></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/flask%E6%BA%90%E7%A0%81/" rel="tag"># flask源码</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/hexo/hexo%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2%E7%9A%84seo%E4%BC%98%E5%8C%96/" rel="prev" title="hexo个人博客的SEO优化">
+      <i class="fa fa-chevron-left"></i> hexo个人博客的SEO优化
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/flask/flask%E6%BA%90%E7%A0%81%E4%B9%8B%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86-%E5%85%BC%E8%AE%BA%E5%89%8D%E5%90%8E%E7%AB%AF%E5%88%86%E7%A6%BB%E5%9C%BA%E6%99%AF%E4%B8%8B%E7%9A%84%E6%8E%A5%E5%8F%A3%E6%A0%BC%E5%BC%8F%E9%97%AE%E9%A2%98%EF%BC%88%E4%BA%94%EF%BC%89/" rel="next" title="Flask源码之异常处理-兼论前后端分离场景下的接口格式问题（五）">
+      Flask源码之异常处理-兼论前后端分离场景下的接口格式问题（五） <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+        </div>
+        
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Johnson</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener external nofollow noreferrer" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" class="theme-link" rel="noopener external nofollow noreferrer" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/muse.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+  
+  <script>
+    (function(){
+      var bp = document.createElement('script');
+      var curProtocol = window.location.protocol.split(':')[0];
+      bp.src = (curProtocol === 'https') ? 'https://zz.bdstatic.com/linksubmit/push.js' : 'http://push.zhanzhang.baidu.com/push.js';
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(bp, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+</body>
+</html>
